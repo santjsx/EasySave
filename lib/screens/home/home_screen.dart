@@ -418,19 +418,31 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildCallLogTile(BuildContext context, WidgetRef ref, CallLogEntry entry) {
     final localization = AppLocalizations.of(context)!;
 
+    String formatPhone(String p) {
+      final clean = p.replaceAll(RegExp(r'\s+'), '');
+      if (clean.length == 10) {
+        return '${clean.substring(0, 5)} ${clean.substring(5)}';
+      } else if (clean.length == 13 && clean.startsWith('+91')) {
+        return '+91 ${clean.substring(3, 8)} ${clean.substring(8)}';
+      } else if (clean.length == 12 && clean.startsWith('91')) {
+        return '+91 ${clean.substring(2, 7)} ${clean.substring(7)}';
+      }
+      return p;
+    }
+
     final String shortCallType;
     switch (entry.callType) {
       case CallEntryType.incoming:
-        shortCallType = '↙ వచ్చిన';
+        shortCallType = 'వచ్చిన';
         break;
       case CallEntryType.outgoing:
-        shortCallType = '↗ చేసిన';
+        shortCallType = 'చేసిన';
         break;
       case CallEntryType.missed:
-        shortCallType = '✕ మిస్';
+        shortCallType = 'మిస్';
         break;
       case CallEntryType.rejected:
-        shortCallType = '✕ కట్';
+        shortCallType = 'కట్';
         break;
     }
 
@@ -465,7 +477,7 @@ class HomeScreen extends ConsumerWidget {
               Text(
                 entry.isSavedContact
                     ? '${entry.contactName}${entry.callCount > 1 ? " (${entry.callCount})" : ""}'
-                    : entry.phoneNumber,
+                    : formatPhone(entry.phoneNumber),
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.w600, // Semi-bold
@@ -479,10 +491,10 @@ class HomeScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 4.0),
 
-              // Row 2: Phone Number (15sp Medium, grey)
+              // Row 2: Phone Number (15sp Medium, grey, standardized format)
               Text(
                 entry.isSavedContact
-                    ? entry.phoneNumber
+                    ? formatPhone(entry.phoneNumber)
                     : localization.unsavedNumber,
                 style: TextStyle(
                   fontSize: 15.0,
@@ -497,15 +509,21 @@ class HomeScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 4.0),
 
-              // Row 3: Call Status (left, 14sp Medium) and Time (right, visually secondary)
+              // Row 3: Call Status (left, clean Material icon + short Telugu status text) and Time (right)
               Row(
                 children: [
+                  Icon(
+                    entry.typeIcon,
+                    size: 16.0,
+                    color: entry.typeColor,
+                  ),
+                  const SizedBox(width: 6.0),
                   Flexible(
                     child: Text(
                       shortCallType,
                       style: TextStyle(
                         fontSize: 14.0,
-                        fontWeight: FontWeight.w500, // Medium call status
+                        fontWeight: FontWeight.w500, // 14sp Medium call status
                         color: entry.typeColor,
                         fontFamily: AppTypography.fontFamily,
                         height: 1.2,
@@ -517,13 +535,13 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   const Spacer(),
                   const SizedBox(width: 8.0),
-                  // Time must always remain fully visible, visually secondary
+                  // Time must always remain fully visible, visually secondary (12sp regular)
                   Text(
                     entry.telugifiedTime,
                     style: TextStyle(
-                      fontSize: 13.0, // smaller size
-                      fontWeight: FontWeight.w400, // lower weight
-                      color: AppDesignColors.textSecondary.withValues(alpha: 0.7), // lower contrast
+                      fontSize: 12.0, // Reduced size (12sp)
+                      fontWeight: FontWeight.w400, // Reduced weight (regular)
+                      color: AppDesignColors.textSecondary.withValues(alpha: 0.5), // Reduced contrast
                       fontFamily: AppTypography.fontFamily,
                       height: 1.2,
                       letterSpacing: 0.2,
@@ -587,7 +605,7 @@ class HomeScreen extends ConsumerWidget {
       },
       borderRadius: BorderRadius.circular(20.0),
       child: Container(
-        height: 96.0, // Strict 96dp card height
+        height: 100.0, // Strict 100dp fixed card height
         padding: const EdgeInsets.symmetric(
           horizontal: 16.0,
           vertical: 12.0,
