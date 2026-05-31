@@ -7,6 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/contact_model.dart';
 import '../../providers/contacts_list_provider.dart';
+import '../../providers/system_provider.dart';
+import '../../services/speech_service.dart';
 import '../../theme/spacing.dart';
 import '../../widgets/easy_button.dart';
 import '../../widgets/easy_snackbar.dart';
@@ -358,145 +360,308 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
   void _showRenameDialog(BuildContext context, ContactModel contact) {
     final TextEditingController nameEditController = TextEditingController(text: contact.name);
     final TextEditingController phoneEditController = TextEditingController(text: contact.phone);
+    final speechService = ref.read(speechServiceProvider);
+
+    bool isListening = false;
+    String statusMessage = '';
+    bool hasError = false;
 
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext dialogCtx) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
-          title: const Text(
-            'వివరాలు మార్చండి',
-            style: TextStyle(
-              fontSize: 22.0,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'NotoSansTelugu',
-            ),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Name Field Label
-                const Text(
-                  'పేరు',
-                  style: TextStyle(
-                    color: Color(0xFF666666),
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'NotoSansTelugu',
-                  ),
-                ),
-                const SizedBox(height: 6.0),
-                TextField(
-                  controller: nameEditController,
-                  style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                      borderSide: const BorderSide(color: Color(0xFFC17B3F), width: 2.0),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16.0),
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            Future<void> stopListening() async {
+              await speechService.stopListening();
+              if (dialogCtx.mounted) {
+                setDialogState(() {
+                  isListening = false;
+                });
+              }
+            }
 
-                // Phone Field Label
-                const Text(
-                  'ఫోన్ నంబర్',
-                  style: TextStyle(
-                    color: Color(0xFF666666),
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'NotoSansTelugu',
+            Future<void> toggleListening() async {
+              if (isListening) {
+                await stopListening();
+                return;
+              }
+
+              setDialogState(() {
+                isListening = true;
+                statusMessage = 'మాట్లాడండి... వింటున్నాము'; // Telugu: Speak... listening
+                hasError = false;
+              });
+
+              final hasPermission = await speechService.requestMicrophonePermission();
+              if (!hasPermission) {
+                if (dialogCtx.mounted) {
+                  setDialogState(() {
+                    isListening = false;
+                    statusMessage = 'మైక్ ఉపయోగించడానికి అనుమతి లేదు';
+                    hasError = true;
+                  });
+                }
+                return;
+              }
+
+              final initialized = await speechService.initialize(
+                onStatus: (status) {
+                  if (status == 'notListening' && isListening) {
+                    if (dialogCtx.mounted) {
+                      setDialogState(() {
+                        isListening = false;
+                      });
+                    }
+                  }
+                },
+                onError: (err) {
+                  if (dialogCtx.mounted) {
+                    setDialogState(() {
+                      isListening = false;
+                      statusMessage = err;
+                      hasError = true;
+                    });
+                  }
+                },
+              );
+
+              if (!initialized) {
+                if (dialogCtx.mounted) {
+                  setDialogState(() {
+                    isListening = false;
+                    statusMessage = 'వాయిస్ సేవలు అందుబాటులో లేవు';
+                    hasError = true;
+                  });
+                }
+                return;
+              }
+
+              await speechService.startListening(
+                onResult: (words, isFinal) {
+                  if (dialogCtx.mounted) {
+                    setDialogState(() {
+                      nameEditController.text = words;
+                      nameEditController.selection = TextSelection.fromPosition(
+                        TextPosition(offset: nameEditController.text.length),
+                      );
+                      if (isFinal) {
+                        isListening = false;
+                        statusMessage = '';
+                      }
+                    });
+                  }
+                },
+                onError: (err) {
+                  if (dialogCtx.mounted) {
+                    setDialogState(() {
+                      isListening = false;
+                      statusMessage = err;
+                      hasError = true;
+                    });
+                  }
+                },
+              );
+            }
+
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
+              title: const Text(
+                'వివరాలు మార్చండి',
+                style: TextStyle(
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'NotoSansTelugu',
+                ),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Name Field Label
+                    const Text(
+                      'పేరు',
+                      style: TextStyle(
+                        color: Color(0xFF666666),
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'NotoSansTelugu',
+                      ),
+                    ),
+                    const SizedBox(height: 6.0),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: nameEditController,
+                            style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                                borderSide: const BorderSide(color: Color(0xFFC17B3F), width: 2.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8.0),
+                        // Highly accessible microphone button next to Name
+                        Container(
+                          width: 56.0,
+                          height: 56.0,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isListening ? const Color(0xFFD32F2F) : const Color(0xFF2E7D32),
+                            boxShadow: [
+                              BoxShadow(
+                                color: (isListening ? const Color(0xFFD32F2F) : const Color(0xFF2E7D32)).withOpacity(0.3),
+                                blurRadius: 8.0,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                HapticFeedback.heavyImpact();
+                                toggleListening();
+                              },
+                              customBorder: const CircleBorder(),
+                              child: Icon(
+                                isListening ? Icons.mic : Icons.mic_none_rounded,
+                                color: Colors.white,
+                                size: 28.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (statusMessage.isNotEmpty) ...[
+                      const SizedBox(height: 8.0),
+                      Text(
+                        statusMessage,
+                        style: TextStyle(
+                          color: hasError ? const Color(0xFFD32F2F) : const Color(0xFF2E7D32),
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'NotoSansTelugu',
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 16.0),
+
+                    // Phone Field Label
+                    const Text(
+                      'ఫోన్ నంబర్',
+                      style: TextStyle(
+                        color: Color(0xFF666666),
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'NotoSansTelugu',
+                      ),
+                    ),
+                    const SizedBox(height: 6.0),
+                    TextField(
+                      controller: phoneEditController,
+                      keyboardType: TextInputType.phone,
+                      style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: const BorderSide(color: Color(0xFFC17B3F), width: 2.0),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actions: [
+                // Cancel
+                TextButton(
+                  style: TextButton.styleFrom(minimumSize: const Size(100, 48)),
+                  onPressed: () async {
+                    if (isListening) {
+                      await speechService.stopListening();
+                    }
+                    if (dialogCtx.mounted) {
+                      Navigator.pop(dialogCtx);
+                    }
+                  },
+                  child: const Text(
+                    'రద్దు చేయి',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'NotoSansTelugu',
+                    ),
                   ),
                 ),
-                const SizedBox(height: 6.0),
-                TextField(
-                  controller: phoneEditController,
-                  keyboardType: TextInputType.phone,
-                  style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    border: OutlineInputBorder(
+                // Commit Save (Update)
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2E7D32),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(120, 48),
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.0),
-                      borderSide: BorderSide.none,
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                      borderSide: const BorderSide(color: Color(0xFFC17B3F), width: 2.0),
+                  ),
+                  onPressed: () async {
+                    if (isListening) {
+                      await speechService.stopListening();
+                    }
+                    final newName = nameEditController.text.trim();
+                    final newPhone = phoneEditController.text.trim();
+                    if (newName.isEmpty || newPhone.isEmpty) {
+                      EasySnackBar.showError(context, 'సరైన వివరాలు ఇవ్వండి');
+                      return;
+                    }
+
+                    if (dialogCtx.mounted) {
+                      Navigator.pop(dialogCtx);
+                    }
+                    final success = await ref
+                        .read(contactsListProvider.notifier)
+                        .updateContact(contact.id, newName, newPhone);
+
+                    if (success) {
+                      if (context.mounted) {
+                        EasySnackBar.showSuccess(context, 'వివరాలు మార్చబడ్డాయి!');
+                      }
+                    } else {
+                      if (context.mounted) {
+                        EasySnackBar.showError(context, 'సేవ్ చేయడం కుదరలేదు');
+                      }
+                    }
+                  },
+                  child: const Text(
+                    'సేవ్ చేయండి',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'NotoSansTelugu',
                     ),
                   ),
                 ),
               ],
-            ),
-          ),
-          actionsAlignment: MainAxisAlignment.spaceBetween,
-          actions: [
-            // Cancel
-            TextButton(
-              style: TextButton.styleFrom(minimumSize: const Size(100, 48)),
-              onPressed: () => Navigator.pop(dialogCtx),
-              child: const Text(
-                'రద్దు చేయి',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'NotoSansTelugu',
-                ),
-              ),
-            ),
-            // Commit Save (Update)
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2E7D32),
-                foregroundColor: Colors.white,
-                minimumSize: const Size(120, 48),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-              ),
-              onPressed: () async {
-                final newName = nameEditController.text.trim();
-                final newPhone = phoneEditController.text.trim();
-                if (newName.isEmpty || newPhone.isEmpty) {
-                  EasySnackBar.showError(context, 'సరైన వివరాలు ఇవ్వండి');
-                  return;
-                }
-
-                Navigator.pop(dialogCtx);
-                final success = await ref
-                    .read(contactsListProvider.notifier)
-                    .updateContact(contact.id, newName, newPhone);
-
-                if (success) {
-                  if (context.mounted) {
-                    EasySnackBar.showSuccess(context, 'వివరాలు మార్చబడ్డాయి!');
-                  }
-                } else {
-                  if (context.mounted) {
-                    EasySnackBar.showError(context, 'సేవ్ చేయడం కుదరలేదు');
-                  }
-                }
-              },
-              child: const Text(
-                'సేవ్ చేయండి',
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'NotoSansTelugu',
-                ),
-              ),
-            ),
-          ],
+            );
+          },
         );
       },
     );
