@@ -23,4 +23,14 @@ class ContactsService {
   Future<bool> saveContact(String name, String phone) {
     return _repository.saveContact(name, phone);
   }
+
+  /// Deletes an existing contact.
+  Future<bool> deleteContact(String id) {
+    return _repository.deleteContact(id);
+  }
+
+  /// Updates details of an existing contact.
+  Future<bool> updateContact(String id, String newName, String newPhone) {
+    return _repository.updateContact(id, newName, newPhone);
+  }
 }

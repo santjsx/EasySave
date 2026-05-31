@@ -63,6 +63,31 @@ class FakeContactsRepository implements ContactsRepository {
 
     return true;
   }
+
+  @override
+  Future<bool> deleteContact(String id) async {
+    if (!hasPermission) {
+      throw const PermissionDeniedException('అనుమతి లేదు');
+    }
+    mockContacts.removeWhere((element) => element.id == id);
+    return true;
+  }
+
+  @override
+  Future<bool> updateContact(String id, String newName, String newPhone) async {
+    if (!hasPermission) {
+      throw const PermissionDeniedException('అనుమతి లేదు');
+    }
+    final int index = mockContacts.indexWhere((element) => element.id == id);
+    if (index != -1) {
+      mockContacts[index] = mockContacts[index].copyWith(
+        name: newName,
+        phone: newPhone,
+      );
+      return true;
+    }
+    return false;
+  }
 }
 
 void main() {

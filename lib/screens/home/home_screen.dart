@@ -177,160 +177,238 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: AppSpacing.md),
 
               // -------------------------------------------------------------
-              // Bottom Section: Two compact side-by-side action cards
+              // Bottom Section: Highly Accessible Action Column Panel
               // -------------------------------------------------------------
-              SizedBox(
-                height: 90.0, // Strict compact limit 80-100px max
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                      // Card 1: Save Contact (Soft Warm Amber Background)
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFF8E1), // Soft Amber background
-                            borderRadius: BorderRadius.circular(24.0), // Rounded corners 20-24px
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.03),
-                                blurRadius: 10.0,
-                                offset: const Offset(0, 4),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Card 1: My Contacts Manager Card (Full Width Green Card)
+                  Container(
+                    height: 84.0,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE8F5E9), // Soft Theme-Matching Light Green
+                      borderRadius: BorderRadius.circular(24.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 10.0,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          context.push(AppRoutes.contactsList);
+                        },
+                        borderRadius: BorderRadius.circular(24.0),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.contacts_rounded,
+                                color: Color(0xFF2E7D32), // Primary Green
+                                size: 36.0,
+                              ),
+                              const SizedBox(width: 14.0),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'నా పరిచయాలు', // My Contacts in Telugu
+                                      style: TextStyle(
+                                        color: const Color(0xFF1B5E20),
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.w900,
+                                        fontFamily: 'NotoSansTelugu',
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2.0),
+                                    Text(
+                                      'చూడండి, మార్చండి, తీసేయండి', // View, edit, delete in Telugu
+                                      style: TextStyle(
+                                        color: const Color(0xFF388E3C),
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'NotoSansTelugu',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const Icon(
+                                Icons.chevron_right_rounded,
+                                color: Color(0xFF2E7D32),
+                                size: 24.0,
                               ),
                             ],
                           ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                context.push(AppRoutes.saveContact);
-                              },
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: AppSpacing.sm),
+
+                  // Card 2 & 3 Row: Save Contact & Share Photo
+                  SizedBox(
+                    height: 84.0,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Card 2: Save Contact (Soft Warm Amber Background)
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFF8E1), // Soft Amber background
                               borderRadius: BorderRadius.circular(24.0),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.person_add_alt_1_rounded,
-                                      color: Color(0xFF8D6E63), // Brown/Amber color
-                                      size: 32.0,
-                                    ),
-                                    const SizedBox(width: 8.0),
-                                    Expanded(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'కొత్త నంబర్',
-                                            style: TextStyle(
-                                              color: const Color(0xFF5D4037),
-                                              fontSize: 18.0,
-                                              height: 1.2,
-                                              fontWeight: FontWeight.w900,
-                                              fontFamily: 'NotoSansTelugu',
-                                            ),
-                                          ),
-                                          Text(
-                                            'సేవ్ చేయండి',
-                                            style: TextStyle(
-                                              color: const Color(0xFF5D4037),
-                                              fontSize: 18.0,
-                                              height: 1.2,
-                                              fontWeight: FontWeight.w900,
-                                              fontFamily: 'NotoSansTelugu',
-                                            ),
-                                          ),
-                                        ],
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.03),
+                                  blurRadius: 10.0,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  context.push(AppRoutes.saveContact);
+                                },
+                                borderRadius: BorderRadius.circular(24.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.person_add_alt_1_rounded,
+                                        color: Color(0xFF8D6E63),
+                                        size: 28.0,
                                       ),
-                                    ),
-                                    const Icon(
-                                      Icons.chevron_right_rounded,
-                                      color: Color(0xFF5D4037),
-                                      size: 20.0,
-                                    ),
-                                  ],
+                                      const SizedBox(width: 8.0),
+                                      Expanded(
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'కొత్త నంబర్',
+                                              style: TextStyle(
+                                                color: const Color(0xFF5D4037),
+                                                fontSize: 16.0,
+                                                height: 1.2,
+                                                fontWeight: FontWeight.w900,
+                                                fontFamily: 'NotoSansTelugu',
+                                              ),
+                                            ),
+                                            Text(
+                                              'సేవ్ చేయండి',
+                                              style: TextStyle(
+                                                color: const Color(0xFF5D4037),
+                                                fontSize: 16.0,
+                                                height: 1.2,
+                                                fontWeight: FontWeight.w900,
+                                                fontFamily: 'NotoSansTelugu',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const Icon(
+                                        Icons.chevron_right_rounded,
+                                        color: Color(0xFF5D4037),
+                                        size: 16.0,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
 
-                      const SizedBox(width: AppSpacing.md),
+                        const SizedBox(width: AppSpacing.sm),
 
-                      // Card 2: Share Photo (Soft Light Blue Background)
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE3F2FD), // Soft light blue background
-                            borderRadius: BorderRadius.circular(24.0), // Rounded corners 20-24px
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.03),
-                                blurRadius: 10.0,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                context.push(AppRoutes.sharePhoto);
-                              },
+                        // Card 3: Share Photo (Soft Light Blue Background)
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE3F2FD), // Soft light blue background
                               borderRadius: BorderRadius.circular(24.0),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.chat_bubble_outline_rounded,
-                                      color: Color(0xFF1976D2), // Blue color
-                                      size: 32.0,
-                                    ),
-                                    const SizedBox(width: 8.0),
-                                    Expanded(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'ఫోటో పంపండి',
-                                            style: TextStyle(
-                                              color: const Color(0xFF0D47A1),
-                                              fontSize: 18.0,
-                                              height: 1.2,
-                                              fontWeight: FontWeight.w900,
-                                              fontFamily: 'NotoSansTelugu',
-                                            ),
-                                          ),
-                                          Text(
-                                            '(WhatsApp)',
-                                            style: TextStyle(
-                                              color: const Color(0xFF0D47A1),
-                                              fontSize: 15.0,
-                                              height: 1.2,
-                                              fontWeight: FontWeight.w900,
-                                              fontFamily: 'NotoSansTelugu',
-                                            ),
-                                          ),
-                                        ],
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.03),
+                                  blurRadius: 10.0,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  context.push(AppRoutes.sharePhoto);
+                                },
+                                borderRadius: BorderRadius.circular(24.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.chat_bubble_outline_rounded,
+                                        color: Color(0xFF1976D2),
+                                        size: 28.0,
                                       ),
-                                    ),
-                                    const Icon(
-                                      Icons.chevron_right_rounded,
-                                      color: Color(0xFF0D47A1),
-                                      size: 20.0,
-                                    ),
-                                  ],
+                                      const SizedBox(width: 8.0),
+                                      Expanded(
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'ఫోటో పంపండి',
+                                              style: TextStyle(
+                                                color: const Color(0xFF0D47A1),
+                                                fontSize: 16.0,
+                                                height: 1.2,
+                                                fontWeight: FontWeight.w900,
+                                                fontFamily: 'NotoSansTelugu',
+                                              ),
+                                            ),
+                                            Text(
+                                              '(WhatsApp)',
+                                              style: TextStyle(
+                                                color: const Color(0xFF0D47A1),
+                                                fontSize: 14.0,
+                                                height: 1.2,
+                                                fontWeight: FontWeight.w900,
+                                                fontFamily: 'NotoSansTelugu',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const Icon(
+                                        Icons.chevron_right_rounded,
+                                        color: Color(0xFF0D47A1),
+                                        size: 16.0,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

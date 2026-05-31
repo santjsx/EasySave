@@ -125,4 +125,50 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get teluguSpeechMissing => 'తెలుగు వాయిస్ ప్యాక్ డౌన్లోడ్ చేయండి';
+
+  @override
+  String get viewMyContacts => 'నా పరిచయాలు';
+
+  @override
+  String get viewMyContactsSub => 'చూడండి, మార్చండి, తీసేయండి';
+
+  @override
+  String get searchContactsHint => 'ఇక్కడ పేరు టైప్ చేసి వెతకండి...';
+
+  @override
+  String get contactDetailsTitle => 'పరిచయం వివరాలు';
+
+  @override
+  String get callNowButton => 'ఫోన్ చేయండి';
+
+  @override
+  String get renameButton => 'పేరు మార్చండి';
+
+  @override
+  String get deleteButton => 'తీసేయండి';
+
+  @override
+  String get deleteConfirmTitle => 'డిలీట్ చేయాలా?';
+
+  @override
+  String get deleteConfirmMessage =>
+      'మీరు నిజంగా నిశ్చయంగా డిలీట్ చేయాలనుకుంటున్నారా?';
+
+  @override
+  String get editContactTitle => 'వివరాలు మార్చండి';
+
+  @override
+  String get editNameLabel => 'పేరు';
+
+  @override
+  String get editPhoneLabel => 'ఫోన్ నంబర్';
+
+  @override
+  String get contactUpdatedSuccess => 'వివరాలు మార్చబడ్డాయి!';
+
+  @override
+  String get contactDeletedSuccess => 'పరిచయం తీసివేయబడింది!';
+
+  @override
+  String get cancelButton => 'రద్దు చేయి';
 }

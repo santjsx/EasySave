@@ -18,6 +18,12 @@ class FakeContactsForCallLogRepo implements ContactsRepository {
 
   @override
   Future<bool> saveContact(String name, String phone) async => true;
+
+  @override
+  Future<bool> deleteContact(String id) async => true;
+
+  @override
+  Future<bool> updateContact(String id, String newName, String newPhone) async => true;
 }
 
 void main() {

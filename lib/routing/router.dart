@@ -12,6 +12,7 @@ import '../screens/share_photo/gallery_screen.dart';
 import '../screens/share_photo/photo_confirm_screen.dart';
 import '../screens/recent_calls/recent_calls_screen.dart';
 import '../screens/recent_calls/quick_save_screen.dart';
+import '../screens/contacts/contacts_screen.dart';
 import 'routes.dart';
 
 /// Riverpod provider for GoRouter configuration.
@@ -26,6 +27,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => _buildLinearTransitionPage(
           state: state,
           child: const HomeScreen(),
+        ),
+      ),
+
+      // 0. Contacts Manager
+      GoRoute(
+        path: AppRoutes.contactsList,
+        pageBuilder: (context, state) => _buildLinearTransitionPage(
+          state: state,
+          child: const ContactsScreen(),
         ),
       ),
 

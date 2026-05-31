@@ -36,5 +36,20 @@
   "permissionMicExplanation": "మీ పేరు వినడానికి మైక్ అనుమతి అడుగుతున్నాం",
   "permissionDeniedMessage": "అనుమతి ఇవ్వకపోతే ఇది పని చేయదు",
   "openSettings": "సెట్టింగ్స్ తెరవండి",
-  "teluguSpeechMissing": "తెలుగు వాయిస్ ప్యాక్ డౌన్లోడ్ చేయండి"
+  "teluguSpeechMissing": "తెలుగు వాయిస్ ప్యాక్ డౌన్లోడ్ చేయండి",
+  "viewMyContacts": "నా పరిచయాలు",
+  "viewMyContactsSub": "చూడండి, మార్చండి, తీసేయండి",
+  "searchContactsHint": "ఇక్కడ పేరు టైప్ చేసి వెతకండి...",
+  "contactDetailsTitle": "పరిచయం వివరాలు",
+  "callNowButton": "ఫోన్ చేయండి",
+  "renameButton": "పేరు మార్చండి",
+  "deleteButton": "తీసేయండి",
+  "deleteConfirmTitle": "డిలీట్ చేయాలా?",
+  "deleteConfirmMessage": "మీరు నిజంగా నిశ్చయంగా డిలీట్ చేయాలనుకుంటున్నారా?",
+  "editContactTitle": "వివరాలు మార్చండి",
+  "editNameLabel": "పేరు",
+  "editPhoneLabel": "ఫోన్ నంబర్",
+  "contactUpdatedSuccess": "వివరాలు మార్చబడ్డాయి!",
+  "contactDeletedSuccess": "పరిచయం తీసివేయబడింది!",
+  "cancelButton": "రద్దు చేయి"
 }

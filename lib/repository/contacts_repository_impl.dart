@@ -135,4 +135,56 @@ class ContactsRepositoryImpl implements ContactsRepository {
       throw const ContactSaveFailureException();
     }
   }
+
+  @override
+  Future<bool> deleteContact(String id) async {
+    final bool hasPermission = await FlutterContacts.requestPermission();
+    if (!hasPermission) {
+      throw const PermissionDeniedException('డిలీట్ చేయడానికి అనుమతి లేదు');
+    }
+    try {
+      final contact = await FlutterContacts.getContact(id);
+      if (contact != null) {
+        await contact.delete();
+        debugPrint('Successfully deleted contact: $id');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      debugPrint('Delete contact native failure: $e');
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> updateContact(String id, String newName, String newPhone) async {
+    final bool hasPermission = await FlutterContacts.requestPermission();
+    if (!hasPermission) {
+      throw const PermissionDeniedException('సరిచేయడానికి అనుమతి లేదు');
+    }
+
+    final String cleanPhone = newPhone.replaceAll(RegExp(r'[^\d+]+'), '');
+    if (cleanPhone.isEmpty || cleanPhone.length < 10) {
+      throw const InvalidPhoneNumberException();
+    }
+
+    try {
+      final contact = await FlutterContacts.getContact(id);
+      if (contact != null) {
+        contact.name.first = newName.trim();
+        if (contact.phones.isNotEmpty) {
+          contact.phones.first.number = cleanPhone;
+        } else {
+          contact.phones = [Phone(cleanPhone)];
+        }
+        await contact.update();
+        debugPrint('Successfully updated contact: $id to $newName ($cleanPhone)');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      debugPrint('Update contact native failure: $e');
+      return false;
+    }
+  }
 }

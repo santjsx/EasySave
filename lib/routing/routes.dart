@@ -21,6 +21,9 @@ class AppRoutes {
   /// Auto-dismissing success banner path: /save-contact/success
   static const String saveSuccess = '/save-contact/success';
 
+  /// Contacts List view path: /contacts
+  static const String contactsList = '/contacts';
+
   // -------------------------------------------------------------
   // Feature Flow 2: WhatsApp Photo Sharer
   // -------------------------------------------------------------

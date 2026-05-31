@@ -17,6 +17,7 @@ class EasyButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final EasyButtonVariant variant;
   final IconData? icon;
+  final Color? color;
 
   const EasyButton({
     super.key,
@@ -24,6 +25,7 @@ class EasyButton extends StatelessWidget {
     required this.onPressed,
     this.variant = EasyButtonVariant.filled,
     this.icon,
+    this.color,
   });
 
   @override
@@ -41,7 +43,7 @@ class EasyButton extends StatelessWidget {
             ? ElevatedButton(
                 onPressed: _handlePress,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppDesignColors.primary,
+                  backgroundColor: color ?? AppDesignColors.primary,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: AppDesignColors.surfaceMuted,
                   disabledForegroundColor: AppDesignColors.textSecondary,

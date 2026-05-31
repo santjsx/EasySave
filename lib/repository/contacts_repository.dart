@@ -53,4 +53,10 @@ abstract class ContactsRepository {
   /// Throws [PermissionDeniedException], [InvalidPhoneNumberException],
   /// [DuplicateContactException], or [ContactSaveFailureException].
   Future<bool> saveContact(String name, String phone);
+
+  /// Deletes a contact card from the device address book.
+  Future<bool> deleteContact(String id);
+
+  /// Updates contact card details (name or phone) on the device.
+  Future<bool> updateContact(String id, String newName, String newPhone);
 }

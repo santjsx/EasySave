@@ -321,6 +321,96 @@ abstract class AppLocalizations {
   /// In te, this message translates to:
   /// **'తెలుగు వాయిస్ ప్యాక్ డౌన్లోడ్ చేయండి'**
   String get teluguSpeechMissing;
+
+  /// No description provided for @viewMyContacts.
+  ///
+  /// In te, this message translates to:
+  /// **'నా పరిచయాలు'**
+  String get viewMyContacts;
+
+  /// No description provided for @viewMyContactsSub.
+  ///
+  /// In te, this message translates to:
+  /// **'చూడండి, మార్చండి, తీసేయండి'**
+  String get viewMyContactsSub;
+
+  /// No description provided for @searchContactsHint.
+  ///
+  /// In te, this message translates to:
+  /// **'ఇక్కడ పేరు టైప్ చేసి వెతకండి...'**
+  String get searchContactsHint;
+
+  /// No description provided for @contactDetailsTitle.
+  ///
+  /// In te, this message translates to:
+  /// **'పరిచయం వివరాలు'**
+  String get contactDetailsTitle;
+
+  /// No description provided for @callNowButton.
+  ///
+  /// In te, this message translates to:
+  /// **'ఫోన్ చేయండి'**
+  String get callNowButton;
+
+  /// No description provided for @renameButton.
+  ///
+  /// In te, this message translates to:
+  /// **'పేరు మార్చండి'**
+  String get renameButton;
+
+  /// No description provided for @deleteButton.
+  ///
+  /// In te, this message translates to:
+  /// **'తీసేయండి'**
+  String get deleteButton;
+
+  /// No description provided for @deleteConfirmTitle.
+  ///
+  /// In te, this message translates to:
+  /// **'డిలీట్ చేయాలా?'**
+  String get deleteConfirmTitle;
+
+  /// No description provided for @deleteConfirmMessage.
+  ///
+  /// In te, this message translates to:
+  /// **'మీరు నిజంగా నిశ్చయంగా డిలీట్ చేయాలనుకుంటున్నారా?'**
+  String get deleteConfirmMessage;
+
+  /// No description provided for @editContactTitle.
+  ///
+  /// In te, this message translates to:
+  /// **'వివరాలు మార్చండి'**
+  String get editContactTitle;
+
+  /// No description provided for @editNameLabel.
+  ///
+  /// In te, this message translates to:
+  /// **'పేరు'**
+  String get editNameLabel;
+
+  /// No description provided for @editPhoneLabel.
+  ///
+  /// In te, this message translates to:
+  /// **'ఫోన్ నంబర్'**
+  String get editPhoneLabel;
+
+  /// No description provided for @contactUpdatedSuccess.
+  ///
+  /// In te, this message translates to:
+  /// **'వివరాలు మార్చబడ్డాయి!'**
+  String get contactUpdatedSuccess;
+
+  /// No description provided for @contactDeletedSuccess.
+  ///
+  /// In te, this message translates to:
+  /// **'పరిచయం తీసివేయబడింది!'**
+  String get contactDeletedSuccess;
+
+  /// No description provided for @cancelButton.
+  ///
+  /// In te, this message translates to:
+  /// **'రద్దు చేయి'**
+  String get cancelButton;
 }
 
 class _AppLocalizationsDelegate
