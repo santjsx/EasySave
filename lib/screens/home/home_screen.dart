@@ -419,24 +419,25 @@ class HomeScreen extends ConsumerWidget {
     final localization = AppLocalizations.of(context)!;
 
     final Widget detailsRow = Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // 1. Giant CircleAvatar (88dp size -> radius: 44.0)
+        // 1. CircleAvatar (64dp size -> radius: 32.0)
         CircleAvatar(
-          radius: 44.0,
+          radius: 32.0,
           backgroundColor: entry.avatarColor,
           child: Text(
             entry.isSavedContact
                 ? entry.contactName.substring(0, 1).toUpperCase()
                 : 'అ',
             style: const TextStyle(
-              fontSize: 34.0, // Bold large letters
+              fontSize: 24.0, // Adjusted bold initial letter size
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontFamily: AppTypography.fontFamily,
             ),
           ),
         ),
-        const SizedBox(width: 16.0), // Generous 16dp spacing
+        const SizedBox(width: 16.0), // 16dp horizontal padding spacing
 
         // 2. Middle column: Clean visual hierarchy with strict typography sizes
         Expanded(
@@ -444,13 +445,13 @@ class HomeScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Contact Name (or Phone Number for unsaved contacts) -> 22sp semi-bold
+              // Row 1: Contact Name (18sp SemiBold, maxLines=1, ellipsis)
               Text(
                 entry.isSavedContact
                     ? '${entry.contactName}${entry.callCount > 1 ? " (${entry.callCount})" : ""}'
                     : entry.phoneNumber,
                 style: TextStyle(
-                  fontSize: 22.0,
+                  fontSize: 18.0,
                   fontWeight: FontWeight.w600, // Semi-bold
                   color: AppDesignColors.textPrimary,
                   fontFamily: AppTypography.fontFamily,
@@ -460,78 +461,76 @@ class HomeScreen extends ConsumerWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 6.0),
+              const SizedBox(height: 4.0),
 
-              // Call Status -> Row containing type icon and 16sp medium text
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    entry.typeIcon,
-                    size: 20.0, // Highly visible accessibility icons
-                    color: entry.typeColor,
-                  ),
-                  const SizedBox(width: 6.0),
-                  Text(
-                    entry.telugifiedCallType,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w500, // Medium call status
-                      color: entry.typeColor,
-                      fontFamily: AppTypography.fontFamily,
-                      height: 1.2,
-                      letterSpacing: 0.1,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6.0),
-
-              // Phone Number (or "Unsaved Number" label for unsaved contacts) -> 16sp regular
+              // Row 2: Phone Number (14sp Medium, grey)
               Text(
                 entry.isSavedContact
                     ? entry.phoneNumber
                     : localization.unsavedNumber,
                 style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w400, // Regular
-                  color: entry.isSavedContact
-                      ? AppDesignColors.textSecondary
-                      : AppDesignColors.error,
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w500, // Medium
+                  color: AppDesignColors.textSecondary,
                   fontFamily: AppTypography.fontFamily,
                   height: 1.2,
-                  letterSpacing: 0.5, // Number readability spacing
+                  letterSpacing: 0.5,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
+              const SizedBox(height: 4.0),
+
+              // Row 3: Call Status (left) and Time (right) in the same horizontal row using Spacer
+              Row(
+                children: [
+                  Icon(
+                    entry.typeIcon,
+                    size: 18.0,
+                    color: entry.typeColor,
+                  ),
+                  const SizedBox(width: 6.0),
+                  Flexible(
+                    child: Text(
+                      entry.telugifiedCallType,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w500, // Medium call status
+                        color: entry.typeColor,
+                        fontFamily: AppTypography.fontFamily,
+                        height: 1.2,
+                        letterSpacing: 0.1,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const Spacer(),
+                  const SizedBox(width: 8.0),
+                  // Time must always remain fully visible
+                  Text(
+                    entry.telugifiedTime,
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w500, // Medium timestamp
+                      color: AppDesignColors.textSecondary,
+                      fontFamily: AppTypography.fontFamily,
+                      height: 1.2,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
-        const SizedBox(width: 12.0),
+        const SizedBox(width: 16.0), // 16dp horizontal spacing before chevron
 
-        // 3. Right Status Block (consistently aligned 20sp medium timestamp + chevron)
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              entry.telugifiedTime,
-              style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.w500, // Medium timestamp
-                color: AppDesignColors.textSecondary,
-                fontFamily: AppTypography.fontFamily,
-                height: 1.2,
-                letterSpacing: 0.2,
-              ),
-            ),
-            const SizedBox(width: 8.0),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: AppDesignColors.textSecondary,
-              size: 28.0,
-            ),
-          ],
+        // 3. Trailing chevron aligned vertically center
+        const Icon(
+          Icons.chevron_right_rounded,
+          color: AppDesignColors.textSecondary,
+          size: 28.0,
         ),
       ],
     );
@@ -562,18 +561,16 @@ class HomeScreen extends ConsumerWidget {
           }
         }
       },
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(20.0),
-        topRight: Radius.circular(20.0),
-        bottomLeft: Radius.circular(20.0),
-        bottomRight: Radius.circular(20.0),
-      ),
+      borderRadius: BorderRadius.circular(20.0),
       child: Container(
-        constraints: const BoxConstraints(minHeight: 110.0), // Pinned minimum card height
+        constraints: const BoxConstraints(
+          minHeight: 96.0,
+          maxHeight: 104.0,
+        ), // Strict 96-104dp card height constraints
         padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
-        ),
+          horizontal: 16.0,
+          vertical: 12.0,
+        ), // 16dp horizontal padding, 12dp vertical spacing
         alignment: Alignment.center,
         child: detailsRow,
       ),
