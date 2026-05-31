@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTagline.
   ///
   /// In te, this message translates to:
-  /// **'మీ సహాయకుడు'**
+  /// **'మీ సులభమైన సేవ్ యాప్'**
   String get appTagline;
 
   /// No description provided for @saveContactLabel.
@@ -419,48 +419,93 @@ abstract class AppLocalizations {
   String get cancelButton;
 
   /// No description provided for @recentCallsTitle.
+  ///
+  /// In te, this message translates to:
+  /// **'ఇటీవల కాల్స్'**
   String get recentCallsTitle;
 
   /// No description provided for @noCallLogs.
+  ///
+  /// In te, this message translates to:
+  /// **'కాల్ రికార్డులు ఏమీ లేవు'**
   String get noCallLogs;
 
   /// No description provided for @callFailed.
+  ///
+  /// In te, this message translates to:
+  /// **'కాల్ చేయడం కుదరలేదు'**
   String get callFailed;
 
   /// No description provided for @callPermissionNeeded.
+  ///
+  /// In te, this message translates to:
+  /// **'కాల్ చేయడానికి పర్మిషన్ ఇవ్వాలి'**
   String get callPermissionNeeded;
 
   /// No description provided for @permissionRequired.
+  ///
+  /// In te, this message translates to:
+  /// **'అనుమతి అవసరం'**
   String get permissionRequired;
 
   /// No description provided for @callLogPermissionExplanation.
+  ///
+  /// In te, this message translates to:
+  /// **'మీకు వచ్చిన ఫోన్ కాల్స్ ఇక్కడ చూసి నేరుగా కాల్ చేయడానికి మరియు సేవ్ చేయడానికి కాల్ రికార్డుల పర్మిషన్ ఇవ్వండి.'**
   String get callLogPermissionExplanation;
 
   /// No description provided for @grantPermission.
+  ///
+  /// In te, this message translates to:
+  /// **'అనుమతి ఇవ్వండి'**
   String get grantPermission;
 
   /// No description provided for @saveCallText.
+  ///
+  /// In te, this message translates to:
+  /// **'సేవ్ చేయండి'**
   String get saveCallText;
 
   /// No description provided for @settingsTitle.
+  ///
+  /// In te, this message translates to:
+  /// **'సెట్టింగ్స్ & సమాచారం'**
   String get settingsTitle;
 
   /// No description provided for @developerCredits.
+  ///
+  /// In te, this message translates to:
+  /// **'సంతోష్ రెడ్డి ద్వారా అభివృద్ధి చేయబడింది'**
   String get developerCredits;
 
   /// No description provided for @privacyPolicyTitle.
+  ///
+  /// In te, this message translates to:
+  /// **'Privacy Policy'**
   String get privacyPolicyTitle;
 
   /// No description provided for @privacyPolicyText.
+  ///
+  /// In te, this message translates to:
+  /// **'Your trust is our priority. EasySave does not collect, track, or share any of your contacts, call histories, or photos. Everything is processed purely locally on your device to guarantee absolute privacy and security.'**
   String get privacyPolicyText;
 
   /// No description provided for @termsOfServiceTitle.
+  ///
+  /// In te, this message translates to:
+  /// **'Terms of Service'**
   String get termsOfServiceTitle;
 
   /// No description provided for @termsOfServiceText.
+  ///
+  /// In te, this message translates to:
+  /// **'By using EasySave, you agree that your contact directories, dialers, and photo assets are managed offline under your direct local control. The app is provided as-is without remote storage or third-party integrations.'**
   String get termsOfServiceText;
 
   /// No description provided for @closeButton.
+  ///
+  /// In te, this message translates to:
+  /// **'మూసివేయి'**
   String get closeButton;
 }
 

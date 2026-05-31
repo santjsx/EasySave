@@ -15,16 +15,16 @@ class AppLocalizationsTe extends AppLocalizations {
   String get appTagline => 'మీ సులభమైన సేవ్ యాప్';
 
   @override
-  String get saveContactLabel => 'కొత్త నంబర్ సేవ్ చేయండి';
+  String get saveContactLabel => 'కొత్త నంబర్ దాచుకోండి';
 
   @override
-  String get saveContactSub => 'కొత్త నంబర్ సేవ్ చేయడానికి';
+  String get saveContactSub => 'కొత్త నంబర్ రాసుకోవడానికి';
 
   @override
   String get sharePhotoLabel => 'ఫోటో పంపండి';
 
   @override
-  String get sharePhotoSub => 'WhatsApp లో ఫోటో పంపించడానికి';
+  String get sharePhotoSub => 'వాట్సాప్ లో ఫోటో పంపండి';
 
   @override
   String get enterNumber => 'నంబర్ ఎంటర్ చేయండి';
@@ -130,10 +130,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get teluguSpeechMissing => 'తెలుగు వాయిస్ ప్యాక్ డౌన్లోడ్ చేయండి';
 
   @override
-  String get viewMyContacts => 'నా పరిచయాలు';
+  String get viewMyContacts => 'నా ఫోన్ నంబర్లు';
 
   @override
-  String get viewMyContactsSub => 'చూడండి, మార్చండి, తీసేయండి';
+  String get viewMyContactsSub => 'ఫోన్ బుక్ చూడడానికి, మార్చడానికి';
 
   @override
   String get searchContactsHint => 'ఇక్కడ పేరు టైప్ చేసి వెతకండి...';
@@ -176,46 +176,49 @@ class AppLocalizationsTe extends AppLocalizations {
   String get cancelButton => 'రద్దు చేయి';
 
   @override
-  String get recentCallsTitle => 'ఇటీవల కాల్స్';
+  String get recentCallsTitle => 'వచ్చిన ఫోన్ కాల్స్';
 
   @override
-  String get noCallLogs => 'కాల్ రికార్డులు ఏమీ లేవు';
+  String get noCallLogs => 'ఫోన్ కాల్స్ ఏమీ లేవు';
 
   @override
-  String get callFailed => 'కాల్ చేయడం కుదరలేదు';
+  String get callFailed => 'ఫోన్ చేయడం కుదరలేదు';
 
   @override
-  String get callPermissionNeeded => 'కాల్ చేయడానికి పర్మిషన్ ఇవ్వాలి';
+  String get callPermissionNeeded => 'ఫోన్ చేయడానికి అనుమతి ఇవ్వాలి';
 
   @override
-  String get permissionRequired => 'అనుమతి అవసరం';
+  String get permissionRequired => 'అనుమతి ఇవ్వండి';
 
   @override
-  String get callLogPermissionExplanation => 'మీకు వచ్చిన ఫోన్ కాల్స్ ఇక్కడ చూసి నేరుగా కాల్ చేయడానికి మరియు సేవ్ చేయడానికి కాల్ రికార్డుల పర్మిషన్ ఇవ్వండి.';
+  String get callLogPermissionExplanation =>
+      'ఇక్కడ మీకు వచ్చిన ఫోన్ కాల్స్ చూసుకోవడానికి మరియు ఫోన్ చేయడానికి అనుమతి ఇవ్వండి.';
 
   @override
   String get grantPermission => 'అనుమతి ఇవ్వండి';
 
   @override
-  String get saveCallText => 'సేవ్ చేయండి';
+  String get saveCallText => 'సేవ్ చేసుకోండి';
 
   @override
   String get settingsTitle => 'సెట్టింగ్స్ & సమాచారం';
 
   @override
-  String get developerCredits => 'సంతోష్ రెడ్డి ద్వారా అభివృద్ధి చేయబడింది';
+  String get developerCredits => 'Developed by Santosh Reddy';
 
   @override
   String get privacyPolicyTitle => 'Privacy Policy';
 
   @override
-  String get privacyPolicyText => 'Your trust is our priority. EasySave does not collect, track, or share any of your contacts, call histories, or photos. Everything is processed purely locally on your device to guarantee absolute privacy and security.';
+  String get privacyPolicyText =>
+      'EasySave is committed to protecting your privacy. This application operates entirely offline under your direct control. We do not collect, store, transmit, or share any personal data, contacts, call logs, or photos. All data processing occurs locally on your device, ensuring complete security and absolute confidentiality.';
 
   @override
   String get termsOfServiceTitle => 'Terms of Service';
 
   @override
-  String get termsOfServiceText => 'By using EasySave, you agree that your contact directories, dialers, and photo assets are managed offline under your direct local control. The app is provided as-is without remote storage or third-party integrations.';
+  String get termsOfServiceText =>
+      'By using EasySave, you agree that all contact directories, call histories, and media transmission tools are managed exclusively offline on your local device. The application is provided on an \'as-is\' and \'as-available\' basis without any warranties. There are no remote database connections, analytics tracking, or third-party cloud integrations.';
 
   @override
   String get closeButton => 'మూసివేయి';
