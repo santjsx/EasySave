@@ -4,20 +4,6 @@ EasySave is an elite, **Telugu-first, elderly-first, accessibility-first** Andro
 
 ---
 
-## 🌟 Visual Gallery
-
-Below is a walkthrough of the EasySave interface designed specifically for elderly users:
-
-| Main Dashboard (Home) | Dialpad (Telugu Cues) | Voice Saving Screen |
-|:---:|:---:|:---:|
-| ![Main Dashboard](screenshots/media__1780219281608.png) | ![Dialpad](screenshots/media__1780219807543.png) | ![Voice Saving](screenshots/media__1780220295305.png) |
-
-| Voice Result Screen | Photo Selection (WhatsApp) | Ready to Send (WhatsApp) |
-|:---:|:---:|:---:|
-| ![Voice Result](screenshots/media__1780220778892.png) | ![Photo Selection](screenshots/media__1780221369765.png) | ![WhatsApp Direct](screenshots/media__1780221948474.png) |
-
----
-
 ## ✨ Core Pillars & Elite Features
 
 ### 🎙️ 1. Voice-First Contact Saving (2-3 Taps)
