@@ -12,7 +12,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get appName => 'EasySave';
 
   @override
-  String get appTagline => 'మీ సహాయకుడు';
+  String get appTagline => 'మీ సులభమైన సేవ్ యాప్';
 
   @override
   String get saveContactLabel => 'కొత్త నంబర్ సేవ్ చేయండి';
@@ -174,4 +174,49 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get cancelButton => 'రద్దు చేయి';
+
+  @override
+  String get recentCallsTitle => 'ఇటీవల కాల్స్';
+
+  @override
+  String get noCallLogs => 'కాల్ రికార్డులు ఏమీ లేవు';
+
+  @override
+  String get callFailed => 'కాల్ చేయడం కుదరలేదు';
+
+  @override
+  String get callPermissionNeeded => 'కాల్ చేయడానికి పర్మిషన్ ఇవ్వాలి';
+
+  @override
+  String get permissionRequired => 'అనుమతి అవసరం';
+
+  @override
+  String get callLogPermissionExplanation => 'మీకు వచ్చిన ఫోన్ కాల్స్ ఇక్కడ చూసి నేరుగా కాల్ చేయడానికి మరియు సేవ్ చేయడానికి కాల్ రికార్డుల పర్మిషన్ ఇవ్వండి.';
+
+  @override
+  String get grantPermission => 'అనుమతి ఇవ్వండి';
+
+  @override
+  String get saveCallText => 'సేవ్ చేయండి';
+
+  @override
+  String get settingsTitle => 'సెట్టింగ్స్ & సమాచారం';
+
+  @override
+  String get developerCredits => 'సంతోష్ రెడ్డి ద్వారా అభివృద్ధి చేయబడింది';
+
+  @override
+  String get privacyPolicyTitle => 'Privacy Policy';
+
+  @override
+  String get privacyPolicyText => 'Your trust is our priority. EasySave does not collect, track, or share any of your contacts, call histories, or photos. Everything is processed purely locally on your device to guarantee absolute privacy and security.';
+
+  @override
+  String get termsOfServiceTitle => 'Terms of Service';
+
+  @override
+  String get termsOfServiceText => 'By using EasySave, you agree that your contact directories, dialers, and photo assets are managed offline under your direct local control. The app is provided as-is without remote storage or third-party integrations.';
+
+  @override
+  String get closeButton => 'మూసివేయి';
 }

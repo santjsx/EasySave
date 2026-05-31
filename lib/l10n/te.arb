@@ -1,6 +1,6 @@
 {
   "appName": "EasySave",
-  "appTagline": "మీ సహాయకుడు",
+  "appTagline": "మీ సులభమైన సేవ్ యాప్",
   "saveContactLabel": "కొత్త నంబర్ సేవ్ చేయండి",
   "saveContactSub": "కొత్త నంబర్ సేవ్ చేయడానికి",
   "sharePhotoLabel": "ఫోటో పంపండి",
@@ -52,5 +52,20 @@
   "editPhoneLabel": "ఫోన్ నంబర్",
   "contactUpdatedSuccess": "వివరాలు మార్చబడ్డాయి!",
   "contactDeletedSuccess": "పరిచయం తీసివేయబడింది!",
-  "cancelButton": "రద్దు చేయి"
+  "cancelButton": "రద్దు చేయి",
+  "recentCallsTitle": "ఇటీవల కాల్స్",
+  "noCallLogs": "కాల్ రికార్డులు ఏమీ లేవు",
+  "callFailed": "కాల్ చేయడం కుదరలేదు",
+  "callPermissionNeeded": "కాల్ చేయడానికి పర్మిషన్ ఇవ్వాలి",
+  "permissionRequired": "అనుమతి అవసరం",
+  "callLogPermissionExplanation": "మీకు వచ్చిన ఫోన్ కాల్స్ ఇక్కడ చూసి నేరుగా కాల్ చేయడానికి మరియు సేవ్ చేయడానికి కాల్ రికార్డుల పర్మిషన్ ఇవ్వండి.",
+  "grantPermission": "అనుమతి ఇవ్వండి",
+  "saveCallText": "సేవ్ చేయండి",
+  "settingsTitle": "సెట్టింగ్స్ & సమాచారం",
+  "developerCredits": "సంతోష్ రెడ్డి ద్వారా అభివృద్ధి చేయబడింది",
+  "privacyPolicyTitle": "Privacy Policy",
+  "privacyPolicyText": "Your trust is our priority. EasySave does not collect, track, or share any of your contacts, call histories, or photos. Everything is processed purely locally on your device to guarantee absolute privacy and security.",
+  "termsOfServiceTitle": "Terms of Service",
+  "termsOfServiceText": "By using EasySave, you agree that your contact directories, dialers, and photo assets are managed offline under your direct local control. The app is provided as-is without remote storage or third-party integrations.",
+  "closeButton": "మూసివేయి"
 }

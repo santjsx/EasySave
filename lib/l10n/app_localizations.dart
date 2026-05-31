@@ -417,6 +417,51 @@ abstract class AppLocalizations {
   /// In te, this message translates to:
   /// **'రద్దు చేయి'**
   String get cancelButton;
+
+  /// No description provided for @recentCallsTitle.
+  String get recentCallsTitle;
+
+  /// No description provided for @noCallLogs.
+  String get noCallLogs;
+
+  /// No description provided for @callFailed.
+  String get callFailed;
+
+  /// No description provided for @callPermissionNeeded.
+  String get callPermissionNeeded;
+
+  /// No description provided for @permissionRequired.
+  String get permissionRequired;
+
+  /// No description provided for @callLogPermissionExplanation.
+  String get callLogPermissionExplanation;
+
+  /// No description provided for @grantPermission.
+  String get grantPermission;
+
+  /// No description provided for @saveCallText.
+  String get saveCallText;
+
+  /// No description provided for @settingsTitle.
+  String get settingsTitle;
+
+  /// No description provided for @developerCredits.
+  String get developerCredits;
+
+  /// No description provided for @privacyPolicyTitle.
+  String get privacyPolicyTitle;
+
+  /// No description provided for @privacyPolicyText.
+  String get privacyPolicyText;
+
+  /// No description provided for @termsOfServiceTitle.
+  String get termsOfServiceTitle;
+
+  /// No description provided for @termsOfServiceText.
+  String get termsOfServiceText;
+
+  /// No description provided for @closeButton.
+  String get closeButton;
 }
 
 class _AppLocalizationsDelegate
