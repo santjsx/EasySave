@@ -408,28 +408,6 @@ class HomeScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16.0),
-                  // Cool & minimal developer credits as Santhosh Reddy
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.favorite_rounded,
-                        size: 14.0,
-                        color: Colors.red[300],
-                      ),
-                      const SizedBox(width: 6.0),
-                      const Text(
-                        'రూపకల్పన: సంతోష్ రెడ్డి (Dev: Santhosh Reddy)',
-                        style: TextStyle(
-                          fontSize: 13.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF757575),
-                          fontFamily: 'NotoSansTelugu',
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ],
@@ -736,43 +714,164 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  /// Opens a friendly dialogue on gear tap to maintain a premium feel without requiring complex settings.
+  /// Opens a friendly Settings & Info dialog on gear tap.
   void _showSettingsExplanationDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogCtx) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
           title: const Text(
-            'యాప్ సమాచారం',
+            'Settings & Info',
             style: TextStyle(
               fontSize: 22.0,
               fontWeight: FontWeight.bold,
-              fontFamily: 'NotoSansTelugu',
+              color: Color(0xFF2E7D32),
             ),
           ),
-          content: Text(
-            'ఇది మీ సులభమైన సహాయక యాప్. మీకు ఏ ఇతర సెట్టింగ్స్ అవసరం లేదు, అన్నీ సిద్ధంగా ఉన్నాయి!',
-            style: TextStyle(
-              fontSize: 18.0,
-              color: Colors.grey[800],
-              height: 1.4,
-              fontFamily: 'NotoSansTelugu',
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // 1. Developer Credits
+                Container(
+                  padding: const EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5E9),
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.code_rounded, color: Color(0xFF2E7D32), size: 22.0),
+                      const SizedBox(width: 10.0),
+                      const Expanded(
+                        child: Text(
+                          'Developed by Santhosh Reddy',
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1B5E20),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+
+                // 2. Privacy Policy Card
+                InkWell(
+                  onTap: () => _showPolicyDialog(context, 'Privacy Policy', 
+                    'Your trust is our priority. EasySave does not collect, track, or share any of your contacts, call histories, or photos. Everything is processed purely locally on your device to guarantee absolute privacy and security.'),
+                  borderRadius: BorderRadius.circular(16.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[300]!),
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.privacy_tip_outlined, color: Colors.grey, size: 20.0),
+                        SizedBox(width: 12.0),
+                        Expanded(
+                          child: Text(
+                            'Privacy Policy',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey, size: 14.0),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12.0),
+
+                // 3. Terms of Service Card
+                InkWell(
+                  onTap: () => _showPolicyDialog(context, 'Terms of Service', 
+                    'By using EasySave, you agree that your contact directories, dialers, and photo assets are managed offline under your direct local control. The app is provided as-is without remote storage or third-party integrations.'),
+                  borderRadius: BorderRadius.circular(16.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[300]!),
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.description_outlined, color: Colors.grey, size: 20.0),
+                        SizedBox(width: 12.0),
+                        Expanded(
+                          child: Text(
+                            'Terms of Service',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey, size: 14.0),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           actions: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2E7D32),
-                foregroundColor: Colors.white,
-                minimumSize: const Size(100, 48),
-              ),
-              onPressed: () => Navigator.of(context).pop(),
+            TextButton(
+              style: TextButton.styleFrom(minimumSize: const Size(80, 48)),
+              onPressed: () => Navigator.of(dialogCtx).pop(),
               child: const Text(
-                'సరే',
+                'Close',
                 style: TextStyle(
-                  fontSize: 18.0,
+                  color: Color(0xFF2E7D32),
+                  fontSize: 16.0,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'NotoSansTelugu',
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Opens a sub-dialog displaying policies in English.
+  void _showPolicyDialog(BuildContext context, String title, String body) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogCtx) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          title: Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            child: Text(
+              body,
+              style: TextStyle(
+                fontSize: 15.0,
+                color: Colors.grey[800],
+                height: 1.4,
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogCtx).pop(),
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2E7D32),
                 ),
               ),
             ),
