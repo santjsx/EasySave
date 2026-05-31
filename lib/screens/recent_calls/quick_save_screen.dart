@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../providers/quick_save_provider.dart';
 import '../../services/speech_service.dart';
 import '../../theme/colors.dart';
@@ -106,6 +107,47 @@ class QuickSaveScreen extends ConsumerWidget {
                         ),
                         textAlign: TextAlign.center,
                       ),
+                      // Live speech recognition feedback
+                      if (isListening && state.recognizedName.isNotEmpty) ...[
+                        const SizedBox(height: AppSpacing.lg),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.lg,
+                            vertical: AppSpacing.md,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppDesignColors.primaryLight.withValues(alpha: 0.4),
+                            borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+                            border: Border.all(
+                              color: AppDesignColors.primary.withValues(alpha: 0.3),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context)!.hearingLabel,
+                                style: AppTypography.secondaryText.copyWith(
+                                  color: AppDesignColors.textSecondary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.0,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.xs),
+                              Text(
+                                state.recognizedName,
+                                style: AppTypography.confirmedName.copyWith(
+                                  color: AppDesignColors.primaryDark,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 28.0,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),

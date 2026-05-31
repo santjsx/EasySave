@@ -160,6 +160,12 @@ abstract class AppLocalizations {
   /// **'వింటున్నాను...'**
   String get listeningLabel;
 
+  /// No description provided for @hearingLabel.
+  ///
+  /// In te, this message translates to:
+  /// **'విన్నది: '**
+  String get hearingLabel;
+
   /// No description provided for @isCorrectQuestion.
   ///
   /// In te, this message translates to:

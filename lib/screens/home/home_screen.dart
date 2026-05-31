@@ -8,9 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../models/call_log_model.dart';
 import '../../providers/call_log_provider.dart';
 import '../../routing/routes.dart';
-import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
-import '../../theme/typography.dart';
 import '../../widgets/easy_snackbar.dart';
 
 /// Redesigned Home Screen Dashboard of EasyConnect (Amma Nanna App).

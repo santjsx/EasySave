@@ -106,10 +106,7 @@ class SaveContactNotifier extends StateNotifier<SaveContactState> {
           if (status == 'listening') {
             state = state.copyWith(speechState: SpeechState.listening);
           } else if (status == 'notListening') {
-            if (state.recognizedName.isNotEmpty) {
-              // If we already captured a name, directly promote to result to avoid flickering
-              state = state.copyWith(speechState: SpeechState.result);
-            } else if (state.speechState != SpeechState.result && state.speechState != SpeechState.error) {
+            if (state.speechState == SpeechState.listening && state.recognizedName.isEmpty) {
               state = state.copyWith(speechState: SpeechState.idle);
             }
           }

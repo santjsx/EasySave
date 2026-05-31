@@ -42,6 +42,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get listeningLabel => 'వింటున్నాను...';
 
   @override
+  String get hearingLabel => 'విన్నది: ';
+
+  @override
   String get isCorrectQuestion => 'ఇది కరెక్టేనా?';
 
   @override

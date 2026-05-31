@@ -10,6 +10,7 @@
   "speakName": "పేరు చెప్పండి",
   "pressMicPrompt": "పై బటన్ నొక్కి పేరు చెప్పండి",
   "listeningLabel": "వింటున్నాను...",
+  "hearingLabel": "విన్నది: ",
   "isCorrectQuestion": "ఇది కరెక్టేనా?",
   "yesButton": "అవును",
   "tryAgainButton": "మళ్ళీ చెప్పండి",

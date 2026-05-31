@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../providers/save_contact_provider.dart';
 import '../../routing/routes.dart';
 import '../../services/speech_service.dart';
@@ -24,7 +25,6 @@ class VoiceNameScreen extends ConsumerWidget {
     final notifier = ref.read(saveContactProvider.notifier);
 
     // Dynamic state evaluation
-    final bool isIdle = state.speechState == SpeechState.idle;
     final bool isListening = state.speechState == SpeechState.listening;
     final bool hasResult = state.speechState == SpeechState.result && state.recognizedName.isNotEmpty;
     final bool hasError = state.speechState == SpeechState.error;
@@ -81,6 +81,45 @@ class VoiceNameScreen extends ConsumerWidget {
                         ),
                         textAlign: TextAlign.center,
                       ),
+                      // Live speech recognition feedback
+                      if (isListening && state.recognizedName.isNotEmpty) ...[
+                        const SizedBox(height: AppSpacing.lg),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.lg,
+                            vertical: AppSpacing.md,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppDesignColors.primaryLight.withValues(alpha: 0.4),
+                            borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+                            border: Border.all(
+                              color: AppDesignColors.primary.withValues(alpha: 0.3),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context)!.hearingLabel,
+                                style: AppTypography.secondaryText.copyWith(
+                                  color: AppDesignColors.textSecondary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.xs),
+                              Text(
+                                state.recognizedName,
+                                style: AppTypography.confirmedName.copyWith(
+                                  color: AppDesignColors.primaryDark,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),

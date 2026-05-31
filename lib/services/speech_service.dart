@@ -82,10 +82,13 @@ class SpeechService {
           final String cleanedResult = _cleanDuplicateSpeech(result.recognizedWords);
           onResult(cleanedResult, result.finalResult);
         },
-        localeId: 'te_IN', // Non-negotiable constraint
-        listenFor: const Duration(seconds: 20), // Extended total window for comfortable breath pauses
-        pauseFor: const Duration(seconds: 2),   // Comfortable vertical breath pause
-        partialResults: true,
+        listenOptions: SpeechListenOptions(
+          localeId: 'te_IN', // Non-negotiable constraint
+          listenFor: const Duration(seconds: 30), // Increased window for relaxed flow
+          pauseFor: const Duration(seconds: 4),   // Increased pause window to allow breath pause between names
+          partialResults: true,
+          listenMode: ListenMode.dictation,       // Set dictation mode for continuous, patient voice capture
+        ),
       );
     } catch (e) {
       debugPrint('Speech listen crashed: $e');
