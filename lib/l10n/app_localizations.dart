@@ -1,0 +1,355 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations_te.dart';
+
+// ignore_for_file: type=lint
+
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale)
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+
+  final String localeName;
+
+  static AppLocalizations? of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+  }
+
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
+
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
+
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[Locale('te')];
+
+  /// No description provided for @appName.
+  ///
+  /// In te, this message translates to:
+  /// **'అమ్మానాన్న యాప్'**
+  String get appName;
+
+  /// No description provided for @appTagline.
+  ///
+  /// In te, this message translates to:
+  /// **'మీ సహాయకుడు'**
+  String get appTagline;
+
+  /// No description provided for @saveContactLabel.
+  ///
+  /// In te, this message translates to:
+  /// **'కొత్త నంబర్ సేవ్ చేయండి'**
+  String get saveContactLabel;
+
+  /// No description provided for @saveContactSub.
+  ///
+  /// In te, this message translates to:
+  /// **'కొత్త నంబర్ సేవ్ చేయడానికి'**
+  String get saveContactSub;
+
+  /// No description provided for @sharePhotoLabel.
+  ///
+  /// In te, this message translates to:
+  /// **'ఫోటో పంపండి'**
+  String get sharePhotoLabel;
+
+  /// No description provided for @sharePhotoSub.
+  ///
+  /// In te, this message translates to:
+  /// **'WhatsApp లో ఫోటో పంపించడానికి'**
+  String get sharePhotoSub;
+
+  /// No description provided for @enterNumber.
+  ///
+  /// In te, this message translates to:
+  /// **'నంబర్ ఎంటర్ చేయండి'**
+  String get enterNumber;
+
+  /// No description provided for @nextButton.
+  ///
+  /// In te, this message translates to:
+  /// **'తర్వాత'**
+  String get nextButton;
+
+  /// No description provided for @speakName.
+  ///
+  /// In te, this message translates to:
+  /// **'పేరు చెప్పండి'**
+  String get speakName;
+
+  /// No description provided for @pressMicPrompt.
+  ///
+  /// In te, this message translates to:
+  /// **'పై బటన్ నొక్కి పేరు చెప్పండి'**
+  String get pressMicPrompt;
+
+  /// No description provided for @listeningLabel.
+  ///
+  /// In te, this message translates to:
+  /// **'వింటున్నాను...'**
+  String get listeningLabel;
+
+  /// No description provided for @isCorrectQuestion.
+  ///
+  /// In te, this message translates to:
+  /// **'ఇది కరెక్టేనా?'**
+  String get isCorrectQuestion;
+
+  /// No description provided for @yesButton.
+  ///
+  /// In te, this message translates to:
+  /// **'అవును'**
+  String get yesButton;
+
+  /// No description provided for @tryAgainButton.
+  ///
+  /// In te, this message translates to:
+  /// **'మళ్ళీ చెప్పండి'**
+  String get tryAgainButton;
+
+  /// No description provided for @typeWithKeyboard.
+  ///
+  /// In te, this message translates to:
+  /// **'కీబోర్డ్ తో టైప్ చేయండి'**
+  String get typeWithKeyboard;
+
+  /// No description provided for @confirmLabel.
+  ///
+  /// In te, this message translates to:
+  /// **'సరిచూసుకోండి'**
+  String get confirmLabel;
+
+  /// No description provided for @saveButton.
+  ///
+  /// In te, this message translates to:
+  /// **'సేవ్ చేయండి'**
+  String get saveButton;
+
+  /// No description provided for @savedSuccess.
+  ///
+  /// In te, this message translates to:
+  /// **'సేవ్ అయింది!'**
+  String get savedSuccess;
+
+  /// No description provided for @backButton.
+  ///
+  /// In te, this message translates to:
+  /// **'వెనక్కి'**
+  String get backButton;
+
+  /// No description provided for @goHome.
+  ///
+  /// In te, this message translates to:
+  /// **'హోమ్ కి వెళ్ళండి'**
+  String get goHome;
+
+  /// No description provided for @choosePhoto.
+  ///
+  /// In te, this message translates to:
+  /// **'ఫోటో ఎంచుకోండి'**
+  String get choosePhoto;
+
+  /// No description provided for @recentPhotos.
+  ///
+  /// In te, this message translates to:
+  /// **'కొత్త ఫోటోలు'**
+  String get recentPhotos;
+
+  /// No description provided for @sendThisPhoto.
+  ///
+  /// In te, this message translates to:
+  /// **'ఈ ఫోటో పంపండి'**
+  String get sendThisPhoto;
+
+  /// No description provided for @whoToSend.
+  ///
+  /// In te, this message translates to:
+  /// **'ఎవరికి పంపించాలి?'**
+  String get whoToSend;
+
+  /// No description provided for @whatsappWillSend.
+  ///
+  /// In te, this message translates to:
+  /// **'WhatsApp లో పంపిస్తాము'**
+  String get whatsappWillSend;
+
+  /// No description provided for @whatsappNotInstalled.
+  ///
+  /// In te, this message translates to:
+  /// **'WhatsApp ఇన్స్టాల్ అయిలేదు'**
+  String get whatsappNotInstalled;
+
+  /// No description provided for @installWhatsapp.
+  ///
+  /// In te, this message translates to:
+  /// **'WhatsApp ఇన్స్టాల్ చేయండి'**
+  String get installWhatsapp;
+
+  /// No description provided for @saveContactFirst.
+  ///
+  /// In te, this message translates to:
+  /// **'ముందు నంబర్ సేవ్ చేయండి'**
+  String get saveContactFirst;
+
+  /// No description provided for @noPhotosFound.
+  ///
+  /// In te, this message translates to:
+  /// **'ఫోటోలు దొరకలేదు'**
+  String get noPhotosFound;
+
+  /// No description provided for @generalErrorMessage.
+  ///
+  /// In te, this message translates to:
+  /// **'తప్పు జరిగింది, మళ్ళీ ప్రయత్నించండి'**
+  String get generalErrorMessage;
+
+  /// No description provided for @speechNotRecognized.
+  ///
+  /// In te, this message translates to:
+  /// **'అర్థం కాలేదు, మళ్ళీ చెప్పండి'**
+  String get speechNotRecognized;
+
+  /// No description provided for @permissionContactsExplanation.
+  ///
+  /// In te, this message translates to:
+  /// **'మీ ఫోన్ లోని కాంటాక్ట్స్ చూడడానికి అనుమతి అడుగుతున్నాము'**
+  String get permissionContactsExplanation;
+
+  /// No description provided for @permissionWriteExplanation.
+  ///
+  /// In te, this message translates to:
+  /// **'కొత్త నంబర్లు సేవ్ చేయడానికి అనుమతి అడుగుతున్నాము'**
+  String get permissionWriteExplanation;
+
+  /// No description provided for @permissionPhotosExplanation.
+  ///
+  /// In te, this message translates to:
+  /// **'ఫోటోలు చూడటానికి అనుమతి అడుగుతున్నాం'**
+  String get permissionPhotosExplanation;
+
+  /// No description provided for @permissionMicExplanation.
+  ///
+  /// In te, this message translates to:
+  /// **'మీ పేరు వినడానికి మైక్ అనుమతి అడుగుతున్నాం'**
+  String get permissionMicExplanation;
+
+  /// No description provided for @permissionDeniedMessage.
+  ///
+  /// In te, this message translates to:
+  /// **'అనుమతి ఇవ్వకపోతే ఇది పని చేయదు'**
+  String get permissionDeniedMessage;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In te, this message translates to:
+  /// **'సెట్టింగ్స్ తెరవండి'**
+  String get openSettings;
+
+  /// No description provided for @teluguSpeechMissing.
+  ///
+  /// In te, this message translates to:
+  /// **'తెలుగు వాయిస్ ప్యాక్ డౌన్లోడ్ చేయండి'**
+  String get teluguSpeechMissing;
+}
+
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  Future<AppLocalizations> load(Locale locale) {
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
+  }
+
+  @override
+  bool isSupported(Locale locale) =>
+      <String>['te'].contains(locale.languageCode);
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'te':
+      return AppLocalizationsTe();
+  }
+
+  throw FlutterError(
+      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
+}

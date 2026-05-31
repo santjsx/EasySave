@@ -1,0 +1,60 @@
+name: amma_nanna_app
+description: "A Telugu-first, elderly-friendly Android app for saving contacts and sharing photos on WhatsApp."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management & DI
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.3
+
+  # Routing
+  go_router: ^14.2.0
+
+  # Local Persistence
+  shared_preferences: ^2.2.3
+
+  # Services & Hardware Integrations
+  flutter_contacts: ^1.1.7
+  speech_to_text: ^7.4.0
+  image_picker: ^1.1.2
+  permission_handler: ^11.3.0
+  share_plus: ^10.0.2
+  url_launcher: ^6.2.5
+  flutter_image_compress: ^2.2.0
+  intl: ^0.20.2
+  call_log: ^6.0.1
+
+  # Styling & Aesthetics
+  google_fonts: ^6.2.1
+  material_symbols_icons: ^4.2719.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  riverpod_generator: ^2.3.9
+  build_runner: ^2.4.9
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/fonts/
+
+  fonts:
+    - family: NotoSansTelugu
+      fonts:
+        - asset: assets/fonts/NotoSansTelugu-Regular.ttf
+        - asset: assets/fonts/NotoSansTelugu-SemiBold.ttf
+          weight: 600

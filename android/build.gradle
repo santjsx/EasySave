@@ -1,0 +1,35 @@
+// Inject missing jcenter() method signature back into the Gradle RepositoryHandler.
+// This dynamically intercepts and redirects legacy jcenter() calls from older plugins
+// (such as speech_to_text) to mavenCentral() at compile-time, resolving MissingMethodException.
+org.gradle.api.artifacts.dsl.RepositoryHandler.metaClass.jcenter = { ->
+    delegate.mavenCentral()
+}
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// Redirect build outputs cleanly to top-level folder
+rootProject.layout.buildDirectory.value(rootProject.layout.buildDirectory.dir("../../build").get())
+
+subprojects {
+    project.layout.buildDirectory.value(rootProject.layout.buildDirectory.dir(project.name))
+}
+
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
+    delete(rootProject.layout.buildDirectory)
+}
