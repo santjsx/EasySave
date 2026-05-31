@@ -201,6 +201,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get saveCallText => 'సేవ్ చేసుకోండి';
 
   @override
+  String get unsavedNumber => 'సేవ్ చేయని నంబర్';
+
+  @override
   String get settingsTitle => 'సెట్టింగ్స్ & సమాచారం';
 
   @override

@@ -109,13 +109,13 @@ abstract class AppLocalizations {
   /// No description provided for @saveContactLabel.
   ///
   /// In te, this message translates to:
-  /// **'కొత్త నంబర్ సేవ్ చేయండి'**
+  /// **'కొత్త నంబర్ దాచుకోండి'**
   String get saveContactLabel;
 
   /// No description provided for @saveContactSub.
   ///
   /// In te, this message translates to:
-  /// **'కొత్త నంబర్ సేవ్ చేయడానికి'**
+  /// **'కొత్త నంబర్ రాసుకోవడానికి'**
   String get saveContactSub;
 
   /// No description provided for @sharePhotoLabel.
@@ -127,7 +127,7 @@ abstract class AppLocalizations {
   /// No description provided for @sharePhotoSub.
   ///
   /// In te, this message translates to:
-  /// **'WhatsApp లో ఫోటో పంపించడానికి'**
+  /// **'వాట్సాప్ లో ఫోటో పంపండి'**
   String get sharePhotoSub;
 
   /// No description provided for @enterNumber.
@@ -331,13 +331,13 @@ abstract class AppLocalizations {
   /// No description provided for @viewMyContacts.
   ///
   /// In te, this message translates to:
-  /// **'నా పరిచయాలు'**
+  /// **'నా ఫోన్ నంబర్లు'**
   String get viewMyContacts;
 
   /// No description provided for @viewMyContactsSub.
   ///
   /// In te, this message translates to:
-  /// **'చూడండి, మార్చండి, తీసేయండి'**
+  /// **'ఫోన్ బుక్ చూడడానికి, మార్చడానికి'**
   String get viewMyContactsSub;
 
   /// No description provided for @searchContactsHint.
@@ -421,37 +421,37 @@ abstract class AppLocalizations {
   /// No description provided for @recentCallsTitle.
   ///
   /// In te, this message translates to:
-  /// **'ఇటీవల కాల్స్'**
+  /// **'వచ్చిన ఫోన్ కాల్స్'**
   String get recentCallsTitle;
 
   /// No description provided for @noCallLogs.
   ///
   /// In te, this message translates to:
-  /// **'కాల్ రికార్డులు ఏమీ లేవు'**
+  /// **'ఫోన్ కాల్స్ ఏమీ లేవు'**
   String get noCallLogs;
 
   /// No description provided for @callFailed.
   ///
   /// In te, this message translates to:
-  /// **'కాల్ చేయడం కుదరలేదు'**
+  /// **'ఫోన్ చేయడం కుదరలేదు'**
   String get callFailed;
 
   /// No description provided for @callPermissionNeeded.
   ///
   /// In te, this message translates to:
-  /// **'కాల్ చేయడానికి పర్మిషన్ ఇవ్వాలి'**
+  /// **'ఫోన్ చేయడానికి అనుమతి ఇవ్వాలి'**
   String get callPermissionNeeded;
 
   /// No description provided for @permissionRequired.
   ///
   /// In te, this message translates to:
-  /// **'అనుమతి అవసరం'**
+  /// **'అనుమతి ఇవ్వండి'**
   String get permissionRequired;
 
   /// No description provided for @callLogPermissionExplanation.
   ///
   /// In te, this message translates to:
-  /// **'మీకు వచ్చిన ఫోన్ కాల్స్ ఇక్కడ చూసి నేరుగా కాల్ చేయడానికి మరియు సేవ్ చేయడానికి కాల్ రికార్డుల పర్మిషన్ ఇవ్వండి.'**
+  /// **'ఇక్కడ మీకు వచ్చిన ఫోన్ కాల్స్ చూసుకోవడానికి మరియు ఫోన్ చేయడానికి అనుమతి ఇవ్వండి.'**
   String get callLogPermissionExplanation;
 
   /// No description provided for @grantPermission.
@@ -463,8 +463,14 @@ abstract class AppLocalizations {
   /// No description provided for @saveCallText.
   ///
   /// In te, this message translates to:
-  /// **'సేవ్ చేయండి'**
+  /// **'సేవ్ చేసుకోండి'**
   String get saveCallText;
+
+  /// No description provided for @unsavedNumber.
+  ///
+  /// In te, this message translates to:
+  /// **'సేవ్ చేయని నంబర్'**
+  String get unsavedNumber;
 
   /// No description provided for @settingsTitle.
   ///
@@ -475,7 +481,7 @@ abstract class AppLocalizations {
   /// No description provided for @developerCredits.
   ///
   /// In te, this message translates to:
-  /// **'సంతోష్ రెడ్డి ద్వారా అభివృద్ధి చేయబడింది'**
+  /// **'Developed by Santosh Reddy'**
   String get developerCredits;
 
   /// No description provided for @privacyPolicyTitle.
@@ -487,7 +493,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyText.
   ///
   /// In te, this message translates to:
-  /// **'Your trust is our priority. EasySave does not collect, track, or share any of your contacts, call histories, or photos. Everything is processed purely locally on your device to guarantee absolute privacy and security.'**
+  /// **'EasySave is committed to protecting your privacy. This application operates entirely offline under your direct control. We do not collect, store, transmit, or share any personal data, contacts, call logs, or photos. All data processing occurs locally on your device, ensuring complete security and absolute confidentiality.'**
   String get privacyPolicyText;
 
   /// No description provided for @termsOfServiceTitle.
@@ -499,7 +505,7 @@ abstract class AppLocalizations {
   /// No description provided for @termsOfServiceText.
   ///
   /// In te, this message translates to:
-  /// **'By using EasySave, you agree that your contact directories, dialers, and photo assets are managed offline under your direct local control. The app is provided as-is without remote storage or third-party integrations.'**
+  /// **'By using EasySave, you agree that all contact directories, call histories, and media transmission tools are managed exclusively offline on your local device. The application is provided on an \'as-is\' and \'as-available\' basis without any warranties. There are no remote database connections, analytics tracking, or third-party cloud integrations.'**
   String get termsOfServiceText;
 
   /// No description provided for @closeButton.

@@ -85,29 +85,36 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
 
-              // Sliver 2: "Recent Calls" Section Header Row (No View All Button)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: AppSpacing.md,
-                    left: AppSpacing.xs,
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.phone_in_talk_rounded,
-                        color: AppDesignColors.primary,
-                        size: 28.0,
-                      ),
-                      const SizedBox(width: AppSpacing.xs),
-                      Text(
-                        localization.recentCallsTitle,
-                        style: AppTypography.sectionHeader.copyWith(
-                          color: AppDesignColors.textPrimary,
-                          fontWeight: FontWeight.bold,
+              // Sliver 2: Sticky "Recent Calls" Section Header Row
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _StickyHeaderDelegate(
+                  minHeight: 60.0,
+                  maxHeight: 60.0,
+                  child: Container(
+                    color: AppDesignColors.surface, // Solid sandstone background
+                    padding: const EdgeInsets.only(
+                      bottom: AppSpacing.sm,
+                      left: AppSpacing.xs,
+                      top: AppSpacing.xs,
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.phone_in_talk_rounded,
+                          color: AppDesignColors.primary,
+                          size: 28.0,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: AppSpacing.xs),
+                        Text(
+                          localization.recentCallsTitle,
+                          style: AppTypography.sectionHeader.copyWith(
+                            color: AppDesignColors.textPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -494,7 +501,7 @@ class HomeScreen extends ConsumerWidget {
                         )
                       else
                         Text(
-                          localization.saveCallText,
+                          localization.unsavedNumber,
                           style: AppTypography.bodyText.copyWith(
                             color: AppDesignColors.error,
                             fontWeight: FontWeight.bold,
@@ -826,5 +833,40 @@ class HomeScreen extends ConsumerWidget {
         );
       },
     );
+  }
+}
+
+/// Helper Delegate to render beautiful and high-performance pinned persistent headers.
+class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  _StickyHeaderDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_StickyHeaderDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight ||
+        child != oldDelegate.child;
   }
 }
