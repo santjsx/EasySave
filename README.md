@@ -21,7 +21,13 @@ EasySave is an elite, **Telugu-first, elderly-first, accessibility-first** Andro
 *   **Grouped History:** Lazy-loads up to 500 consecutive logs, grouping duplicates (e.g. `"రమేష్ (3 కాల్స్)"` instead of three lines) to reduce cognitive load and visual clutter.
 *   **Instant Unsaved Save:** Unknown numbers display a massive `"సేవ్ చేయండి"` CTA that directs straight to the voice-first name capture wizard.
 
-### ⚙️ 4. Android 16 (API 36) Cloud-Safe Storage
+### 👤 4. My Contacts Manager (చూడండి, మార్చండి, తీసేయండి)
+*   **Tactile Access Panel:** Integrated a wide, green circular button on the dashboard for direct, zero-friction access.
+*   **Dynamic Telugu Search:** Telugu collation-sorted contacts directory with an instant responsive search bar.
+*   **Tactile Modal Operations:** Tapping any contact tile opens a massive detail sheet featuring Call, Rename, and Delete action cards.
+*   **Pragmatic Updates & Deletions:** Edit/update names and numbers natively, and remove records safely with double-confirm red warning dialogues.
+
+### ⚙️ 5. Android 16 (API 36) Cloud-Safe Storage
 *   **Zero-Crash Guarantee:** Resolves the modern Android 16 blocker (`IllegalArgumentException` when the default saving account is Cloud).
 *   **Native Kotlin Bridge:** [MainActivity.kt](file:///android/app/src/main/kotlin/com/ammananna/app/MainActivity.kt) intercepts local database insert blocks, automatically queries available account authenticators, and writes contacts directly to the active Google/cloud account.
 *   **Automated System Fallback:** Gracefully falls back to the native editor form (`openExternalInsert`) if programmatic insertions fail, ensuring absolute crash-resilience.

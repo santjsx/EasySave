@@ -23,6 +23,12 @@ EasySave is a Telugu-first, elderly-friendly, and accessibility-first assistant 
 *   **Call Duplication Grouping:** Aggregates up to 500 records into grouped logs (e.g., `"రమేష్ (3 కాల్స్)"`) to dramatically reduce cognitive overhead.
 *   **Instant Unsaved Save:** Unknown callers prominently showcase a massive green `"సేవ్ చేయండి"` CTA that directs straight to the voice recorder wizard.
 
+### 👤 4. My Contacts Manager (చూడండి, మార్చండి, తీసేయండి - New!)
+*   **Tactile Dashboard Integration:** Wide, green circular button on the dashboard for direct, zero-friction access.
+*   **Search & View:** Telugu collation-sorted contacts directory with an instant responsive search bar.
+*   **Tactile Modal Sheets:** Tapping any contact tile opens a massive detail sheet featuring huge green Call, amber Rename, and red Delete action cards.
+*   **Bulletproof Native Operations:** Edit/update names and numbers natively, and remove records safely with double-confirm red warning dialogues.
+
 ---
 
 ## ♿ Accessibility Compliance (WCAG 2.2 AA)
