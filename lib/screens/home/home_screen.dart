@@ -414,137 +414,122 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  /// Redesigns each call log item to be an accessible, high-contrast sandalwood tile.
+  /// Redesigns each call log tile.
   Widget _buildCallLogTile(BuildContext context, WidgetRef ref, CallLogEntry entry) {
     final localization = AppLocalizations.of(context)!;
 
     final Widget detailsRow = Row(
       children: [
-        // 1. Large circular avatar (64px)
+        // 1. Giant CircleAvatar (88dp size -> radius: 44.0)
         CircleAvatar(
-          radius: 32.0,
+          radius: 44.0,
           backgroundColor: entry.avatarColor,
           child: Text(
             entry.isSavedContact
                 ? entry.contactName.substring(0, 1).toUpperCase()
                 : 'అ',
             style: const TextStyle(
-              fontSize: 26.0,
+              fontSize: 34.0, // Bold large letters
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontFamily: AppTypography.fontFamily,
             ),
           ),
         ),
-        const SizedBox(width: AppSpacing.md),
+        const SizedBox(width: 16.0), // Generous 16dp spacing
 
-        // 2. Name / Number Middle Column (Font Size >= 18sp)
+        // 2. Middle column: Clean visual hierarchy with strict typography sizes
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (entry.isSavedContact)
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    '${entry.contactName}${entry.callCount > 1 ? " (${entry.callCount})" : ""}',
-                                    style: AppTypography.sectionHeader.copyWith(
-                                      color: AppDesignColors.textPrimary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    maxLines: 1,
-                                    softWrap: false,
-                                  ),
-                                )
-                              else
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    entry.phoneNumber,
-                                    style: AppTypography.sectionHeader.copyWith(
-                                      color: AppDesignColors.textPrimary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    maxLines: 1,
-                                    softWrap: false,
-                                  ),
-                                ),
-                              const SizedBox(height: AppSpacing.xxs),
-                              if (entry.isSavedContact)
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    entry.phoneNumber,
-                                    style: AppTypography.bodyText.copyWith(
-                                      color: AppDesignColors.textSecondary,
-                                    ),
-                                    maxLines: 1,
-                                    softWrap: false,
-                                  ),
-                                )
-                              else
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    localization.unsavedNumber,
-                                    style: AppTypography.bodyText.copyWith(
-                                      color: AppDesignColors.error,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    maxLines: 1,
-                                    softWrap: false,
-                                  ),
-                                ),
+              // Contact Name (or Phone Number for unsaved contacts) -> 22sp semi-bold
+              Text(
+                entry.isSavedContact
+                    ? '${entry.contactName}${entry.callCount > 1 ? " (${entry.callCount})" : ""}'
+                    : entry.phoneNumber,
+                style: TextStyle(
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.w600, // Semi-bold
+                  color: AppDesignColors.textPrimary,
+                  fontFamily: AppTypography.fontFamily,
+                  height: 1.3,
+                  letterSpacing: 0.15,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 6.0),
+
+              // Call Status -> Row containing type icon and 16sp medium text
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    entry.typeIcon,
+                    size: 20.0, // Highly visible accessibility icons
+                    color: entry.typeColor,
+                  ),
+                  const SizedBox(width: 6.0),
+                  Text(
+                    entry.telugifiedCallType,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w500, // Medium call status
+                      color: entry.typeColor,
+                      fontFamily: AppTypography.fontFamily,
+                      height: 1.2,
+                      letterSpacing: 0.1,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6.0),
+
+              // Phone Number (or "Unsaved Number" label for unsaved contacts) -> 16sp regular
+              Text(
+                entry.isSavedContact
+                    ? entry.phoneNumber
+                    : localization.unsavedNumber,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w400, // Regular
+                  color: entry.isSavedContact
+                      ? AppDesignColors.textSecondary
+                      : AppDesignColors.error,
+                  fontFamily: AppTypography.fontFamily,
+                  height: 1.2,
+                  letterSpacing: 0.5, // Number readability spacing
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ],
           ),
         ),
+        const SizedBox(width: 12.0),
 
-
-        // 3. Right Status Block (Font Size >= 18sp)
+        // 3. Right Status Block (consistently aligned 20sp medium timestamp + chevron)
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      entry.typeIcon,
-                      size: 20.0,
-                      color: entry.typeColor,
-                    ),
-                    const SizedBox(width: 4.0),
-                    Text(
-                      entry.telugifiedCallType,
-                      style: AppTypography.secondaryText.copyWith(
-                        color: entry.typeColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.xxs),
-                Text(
-                  entry.telugifiedTime,
-                  style: AppTypography.secondaryText.copyWith(
-                    color: AppDesignColors.textSecondary,
-                  ),
-                ),
-              ],
+            Text(
+              entry.telugifiedTime,
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.w500, // Medium timestamp
+                color: AppDesignColors.textSecondary,
+                fontFamily: AppTypography.fontFamily,
+                height: 1.2,
+                letterSpacing: 0.2,
+              ),
             ),
-            const SizedBox(width: AppSpacing.xs),
+            const SizedBox(width: 8.0),
             const Icon(
               Icons.chevron_right_rounded,
               color: AppDesignColors.textSecondary,
-              size: 26.0,
+              size: 28.0,
             ),
           ],
         ),
@@ -577,17 +562,19 @@ class HomeScreen extends ConsumerWidget {
           }
         }
       },
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(AppSpacing.cardRadius),
-        topRight: Radius.circular(AppSpacing.cardRadius),
-        bottomLeft: Radius.circular(entry.isSavedContact ? AppSpacing.cardRadius : 0.0),
-        bottomRight: Radius.circular(entry.isSavedContact ? AppSpacing.cardRadius : 0.0),
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(20.0),
+        topRight: Radius.circular(20.0),
+        bottomLeft: Radius.circular(20.0),
+        bottomRight: Radius.circular(20.0),
       ),
-      child: Padding(
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 110.0), // Pinned minimum card height
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
           vertical: AppSpacing.sm,
         ),
+        alignment: Alignment.center,
         child: detailsRow,
       ),
     );
@@ -596,7 +583,7 @@ class HomeScreen extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       decoration: BoxDecoration(
         color: AppDesignColors.surfaceCard,
-        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        borderRadius: BorderRadius.circular(20.0), // Rounded corners 20dp
         border: Border.all(
           color: AppDesignColors.divider,
           width: 1.5,
@@ -656,10 +643,11 @@ class HomeScreen extends ConsumerWidget {
                               const SizedBox(width: AppSpacing.xs),
                               Text(
                                 localization.saveCallText,
-                                style: AppTypography.buttonText.copyWith(
+                                style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 20.0,
+                                  fontSize: 20.0, // High visibility size >= 18sp
                                   fontWeight: FontWeight.bold,
+                                  fontFamily: AppTypography.fontFamily,
                                 ),
                               ),
                             ],
