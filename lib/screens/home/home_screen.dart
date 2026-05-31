@@ -263,18 +263,30 @@ class HomeScreen extends ConsumerWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    localization.saveContactLabel.split(' ').take(2).join(' '), // కొత్త నంబర్
-                                    style: AppTypography.bodyText.copyWith(
-                                      color: AppDesignColors.textPrimary,
-                                      fontWeight: FontWeight.bold,
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      localization.saveContactLabel.split(' ').take(2).join(' '), // కొత్త నంబర్
+                                      style: AppTypography.bodyText.copyWith(
+                                        color: AppDesignColors.textPrimary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      maxLines: 1,
+                                      softWrap: false,
                                     ),
                                   ),
-                                  Text(
-                                    localization.saveCallText, // సేవ్ చేయండి
-                                    style: AppTypography.bodyText.copyWith(
-                                      color: AppDesignColors.textPrimary,
-                                      fontWeight: FontWeight.bold,
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      localization.saveCallText, // సేవ్ చేయండి
+                                      style: AppTypography.bodyText.copyWith(
+                                        color: AppDesignColors.textPrimary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      maxLines: 1,
+                                      softWrap: false,
                                     ),
                                   ),
                                 ],
@@ -329,18 +341,30 @@ class HomeScreen extends ConsumerWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    localization.sharePhotoLabel, // ఫోటో పంపండి
-                                    style: AppTypography.bodyText.copyWith(
-                                      color: AppDesignColors.textPrimary,
-                                      fontWeight: FontWeight.bold,
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      localization.sharePhotoLabel, // ఫోటో పంపండి
+                                      style: AppTypography.bodyText.copyWith(
+                                        color: AppDesignColors.textPrimary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      maxLines: 1,
+                                      softWrap: false,
                                     ),
                                   ),
-                                  Text(
-                                    "(WhatsApp)",
-                                    style: AppTypography.secondaryText.copyWith(
-                                      color: AppDesignColors.textSecondary,
-                                      fontWeight: FontWeight.bold,
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      "(WhatsApp)",
+                                      style: AppTypography.secondaryText.copyWith(
+                                        color: AppDesignColors.textSecondary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      maxLines: 1,
+                                      softWrap: false,
                                     ),
                                   ),
                                 ],
@@ -421,49 +445,61 @@ class HomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (entry.isSavedContact)
-                Text(
-                  '${entry.contactName}${entry.callCount > 1 ? " (${entry.callCount})" : ""}',
-                  style: AppTypography.sectionHeader.copyWith(
-                    color: AppDesignColors.textPrimary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                )
-              else
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    entry.phoneNumber,
-                    style: AppTypography.sectionHeader.copyWith(
-                      color: AppDesignColors.textPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                  ),
-                ),
-              const SizedBox(height: AppSpacing.xxs),
-              if (entry.isSavedContact)
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    entry.phoneNumber,
-                    style: AppTypography.bodyText.copyWith(
-                      color: AppDesignColors.textSecondary,
-                    ),
-                    maxLines: 1,
-                  ),
-                )
-              else
-                Text(
-                  localization.unsavedNumber,
-                  style: AppTypography.bodyText.copyWith(
-                    color: AppDesignColors.error,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    '${entry.contactName}${entry.callCount > 1 ? " (${entry.callCount})" : ""}',
+                                    style: AppTypography.sectionHeader.copyWith(
+                                      color: AppDesignColors.textPrimary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                )
+                              else
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    entry.phoneNumber,
+                                    style: AppTypography.sectionHeader.copyWith(
+                                      color: AppDesignColors.textPrimary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                ),
+                              const SizedBox(height: AppSpacing.xxs),
+                              if (entry.isSavedContact)
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    entry.phoneNumber,
+                                    style: AppTypography.bodyText.copyWith(
+                                      color: AppDesignColors.textSecondary,
+                                    ),
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                )
+                              else
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    localization.unsavedNumber,
+                                    style: AppTypography.bodyText.copyWith(
+                                      color: AppDesignColors.error,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
+                                ),
             ],
           ),
         ),
