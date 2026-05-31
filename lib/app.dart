@@ -16,7 +16,7 @@ class AmmaNannaApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
-      title: 'అమ్మానాన్న యాప్',
+      title: 'EasySave',
       theme: AppDesignTheme.lightTheme,
       debugShowCheckedModeBanner: false,
       

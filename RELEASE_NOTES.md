@@ -1,6 +1,6 @@
 # EasySave v1.0.0 Production Release 🚀📱
 
-We are extremely proud to announce the first production release of **EasySave (అమ్మానాన్న యాప్)**! This version has been fully audited, optimized, and certified for zero production blockers.
+We are extremely proud to announce the first production release of **EasySave**! This version has been fully audited, optimized, and certified for zero production blockers.
 
 EasySave is a Telugu-first, elderly-friendly, and accessibility-first assistant tailored specifically for motor-challenged, first-time, or non-literate smartphone users.
 

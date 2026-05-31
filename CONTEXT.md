@@ -343,7 +343,7 @@ All keys used in the app. If you add a new screen, add keys here first.
 
 ```json
 {
-  "appName": "అమ్మానాన్న యాప్",
+  "appName": "EasySave",
   "appTagline": "మీ సహాయకుడు",
   "saveContactLabel": "పరిచయం సేవ్ చేయి",
   "saveContactSub": "కొత్త నంబర్ సేవ్ చేయడానికి",

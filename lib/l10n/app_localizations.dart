@@ -97,7 +97,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In te, this message translates to:
-  /// **'అమ్మానాన్న యాప్'**
+  /// **'EasySave'**
   String get appName;
 
   /// No description provided for @appTagline.

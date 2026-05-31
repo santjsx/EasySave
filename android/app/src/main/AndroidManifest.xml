@@ -28,7 +28,7 @@
     </queries>
 
     <application
-        android:label="అమ్మానాన్న యాప్"
+        android:label="EasySave"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/LaunchTheme">

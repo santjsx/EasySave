@@ -1,4 +1,4 @@
-# EasySave (అమ్మానాన్న యాప్) 📱💖
+# EasySave 📱💖
 
 EasySave is an elite, **Telugu-first, elderly-first, accessibility-first** Android smartphone assistant designed for non-literate and first-time smartphone users. The app streamlines calling, contact saving, and WhatsApp photo sharing into a calm, high-contrast, and highly intuitive interface requiring only **2–3 clicks** with **zero English typing**.
 

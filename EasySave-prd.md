@@ -1,4 +1,4 @@
-# అమ్మానాన్న యాప్ (Amma Nanna App) — Product Requirements Document
+# EasySave (Amma Nanna App) — Product Requirements Document
 
 **Version:** 1.0  
 **Date:** May 2026  
@@ -210,7 +210,7 @@ The palette is warm amber-brown — reminiscent of turmeric and sandalwood, appr
 **Layout:** Full-screen, two equal-height cards stacked vertically with 24dp gap. App name at top.
 
 **Header:**
-- App name: "అమ్మానాన్న యాప్" — 26sp, centered, `text-primary`
+- App name: "EasySave" — 26sp, centered, `text-primary`
 - Subtitle: small Telugu tagline — 16sp, `text-secondary`
 
 **Card 1 — Save Contact:**
@@ -443,7 +443,7 @@ All user-facing strings are stored in `te.arb` (Flutter's ARB format). Key strin
 
 ```json
 {
-  "appName": "అమ్మానాన్న యాప్",
+  "appName": "EasySave",
   "saveContact": "పరిచయం సేవ్ చేయి",
   "sharePhoto": "ఫోటో పంపించు",
   "enterNumber": "నంబర్ ఎంటర్ చేయండి",
