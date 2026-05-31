@@ -408,6 +408,28 @@ class HomeScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 16.0),
+                  // Cool & minimal developer credits as Santhosh Reddy
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.favorite_rounded,
+                        size: 14.0,
+                        color: Colors.red[300],
+                      ),
+                      const SizedBox(width: 6.0),
+                      const Text(
+                        'రూపకల్పన: సంతోష్ రెడ్డి (Dev: Santhosh Reddy)',
+                        style: TextStyle(
+                          fontSize: 13.0,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF757575),
+                          fontFamily: 'NotoSansTelugu',
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ],
