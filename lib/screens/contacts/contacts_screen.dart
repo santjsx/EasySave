@@ -141,7 +141,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
   /// Builds a single contact list tile with minimum 72dp height touch target constraints.
   Widget _buildContactTile(BuildContext context, ContactModel contact) {
     return Container(
-      height: 80.0, // Minimum tactile size 72dp+
+      constraints: const BoxConstraints(minHeight: 80.0), // Flexible responsive height to prevent cutoffs
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20.0),
@@ -159,7 +159,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
           onTap: () => _showContactOptionsSheet(context, contact),
           borderRadius: BorderRadius.circular(20.0),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14.0),
+            padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0), // Responsive padding
             child: Row(
               children: [
                 // 1. Large Warm Avatar (56px)
@@ -231,125 +231,129 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
       ),
       builder: (BuildContext sheetCtx) {
-        return Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Decorative Pill Handle
-              Container(
-                width: 44.0,
-                height: 5.0,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(100.0),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-
-              // Header Avatar & Info
-              CircleAvatar(
-                radius: 36.0,
-                backgroundColor: contact.avatarColor,
-                child: Text(
-                  contact.name.substring(0, 1).toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 32.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+        return SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Decorative Pill Handle
+                  Container(
+                    width: 44.0,
+                    height: 5.0,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(100.0),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                contact.name,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'NotoSansTelugu',
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4.0),
-              Text(
-                contact.phone,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 18.0,
-                  fontFamily: 'NotoSansTelugu',
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.md),
 
-              // Action 1: Call Now (Massive Green Tactile Button)
-              EasyButton(
-                label: 'ఫోన్ చేయండి',
-                icon: Icons.phone_in_talk_rounded,
-                color: const Color(0xFF2E7D32), // Green
-                onPressed: () async {
-                  Navigator.pop(sheetCtx);
-                  final status = await Permission.phone.request();
-                  if (status.isGranted) {
-                    const platform = MethodChannel('com.ammananna.app/direct_call');
-                    try {
-                      await platform.invokeMethod('makeCall', {
-                        'phoneNumber': contact.phone,
-                      });
-                    } catch (_) {
-                      final Uri phoneUri = Uri(scheme: 'tel', path: contact.phone);
-                      await launchUrl(phoneUri);
-                    }
-                  } else {
-                    if (context.mounted) {
-                      EasySnackBar.showError(context, 'కాల్ చేయడానికి పర్మిషన్ ఇవ్వాలి');
-                    }
-                  }
-                },
-              ),
-              const SizedBox(height: 12.0),
-
-              // Action 2: Rename / Edit (Massive Amber Tactile Button)
-              EasyButton(
-                label: 'పేరు మార్చండి',
-                icon: Icons.edit_note_rounded,
-                color: const Color(0xFFC17B3F), // Turmeric Amber
-                onPressed: () {
-                  Navigator.pop(sheetCtx);
-                  _showRenameDialog(context, contact);
-                },
-              ),
-              const SizedBox(height: 12.0),
-
-              // Action 3: Delete / Remove (Massive Red Tactile Button)
-              EasyButton(
-                label: 'డిలీట్ చేయండి',
-                icon: Icons.delete_forever_rounded,
-                color: const Color(0xFFD32F2F), // Accessible Red
-                onPressed: () {
-                  Navigator.pop(sheetCtx);
-                  _showDeleteConfirmDialog(context, contact);
-                },
-              ),
-              const SizedBox(height: 12.0),
-
-              // Action 4: Close Sheet
-              TextButton(
-                style: TextButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 56.0),
-                ),
-                onPressed: () => Navigator.pop(sheetCtx),
-                child: const Text(
-                  'రద్దు చేయి',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'NotoSansTelugu',
+                  // Header Avatar & Info
+                  CircleAvatar(
+                    radius: 36.0,
+                    backgroundColor: contact.avatarColor,
+                    child: Text(
+                      contact.name.substring(0, 1).toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 32.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    contact.name,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'NotoSansTelugu',
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    contact.phone,
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 18.0,
+                      fontFamily: 'NotoSansTelugu',
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+
+                  // Action 1: Call Now (Massive Green Tactile Button)
+                  EasyButton(
+                    label: 'ఫోన్ చేయండి',
+                    icon: Icons.phone_in_talk_rounded,
+                    color: const Color(0xFF2E7D32), // Green
+                    onPressed: () async {
+                      Navigator.pop(sheetCtx);
+                      final status = await Permission.phone.request();
+                      if (status.isGranted) {
+                        const platform = MethodChannel('com.ammananna.app/direct_call');
+                        try {
+                          await platform.invokeMethod('makeCall', {
+                            'phoneNumber': contact.phone,
+                          });
+                        } catch (_) {
+                          final Uri phoneUri = Uri(scheme: 'tel', path: contact.phone);
+                          await launchUrl(phoneUri);
+                        }
+                      } else {
+                        if (context.mounted) {
+                          EasySnackBar.showError(context, 'కాల్ చేయడానికి పర్మిషన్ ఇవ్వాలి');
+                        }
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 12.0),
+
+                  // Action 2: Rename / Edit (Massive Amber Tactile Button)
+                  EasyButton(
+                    label: 'పేరు మార్చండి',
+                    icon: Icons.edit_note_rounded,
+                    color: const Color(0xFFC17B3F), // Turmeric Amber
+                    onPressed: () {
+                      Navigator.pop(sheetCtx);
+                      _showRenameDialog(context, contact);
+                    },
+                  ),
+                  const SizedBox(height: 12.0),
+
+                  // Action 3: Delete / Remove (Massive Red Tactile Button)
+                  EasyButton(
+                    label: 'డిలీట్ చేయండి',
+                    icon: Icons.delete_forever_rounded,
+                    color: const Color(0xFFD32F2F), // Accessible Red
+                    onPressed: () {
+                      Navigator.pop(sheetCtx);
+                      _showDeleteConfirmDialog(context, contact);
+                    },
+                  ),
+                  const SizedBox(height: 12.0),
+
+                  // Action 4: Close Sheet
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 56.0),
+                    ),
+                    onPressed: () => Navigator.pop(sheetCtx),
+                    child: const Text(
+                      'రద్దు చేయి',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'NotoSansTelugu',
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },
@@ -589,75 +593,82 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                   ],
                 ),
               ),
-              actionsAlignment: MainAxisAlignment.spaceBetween,
               actions: [
-                // Cancel
-                TextButton(
-                  style: TextButton.styleFrom(minimumSize: const Size(100, 48)),
-                  onPressed: () async {
-                    if (isListening) {
-                      await speechService.stopListening();
-                    }
-                    if (dialogCtx.mounted) {
-                      Navigator.pop(dialogCtx);
-                    }
-                  },
-                  child: const Text(
-                    'రద్దు చేయి',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'NotoSansTelugu',
+                Wrap(
+                  spacing: 12.0,
+                  runSpacing: 10.0,
+                  alignment: WrapAlignment.end,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    // Cancel
+                    TextButton(
+                      style: TextButton.styleFrom(minimumSize: const Size(100, 48)),
+                      onPressed: () async {
+                        if (isListening) {
+                          await speechService.stopListening();
+                        }
+                        if (dialogCtx.mounted) {
+                          Navigator.pop(dialogCtx);
+                        }
+                      },
+                      child: const Text(
+                        'రద్దు చేయి',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'NotoSansTelugu',
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                // Commit Save (Update)
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2E7D32),
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(120, 48),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                  ),
-                  onPressed: () async {
-                    if (isListening) {
-                      await speechService.stopListening();
-                    }
-                    final newName = nameEditController.text.trim();
-                    final newPhone = phoneEditController.text.trim();
-                    if (newName.isEmpty || newPhone.isEmpty) {
-                      EasySnackBar.showError(context, 'సరైన వివరాలు ఇవ్వండి');
-                      return;
-                    }
+                    // Commit Save (Update)
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2E7D32),
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(120, 48),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                      ),
+                      onPressed: () async {
+                        if (isListening) {
+                          await speechService.stopListening();
+                        }
+                        final newName = nameEditController.text.trim();
+                        final newPhone = phoneEditController.text.trim();
+                        if (newName.isEmpty || newPhone.isEmpty) {
+                          EasySnackBar.showError(context, 'సరైన వివరాలు ఇవ్వండి');
+                          return;
+                        }
 
-                    if (dialogCtx.mounted) {
-                      Navigator.pop(dialogCtx);
-                    }
-                    final success = await ref
-                        .read(contactsListProvider.notifier)
-                        .updateContact(contact.id, newName, newPhone);
+                        if (dialogCtx.mounted) {
+                          Navigator.pop(dialogCtx);
+                        }
+                        final success = await ref
+                            .read(contactsListProvider.notifier)
+                            .updateContact(contact.id, newName, newPhone);
 
-                    if (success) {
-                      if (context.mounted) {
-                        EasySnackBar.showSuccess(context, 'వివరాలు మార్చబడ్డాయి!');
-                      }
-                    } else {
-                      if (context.mounted) {
-                        EasySnackBar.showError(context, 'సేవ్ చేయడం కుదరలేదు');
-                      }
-                    }
-                  },
-                  child: const Text(
-                    'సేవ్ చేయండి',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'NotoSansTelugu',
+                        if (success) {
+                          if (context.mounted) {
+                            EasySnackBar.showSuccess(context, 'వివరాలు మార్చబడ్డాయి!');
+                          }
+                        } else {
+                          if (context.mounted) {
+                            EasySnackBar.showError(context, 'సేవ్ చేయడం కుదరలేదు');
+                          }
+                        }
+                      },
+                      child: const Text(
+                        'సేవ్ చేయండి',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'NotoSansTelugu',
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             );
@@ -698,56 +709,63 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
               fontFamily: 'NotoSansTelugu',
             ),
           ),
-          actionsAlignment: MainAxisAlignment.spaceBetween,
           actions: [
-            // Cancel Action
-            TextButton(
-              style: TextButton.styleFrom(minimumSize: const Size(100, 48)),
-              onPressed: () => Navigator.pop(dialogCtx),
-              child: const Text(
-                'రద్దు చేయి',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'NotoSansTelugu',
+            Wrap(
+              spacing: 12.0,
+              runSpacing: 10.0,
+              alignment: WrapAlignment.end,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                // Cancel Action
+                TextButton(
+                  style: TextButton.styleFrom(minimumSize: const Size(100, 48)),
+                  onPressed: () => Navigator.pop(dialogCtx),
+                  child: const Text(
+                    'రద్దు చేయి',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'NotoSansTelugu',
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            // Confirmed Delete Action (Red)
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD32F2F),
-                foregroundColor: Colors.white,
-                minimumSize: const Size(120, 48),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-              ),
-              onPressed: () async {
-                Navigator.pop(dialogCtx);
-                final success = await ref
-                    .read(contactsListProvider.notifier)
-                    .deleteContact(contact.id);
+                // Confirmed Delete Action (Red)
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFD32F2F),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(120, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(dialogCtx);
+                    final success = await ref
+                        .read(contactsListProvider.notifier)
+                        .deleteContact(contact.id);
 
-                if (success) {
-                  if (context.mounted) {
-                    EasySnackBar.showSuccess(context, 'పరిచయం తీసివేయబడింది!');
-                  }
-                } else {
-                  if (context.mounted) {
-                    EasySnackBar.showError(context, 'డిలీట్ చేయడం కుదరలేదు');
-                  }
-                }
-              },
-              child: const Text(
-                'డిలీట్ చేయి',
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'NotoSansTelugu',
+                    if (success) {
+                      if (context.mounted) {
+                        EasySnackBar.showSuccess(context, 'పరిచయం తీసివేయబడింది!');
+                      }
+                    } else {
+                      if (context.mounted) {
+                        EasySnackBar.showError(context, 'డిలీట్ చేయడం కుదరలేదు');
+                      }
+                    }
+                  },
+                  child: const Text(
+                    'డిలీట్ చేయి',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'NotoSansTelugu',
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         );
