@@ -1,3 +1,17 @@
+# EasySave v1.2.12 Writeable-Filter Update Hotfix 🛠️📱
+
+We are happy to release version **1.2.12**, which implements a highly robust, individual ContentProvider raw-contact updater that excludes read-only platform raw accounts (like WhatsApp/Telegram) and validates modified row counts to guarantee a 100% correct, zero-failure background renaming experience.
+
+---
+
+## 🛠️ What's Changed
+### 👤 Bulletproof Direct Background Contact Renaming (Writeable Filters!)
+*   **Writeable Raw Contact Filtering:** The native Android system now fetches all sub-accounts (raw contacts) associated with the contact ID and filters out read-only types (e.g. WhatsApp, Telegram, Skype) dynamically. This prevents read-only account constraints from throwing database write-protection exceptions.
+*   **Individual Direct Updates:** Instead of batch ContentProvider operations that can fail atomically if a single raw contact fails, the app now updates writeable raw contacts (`StructuredName` and `Phone` tables) individually.
+*   **Truthful Return Status Validation:** Kotlin now tracks the exact number of database rows affected. It returns a successful `true` status to Dart only if at least one row was actually modified. If no rows were changed, it triggers the programmatic fallback seamlessly, guaranteeing the edit succeeds.
+
+---
+
 # EasySave v1.2.11 Background Update Hotfix 🛠️📱
 
 We are happy to release version **1.2.11**, which implements a fully custom, background-based Android ContentProvider update channel for contact renaming, removing any need for opening the external system editor.

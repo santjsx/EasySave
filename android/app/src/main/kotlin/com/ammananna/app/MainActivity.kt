@@ -206,37 +206,96 @@ class MainActivity: FlutterActivity() {
     }
 
     private fun updateContactNatively(contactId: String, name: String, phone: String): Boolean {
-        val ops = ArrayList<ContentProviderOperation>()
-
-        // 1. Update StructuredName entries associated with contactId
-        val nameSelection = "${ContactsContract.Data.CONTACT_ID} = ? AND ${ContactsContract.Data.MIMETYPE} = ?"
-        val nameSelectionArgs = arrayOf(contactId, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-        
-        ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
-            .withSelection(nameSelection, nameSelectionArgs)
-            .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
-            .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, name)
-            .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, "")
-            .withValue(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME, "")
-            .withValue(ContactsContract.CommonDataKinds.StructuredName.PREFIX, "")
-            .withValue(ContactsContract.CommonDataKinds.StructuredName.SUFFIX, "")
-            .build())
-
-        // 2. Update Phone entries associated with contactId
-        val phoneSelection = "${ContactsContract.Data.CONTACT_ID} = ? AND ${ContactsContract.Data.MIMETYPE} = ?"
-        val phoneSelectionArgs = arrayOf(contactId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-        
-        ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
-            .withSelection(phoneSelection, phoneSelectionArgs)
-            .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
-            .build())
-
-        return try {
-            contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
+        val rawContactIds = getRawContactIds(contactId)
+        if (rawContactIds.isEmpty()) {
+            return false
         }
+
+        var totalUpdated = 0
+
+        for (rawId in rawContactIds) {
+            try {
+                // 1. Update StructuredName entries associated with rawId
+                val nameSelection = "${ContactsContract.Data.RAW_CONTACT_ID} = ? AND ${ContactsContract.Data.MIMETYPE} = ?"
+                val nameSelectionArgs = arrayOf(rawId.toString(), ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                
+                val nameValues = android.content.ContentValues().apply {
+                    put(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+                    put(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, name)
+                    put(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, "")
+                    put(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME, "")
+                    put(ContactsContract.CommonDataKinds.StructuredName.PREFIX, "")
+                    put(ContactsContract.CommonDataKinds.StructuredName.SUFFIX, "")
+                }
+                
+                val nameUpdated = contentResolver.update(
+                    ContactsContract.Data.CONTENT_URI,
+                    nameValues,
+                    nameSelection,
+                    nameSelectionArgs
+                )
+                totalUpdated += nameUpdated
+
+                // 2. Update Phone entries associated with rawId
+                val phoneSelection = "${ContactsContract.Data.RAW_CONTACT_ID} = ? AND ${ContactsContract.Data.MIMETYPE} = ?"
+                val phoneSelectionArgs = arrayOf(rawId.toString(), ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                
+                val phoneValues = android.content.ContentValues().apply {
+                    put(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
+                }
+                
+                val phoneUpdated = contentResolver.update(
+                    ContactsContract.Data.CONTENT_URI,
+                    phoneValues,
+                    phoneSelection,
+                    phoneSelectionArgs
+                )
+                totalUpdated += phoneUpdated
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        return totalUpdated > 0
+    }
+
+    private fun getRawContactIds(contactId: String): List<Long> {
+        val rawContactIds = ArrayList<Long>()
+        val projection = arrayOf(
+            ContactsContract.RawContacts._ID,
+            ContactsContract.RawContacts.ACCOUNT_TYPE
+        )
+        val selection = "${ContactsContract.RawContacts.CONTACT_ID} = ?"
+        val selectionArgs = arrayOf(contactId)
+        
+        val readOnlyAccountTypes = setOf(
+            "com.whatsapp",
+            "com.whatsapp.w4b",
+            "org.telegram.messenger",
+            "org.telegram",
+            "com.facebook.auth.login",
+            "com.facebook.messenger",
+            "com.viber.voip",
+            "com.skype.raider"
+        )
+
+        contentResolver.query(
+            ContactsContract.RawContacts.CONTENT_URI,
+            projection,
+            selection,
+            selectionArgs,
+            null
+        )?.use { cursor ->
+            val idColumn = cursor.getColumnIndex(ContactsContract.RawContacts._ID)
+            val typeColumn = cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_TYPE)
+            while (cursor.moveToNext()) {
+                val rawId = cursor.getLong(idColumn)
+                val accountType = cursor.getString(typeColumn) ?: ""
+                if (!readOnlyAccountTypes.contains(accountType.lowercase())) {
+                    rawContactIds.add(rawId)
+                }
+            }
+        }
+        return rawContactIds
     }
 }
