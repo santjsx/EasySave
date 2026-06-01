@@ -234,7 +234,18 @@ class MainActivity: FlutterActivity() {
                     nameSelection,
                     nameSelectionArgs
                 )
-                totalUpdated += nameUpdated
+                
+                if (nameUpdated == 0) {
+                    // StructuredName row does not exist for this raw contact, insert it
+                    nameValues.put(ContactsContract.Data.RAW_CONTACT_ID, rawId)
+                    nameValues.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                    val insertedUri = contentResolver.insert(ContactsContract.Data.CONTENT_URI, nameValues)
+                    if (insertedUri != null) {
+                        totalUpdated += 1
+                    }
+                } else {
+                    totalUpdated += nameUpdated
+                }
 
                 // 2. Update Phone entries associated with rawId
                 val phoneSelection = "${ContactsContract.Data.RAW_CONTACT_ID} = ? AND ${ContactsContract.Data.MIMETYPE} = ?"
@@ -242,6 +253,7 @@ class MainActivity: FlutterActivity() {
                 
                 val phoneValues = android.content.ContentValues().apply {
                     put(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
+                    put(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
                 }
                 
                 val phoneUpdated = contentResolver.update(
@@ -250,7 +262,18 @@ class MainActivity: FlutterActivity() {
                     phoneSelection,
                     phoneSelectionArgs
                 )
-                totalUpdated += phoneUpdated
+                
+                if (phoneUpdated == 0) {
+                    // Phone row does not exist for this raw contact, insert it
+                    phoneValues.put(ContactsContract.Data.RAW_CONTACT_ID, rawId)
+                    phoneValues.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                    val insertedUri = contentResolver.insert(ContactsContract.Data.CONTENT_URI, phoneValues)
+                    if (insertedUri != null) {
+                        totalUpdated += 1
+                    }
+                } else {
+                    totalUpdated += phoneUpdated
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

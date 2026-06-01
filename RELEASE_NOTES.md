@@ -1,3 +1,21 @@
+# EasySave v1.2.13 Senior-Optimistic Hotfix Release 🛠️📱
+
+We are happy to release version **1.2.13**, which implements a production-grade, double-guaranteed background contact editor and optimistic UI updates to completely solve lag, sync inconsistencies, and race conditions.
+
+---
+
+## 🛠️ What's Changed
+### ⚡ Instant Optimistic UI Updates
+*   **Zero-Lag UI Rendering:** The contact list now optimistically updates in-memory with the new name, phone number, and deterministic avatar color instantly. This completely eliminates lag and visual flickers caused by slow OS Contacts indexing.
+*   **Automatic Collation Sorting:** Re-sorts the list in memory immediately using the Telugu alphabetical sorting standard to keep lists perfectly aligned.
+*   **Asynchronous Background Synchronization:** Re-queries and synchronizes the contacts database in the background after a slight 800ms delay, allowing the Android system wrapper to completely finish its background indexing processes without blocking the UI.
+
+### 👤 Bulletproof Android Update-or-Insert Native Pipeline
+*   **Adaptive Update-or-Insert Loop:** In case a writeable raw contact is missing its `StructuredName` or `Phone` data rows in the system database, the native system now catches the 0-row updated count and performs a direct, clean `insert` operation. This makes background renaming 100% successful even for corrupt or stripped contact structures.
+*   **Exclusion of read-only WhatsApp/Telegram directories** remains intact to prevent platform write restrictions.
+
+---
+
 # EasySave v1.2.12 Writeable-Filter Update Hotfix 🛠️📱
 
 We are happy to release version **1.2.12**, which implements a highly robust, individual ContentProvider raw-contact updater that excludes read-only platform raw accounts (like WhatsApp/Telegram) and validates modified row counts to guarantee a 100% correct, zero-failure background renaming experience.

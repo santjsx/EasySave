@@ -101,7 +101,34 @@ class ContactsListNotifier extends StateNotifier<ContactsListState> {
     try {
       final success = await _contactsService.updateContact(id, newName, newPhone);
       if (success) {
-        await fetchContacts();
+        // Optimistically update the list in-memory to prevent slow Android Contacts Provider re-indexing lag/flickering
+        final updatedContacts = state.contacts.map((contact) {
+          if (contact.id == id) {
+            return contact.copyWith(
+              name: newName,
+              phone: newPhone.replaceAll(RegExp(r'[^\d+]+'), ''),
+              avatarColor: ContactModel.generateWarmColor(newName),
+            );
+          }
+          return contact;
+        }).toList();
+
+        // Sort the contacts list alphabetically to match our design system Collation (Rule 3)
+        updatedContacts.sort((a, b) => a.name.compareTo(b.name));
+
+        state = state.copyWith(
+          contacts: updatedContacts,
+          filteredContacts: _applySearchFilter(updatedContacts, state.searchQuery),
+          isLoading: false,
+        );
+
+        // Fetch fresh records in the background after a slight delay to let Android finalize indexing
+        Future.delayed(const Duration(milliseconds: 800), () {
+          if (mounted) {
+            fetchContacts();
+          }
+        });
+
         return true;
       } else {
         state = state.copyWith(isLoading: false, errorMessage: 'సేవ్ చేయడం కుదరలేదు');
