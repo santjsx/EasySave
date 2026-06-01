@@ -196,5 +196,24 @@ void main() {
       expect(sortedList[1].name, equals('కమల్'));
       expect(sortedList[2].name, equals('రవి'));
     });
+
+    test('6. Update contact details cleanly in repository', () async {
+      contactsRepo.hasPermission = true;
+      contactsRepo.mockContacts = [
+        ContactModel(
+          id: '1',
+          name: 'రవి కుమార్',
+          phone: '9876543210',
+          avatarColor: Colors.amber,
+        ),
+      ];
+
+      final success = await contactsRepo.updateContact('1', 'రవి వర్మ', '9876543222');
+      expect(success, isTrue);
+
+      final List<ContactModel> list = await contactsRepo.getContacts();
+      expect(list.first.name, equals('రవి వర్మ'));
+      expect(list.first.phone, equals('9876543222'));
+    });
   });
 }

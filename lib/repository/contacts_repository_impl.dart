@@ -169,9 +169,13 @@ class ContactsRepositoryImpl implements ContactsRepository {
     }
 
     try {
-      final contact = await FlutterContacts.getContact(id);
+      final contact = await FlutterContacts.getContact(id, withProperties: true);
       if (contact != null) {
         contact.name.first = newName.trim();
+        contact.name.last = '';
+        contact.name.middle = '';
+        contact.name.prefix = '';
+        contact.name.suffix = '';
         if (contact.phones.isNotEmpty) {
           contact.phones.first.number = cleanPhone;
         } else {

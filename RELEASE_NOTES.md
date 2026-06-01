@@ -1,3 +1,17 @@
+# EasySave v1.0.1 Patch Release 🛠️📱
+
+We are happy to release version **1.0.1**, which includes a critical bug fix for editing/renaming contacts natively on Android.
+
+---
+
+## 🛠️ What's Changed
+### 👤 Contact Renaming & Details Fix
+*   **Resolved Native Update Errors:** Contact modifications now safely query full data structures from the OS using the `withProperties: true` payload, avoiding native platform crashes or data loss.
+*   **Name Component Sanitization:** Cleanses all name parts (`first`, `last`, `middle`, `prefix`, `suffix`) during updates so that old name parts (e.g. old last names) do not awkwardly linger.
+*   **Expanded Unit Tests:** Added specific mock repository tests to validate the `updateContact` interface.
+
+---
+
 # EasySave v1.0.0 Production Release 🚀📱
 
 We are extremely proud to announce the first production release of **EasySave**! This version has been fully audited, optimized, and certified for zero production blockers.
