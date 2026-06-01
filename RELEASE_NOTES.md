@@ -1,6 +1,6 @@
-# EasySave v1.0.1 Patch Release 🛠️📱
+# EasySave v1.2.9 Patch Release 🛠️📱
 
-We are happy to release version **1.0.1**, which includes a critical bug fix for editing/renaming contacts natively on Android.
+We are happy to release version **1.2.9**, which includes a critical bug fix for editing/renaming contacts natively on Android.
 
 ---
 
