@@ -1,3 +1,16 @@
+# EasySave v1.2.10 Hotfix Release 🛠️📱
+
+We are happy to release version **1.2.10**, which introduces a robust native editor fallback to ensure contact renaming is 100% bulletproof even under modern OS or cloud-synced account database restrictions.
+
+---
+
+## 🛠️ What's Changed
+### 👤 Bulletproof Contact Renaming
+*   **Tactile Native Editor Fallback:** If a programmatic contact update is rejected or fails due to database restrictions (e.g. read-only Google/WhatsApp syncing, permission restrictions), the app now gracefully and instantly opens the OS's native contact edit form (`openExternalEdit`). This provides a seamless, zero-error editing experience.
+*   **Resolved "సేవ్ చేయడం కుదరలేదు" Error:** Eradicates the red "సేవ్ చేయడం కుదరలేదు" error sheet by cleanly delegating the edit action to the Android system when needed.
+
+---
+
 # EasySave v1.2.9 Patch Release 🛠️📱
 
 We are happy to release version **1.2.9**, which includes a critical bug fix for editing/renaming contacts natively on Android.

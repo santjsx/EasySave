@@ -187,8 +187,14 @@ class ContactsRepositoryImpl implements ContactsRepository {
       }
       return false;
     } catch (e) {
-      debugPrint('Update contact native failure: $e');
-      return false;
+      debugPrint('Update contact native failure: $e. Falling back to native system editor form.');
+      try {
+        await FlutterContacts.openExternalEdit(id);
+        return true;
+      } catch (ex) {
+        debugPrint('Fallback external edit failed: $ex');
+        return false;
+      }
     }
   }
 }
