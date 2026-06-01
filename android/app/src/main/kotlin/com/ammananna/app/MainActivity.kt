@@ -48,6 +48,16 @@ class MainActivity: FlutterActivity() {
                 } else {
                     result.error("INVALID_ARGUMENT", "Name or Phone is null", null)
                 }
+            } else if (call.method == "updateContactNatively") {
+                val id = call.argument<String>("id")
+                val name = call.argument<String>("name")
+                val phone = call.argument<String>("phone")
+                if (id != null && name != null && phone != null) {
+                    val updated = updateContactNatively(id, name, phone)
+                    result.success(updated)
+                } else {
+                    result.error("INVALID_ARGUMENT", "ID, Name, or Phone is null", null)
+                }
             } else {
                 result.notImplemented()
             }
@@ -189,6 +199,41 @@ class MainActivity: FlutterActivity() {
             } else {
                 false
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    private fun updateContactNatively(contactId: String, name: String, phone: String): Boolean {
+        val ops = ArrayList<ContentProviderOperation>()
+
+        // 1. Update StructuredName entries associated with contactId
+        val nameSelection = "${ContactsContract.Data.CONTACT_ID} = ? AND ${ContactsContract.Data.MIMETYPE} = ?"
+        val nameSelectionArgs = arrayOf(contactId, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+        
+        ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+            .withSelection(nameSelection, nameSelectionArgs)
+            .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+            .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, name)
+            .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, "")
+            .withValue(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME, "")
+            .withValue(ContactsContract.CommonDataKinds.StructuredName.PREFIX, "")
+            .withValue(ContactsContract.CommonDataKinds.StructuredName.SUFFIX, "")
+            .build())
+
+        // 2. Update Phone entries associated with contactId
+        val phoneSelection = "${ContactsContract.Data.CONTACT_ID} = ? AND ${ContactsContract.Data.MIMETYPE} = ?"
+        val phoneSelectionArgs = arrayOf(contactId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+        
+        ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+            .withSelection(phoneSelection, phoneSelectionArgs)
+            .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
+            .build())
+
+        return try {
+            contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
+            true
         } catch (e: Exception) {
             e.printStackTrace()
             false

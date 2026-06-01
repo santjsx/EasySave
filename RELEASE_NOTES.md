@@ -1,3 +1,17 @@
+# EasySave v1.2.11 Background Update Hotfix 🛠️📱
+
+We are happy to release version **1.2.11**, which implements a fully custom, background-based Android ContentProvider update channel for contact renaming, removing any need for opening the external system editor.
+
+---
+
+## 🛠️ What's Changed
+### 👤 Direct Background Contact Renaming (No External Editor!)
+*   **Direct Native ContentProvider Operations:** Contact renaming is now executed directly in the database background using highly optimized batch ContentProvider queries in Kotlin. This bypasses permission, cloud-sync, and third-party library constraints.
+*   **Removed External Google Contacts UI:** Replaces the native Google contacts system editor completely, satisfying requests for a seamless, in-app editing experience.
+*   **Fully Clean segment updates:** Safely sanitizes all components (`StructuredName` and `Phone` tables) instantly.
+
+---
+
 # EasySave v1.2.10 Hotfix Release 🛠️📱
 
 We are happy to release version **1.2.10**, which introduces a robust native editor fallback to ensure contact renaming is 100% bulletproof even under modern OS or cloud-synced account database restrictions.

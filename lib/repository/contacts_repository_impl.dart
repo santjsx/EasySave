@@ -168,6 +168,25 @@ class ContactsRepositoryImpl implements ContactsRepository {
       throw const InvalidPhoneNumberException();
     }
 
+    // 1. Try our custom native MethodChannel to perform a direct ContentProvider transaction
+    bool updated = false;
+    try {
+      const platform = MethodChannel('com.ammananna.app/direct_call');
+      updated = await platform.invokeMethod<bool>('updateContactNatively', {
+        'id': id,
+        'name': newName.trim(),
+        'phone': cleanPhone,
+      }) ?? false;
+      debugPrint('Native updateContactNatively returned: $updated');
+    } catch (e) {
+      debugPrint('Native updateContactNatively threw error: $e');
+    }
+
+    if (updated) {
+      return true;
+    }
+
+    // 2. Fallback to FlutterContacts programmatic update if direct method fails
     try {
       final contact = await FlutterContacts.getContact(id, withProperties: true);
       if (contact != null) {
@@ -182,19 +201,13 @@ class ContactsRepositoryImpl implements ContactsRepository {
           contact.phones = [Phone(cleanPhone)];
         }
         await contact.update();
-        debugPrint('Successfully updated contact: $id to $newName ($cleanPhone)');
+        debugPrint('Successfully updated contact via library: $id to $newName ($cleanPhone)');
         return true;
       }
       return false;
     } catch (e) {
-      debugPrint('Update contact native failure: $e. Falling back to native system editor form.');
-      try {
-        await FlutterContacts.openExternalEdit(id);
-        return true;
-      } catch (ex) {
-        debugPrint('Fallback external edit failed: $ex');
-        return false;
-      }
+      debugPrint('Update contact library fallback failure: $e');
+      return false;
     }
   }
 }
