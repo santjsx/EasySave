@@ -2,7 +2,7 @@ name: amma_nanna_app
 description: "A Telugu-first, elderly-friendly Android app for saving contacts and sharing photos on WhatsApp."
 publish_to: 'none'
 
-version: 1.2.13+29
+version: 1.2.14+30
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
