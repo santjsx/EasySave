@@ -39,11 +39,11 @@ class AmmaNannaApp extends ConsumerWidget {
 
       // Ensure text scaling and layouts remain readable (minimum 18sp bounds)
       builder: (context, child) {
-        final double textScale = MediaQuery.textScaleFactorOf(context);
+        final TextScaler textScaler = MediaQuery.textScalerOf(context);
         return MediaQuery(
           // Protect against very small systems font settings by mapping to a minimum scale
           data: MediaQuery.of(context).copyWith(
-            textScaleFactor: textScale < 1.0 ? 1.0 : textScale,
+            textScaler: textScaler.clamp(minScaleFactor: 1.0),
           ),
           child: child!,
         );

@@ -285,7 +285,7 @@ class RecentCallsScreen extends ConsumerWidget {
                         width: 56.0,
                         height: 56.0,
                         decoration: BoxDecoration(
-                          color: AppDesignColors.success.withOpacity(0.12),
+                          color: AppDesignColors.success.withValues(alpha: 0.12),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(

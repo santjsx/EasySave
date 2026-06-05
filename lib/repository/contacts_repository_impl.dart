@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:intl/intl.dart';
 
 import '../models/contact_model.dart';
 import 'contacts_repository.dart';

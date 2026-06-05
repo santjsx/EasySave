@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:amma_nanna_app/models/contact_model.dart';
 import 'package:amma_nanna_app/providers/contacts_list_provider.dart';
 import 'package:amma_nanna_app/repository/contacts_repository.dart';
-import 'package:amma_nanna_app/services/contacts_service.dart';
 import 'package:amma_nanna_app/providers/system_provider.dart';
 
 class MockContactsRepositoryForList implements ContactsRepository {
@@ -75,8 +74,6 @@ void main() {
     });
 
     test('1. Initial Load fetches sorted contacts', () async {
-      final state = container.read(contactsListProvider);
-      
       // Wait for auto trigger loading
       await container.read(contactsListProvider.notifier).fetchContacts();
       

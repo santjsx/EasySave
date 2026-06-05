@@ -27,7 +27,7 @@ class EasyPhotoTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 8.0,
               offset: const Offset(0, 2),
             ),
@@ -39,7 +39,7 @@ class EasyPhotoTile extends StatelessWidget {
             color: AppDesignColors.surfaceMuted,
             child: InkWell(
               onTap: onTap,
-              splashColor: AppDesignColors.primaryLight.withOpacity(0.4),
+              splashColor: AppDesignColors.primaryLight.withValues(alpha: 0.4),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(AppSpacing.inputRadius),

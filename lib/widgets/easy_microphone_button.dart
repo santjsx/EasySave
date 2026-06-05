@@ -90,7 +90,7 @@ class _EasyMicrophoneButtonState extends State<EasyMicrophoneButton>
                   boxShadow: [
                     BoxShadow(
                       color: (widget.isListening ? AppDesignColors.success : AppDesignColors.primary)
-                          .withOpacity(0.4),
+                          .withValues(alpha: 0.4),
                       blurRadius: 16.0,
                       offset: const Offset(0, 6),
                     ),

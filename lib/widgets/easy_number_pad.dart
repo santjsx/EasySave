@@ -89,7 +89,7 @@ class EasyNumberPad extends StatelessWidget {
               onDigitTap(digit);
             },
             splashColor: AppDesignColors.primaryLight,
-            highlightColor: AppDesignColors.primaryLight.withOpacity(0.5),
+            highlightColor: AppDesignColors.primaryLight.withValues(alpha: 0.5),
             child: Center(
               child: Text(
                 digit,
@@ -125,7 +125,7 @@ class EasyNumberPad extends StatelessWidget {
               onBackspaceTap();
             },
             splashColor: AppDesignColors.primaryLight,
-            highlightColor: AppDesignColors.primaryLight.withOpacity(0.5),
+            highlightColor: AppDesignColors.primaryLight.withValues(alpha: 0.5),
             child: const Center(
               child: Icon(
                 Icons.backspace_outlined,
@@ -160,7 +160,7 @@ class EasyNumberPad extends StatelessWidget {
               onClearTap();
             },
             splashColor: AppDesignColors.primaryLight,
-            highlightColor: AppDesignColors.primaryLight.withOpacity(0.5),
+            highlightColor: AppDesignColors.primaryLight.withValues(alpha: 0.5),
             child: const Center(
               child: Icon(
                 Icons.delete_forever_outlined, // Highly recognizable sweeping action icon

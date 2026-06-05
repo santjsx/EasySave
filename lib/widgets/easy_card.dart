@@ -46,7 +46,7 @@ class EasyCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(borderRadius),
           boxShadow: [
             BoxShadow(
-              color: AppDesignColors.textPrimary.withOpacity(0.04),
+              color: AppDesignColors.textPrimary.withValues(alpha: 0.04),
               blurRadius: 16.0,
               offset: const Offset(0, 4),
             ),
@@ -60,8 +60,8 @@ class EasyCard extends StatelessWidget {
           child: isClickable
               ? InkWell(
                   onTap: _handleTap,
-                  splashColor: AppDesignColors.primaryLight.withOpacity(0.5),
-                  highlightColor: AppDesignColors.primaryLight.withOpacity(0.3),
+                  splashColor: AppDesignColors.primaryLight.withValues(alpha: 0.5),
+                  highlightColor: AppDesignColors.primaryLight.withValues(alpha: 0.3),
                   child: Padding(
                     padding: padding,
                     child: child,

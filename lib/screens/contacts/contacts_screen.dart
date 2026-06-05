@@ -8,7 +8,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../models/contact_model.dart';
 import '../../providers/contacts_list_provider.dart';
 import '../../providers/system_provider.dart';
-import '../../services/speech_service.dart';
 import '../../theme/spacing.dart';
 import '../../widgets/easy_button.dart';
 import '../../widgets/easy_snackbar.dart';
@@ -59,53 +58,91 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // 1. Highly Accessible Custom Search Bar
+            // 1. Highly Accessible Custom Search Bar with Voice Search
             Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
-                      blurRadius: 10.0,
-                      offset: const Offset(0, 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 10.0,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (val) {
+                          ref.read(contactsListProvider.notifier).search(val);
+                        },
+                        style: const TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'NotoSansTelugu',
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'ఇక్కడ పేరు చెప్పి వెతకండి...',
+                          hintStyle: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 18.0,
+                            fontFamily: 'NotoSansTelugu',
+                          ),
+                          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF2E7D32), size: 28.0),
+                          suffixIcon: _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.cancel_rounded, color: Colors.grey, size: 24.0),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    ref.read(contactsListProvider.notifier).search('');
+                                    setState(() {});
+                                  },
+                                )
+                              : null,
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (val) {
-                    ref.read(contactsListProvider.notifier).search(val);
-                  },
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'NotoSansTelugu',
                   ),
-                  decoration: InputDecoration(
-                    hintText: 'ఇక్కడ పేరు చెప్పి వెతకండి...',
-                    hintStyle: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 18.0,
-                      fontFamily: 'NotoSansTelugu',
+                  const SizedBox(width: 12.0),
+                  // Accessible Voice Search Button
+                  Container(
+                    width: 58.0,
+                    height: 58.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF2E7D32),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF2E7D32).withValues(alpha: 0.3),
+                          blurRadius: 8.0,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF2E7D32), size: 28.0),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.cancel_rounded, color: Colors.grey, size: 24.0),
-                            onPressed: () {
-                              _searchController.clear();
-                              ref.read(contactsListProvider.notifier).search('');
-                              setState(() {});
-                            },
-                          )
-                        : null,
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          HapticFeedback.heavyImpact();
+                          _startVoiceSearch(context);
+                        },
+                        customBorder: const CircleBorder(),
+                        child: const Icon(
+                          Icons.mic_rounded,
+                          color: Colors.white,
+                          size: 30.0,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
 
@@ -147,7 +184,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
         borderRadius: BorderRadius.circular(20.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8.0,
             offset: const Offset(0, 3),
           ),
@@ -524,7 +561,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                             color: isListening ? const Color(0xFFD32F2F) : const Color(0xFF2E7D32),
                             boxShadow: [
                               BoxShadow(
-                                color: (isListening ? const Color(0xFFD32F2F) : const Color(0xFF2E7D32)).withOpacity(0.3),
+                                color: (isListening ? const Color(0xFFD32F2F) : const Color(0xFF2E7D32)).withValues(alpha: 0.3),
                                 blurRadius: 8.0,
                                 offset: const Offset(0, 4),
                               ),
@@ -638,7 +675,9 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                         final newName = nameEditController.text.trim();
                         final newPhone = phoneEditController.text.trim();
                         if (newName.isEmpty || newPhone.isEmpty) {
-                          EasySnackBar.showError(context, 'సరైన వివరాలు ఇవ్వండి');
+                          if (context.mounted) {
+                            EasySnackBar.showError(context, 'సరైన వివరాలు ఇవ్వండి');
+                          }
                           return;
                         }
 
@@ -826,6 +865,420 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
           textAlign: TextAlign.center,
         ),
       ),
+    );
+  }
+
+  /// Starts the voice search flow by showing an accessible bottom sheet with a pulsating mic.
+  void _startVoiceSearch(BuildContext parentContext) {
+    final speechService = ref.read(speechServiceProvider);
+    
+    // Bottom sheet state variables
+    bool isListening = false;
+    String recognizedText = '';
+    String statusMessage = 'మాట్లాడండి... వింటున్నాము'; // Telugu: Speak... listening
+    bool hasError = false;
+
+    showModalBottomSheet(
+      context: parentContext,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
+      ),
+      builder: (BuildContext sheetCtx) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setSheetState) {
+            
+            Future<void> stopListening() async {
+              await speechService.stopListening();
+              if (sheetCtx.mounted) {
+                setSheetState(() {
+                  isListening = false;
+                });
+              }
+            }
+
+            Future<void> startSpeech() async {
+              setSheetState(() {
+                isListening = true;
+                statusMessage = 'మాట్లాడండి... వింటున్నాము';
+                hasError = false;
+              });
+
+              final hasPermission = await speechService.requestMicrophonePermission();
+              if (!hasPermission) {
+                if (sheetCtx.mounted) {
+                  setSheetState(() {
+                    isListening = false;
+                    statusMessage = 'మైక్ ఉపయోగించడానికి అనుమతి లేదు';
+                    hasError = true;
+                  });
+                }
+                return;
+              }
+
+              final initialized = await speechService.initialize(
+                onStatus: (status) {
+                  debugPrint('Voice search sheet status: $status');
+                  if (status == 'notListening' && isListening) {
+                    if (sheetCtx.mounted) {
+                      setSheetState(() {
+                        isListening = false;
+                      });
+                    }
+                  }
+                },
+                onError: (err) {
+                  if (sheetCtx.mounted) {
+                    setSheetState(() {
+                      isListening = false;
+                      statusMessage = err;
+                      hasError = true;
+                    });
+                  }
+                },
+              );
+
+              if (!initialized) {
+                if (sheetCtx.mounted) {
+                  setSheetState(() {
+                    isListening = false;
+                    statusMessage = 'వాయిస్ సేవలు అందుబాటులో లేవు';
+                    hasError = true;
+                  });
+                }
+                return;
+              }
+
+              await speechService.startListening(
+                onResult: (words, isFinal) {
+                  if (sheetCtx.mounted) {
+                    setSheetState(() {
+                      recognizedText = words;
+                      statusMessage = 'వింటున్నాము...';
+                      if (isFinal && words.trim().isNotEmpty) {
+                        isListening = false;
+                        // Populate search bar and filter contacts
+                        _searchController.text = words;
+                        _searchController.selection = TextSelection.fromPosition(
+                          TextPosition(offset: _searchController.text.length),
+                        );
+                        ref.read(contactsListProvider.notifier).search(words);
+                        Navigator.pop(sheetCtx);
+                      }
+                    });
+                  }
+                },
+                onError: (err) {
+                  if (sheetCtx.mounted) {
+                    setSheetState(() {
+                      isListening = false;
+                      statusMessage = err;
+                      hasError = true;
+                    });
+                  }
+                },
+              );
+            }
+
+            // Automatically start listening when bottom sheet opens
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!isListening && !hasError && recognizedText.isEmpty && statusMessage == 'మాట్లాడండి... వింటున్నాము') {
+                startSpeech();
+              }
+            });
+
+            return PopScope(
+              onPopInvokedWithResult: (didPop, result) async {
+                if (didPop) {
+                  await speechService.cancelListening();
+                }
+              },
+              child: SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: AppSpacing.lg,
+                    right: AppSpacing.lg,
+                    top: AppSpacing.md,
+                    bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.lg,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Handle bar
+                      Container(
+                        width: 44.0,
+                        height: 5.0,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(100.0),
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      
+                      // Title
+                      const Text(
+                        'వాయిస్ సెర్చ్',
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2E7D32),
+                          fontFamily: 'NotoSansTelugu',
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+
+                      // Pulsating Mic Button
+                      _VoicePulseMicButton(
+                        isListening: isListening,
+                        hasError: hasError,
+                        onTap: () {
+                          HapticFeedback.heavyImpact();
+                          if (isListening) {
+                            stopListening();
+                          } else {
+                            startSpeech();
+                          }
+                        },
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+
+                      // Status message
+                      Text(
+                        statusMessage,
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: hasError ? const Color(0xFFD32F2F) : const Color(0xFF666666),
+                          fontFamily: 'NotoSansTelugu',
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+
+                      // Real-time transcript display
+                      Container(
+                        width: double.infinity,
+                        constraints: const BoxConstraints(
+                          minHeight: 100.0,
+                          maxHeight: 150.0,
+                        ),
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F8E9),
+                          borderRadius: BorderRadius.circular(16.0),
+                          border: Border.all(
+                            color: const Color(0xFFC5E1A5),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Text(
+                            recognizedText.isEmpty ? 'ఇక్కడ పేరు కనిపిస్తుంది...' : recognizedText,
+                            style: TextStyle(
+                              fontSize: 22.0,
+                              fontWeight: FontWeight.bold,
+                              color: recognizedText.isEmpty ? Colors.grey[500] : const Color(0xFF2E7D32),
+                              fontFamily: 'NotoSansTelugu',
+                              height: 1.5,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+
+                      // Actions Row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(color: Colors.grey),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14.0),
+                                ),
+                                minimumSize: const Size(0, 52),
+                              ),
+                              onPressed: () async {
+                                await speechService.cancelListening();
+                                if (sheetCtx.mounted) {
+                                  Navigator.pop(sheetCtx);
+                                }
+                              },
+                              child: const Text(
+                                'రద్దు చేయి',
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                  fontFamily: 'NotoSansTelugu',
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (hasError || (!isListening && recognizedText.isNotEmpty)) ...[
+                            const SizedBox(width: 16.0),
+                            Expanded(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF2E7D32),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14.0),
+                                  ),
+                                  minimumSize: const Size(0, 52),
+                                ),
+                                onPressed: () async {
+                                  if (hasError) {
+                                    startSpeech();
+                                  } else {
+                                    if (recognizedText.trim().isNotEmpty) {
+                                      _searchController.text = recognizedText;
+                                      _searchController.selection = TextSelection.fromPosition(
+                                        TextPosition(offset: _searchController.text.length),
+                                      );
+                                      ref.read(contactsListProvider.notifier).search(recognizedText);
+                                    }
+                                    await speechService.stopListening();
+                                    if (sheetCtx.mounted) {
+                                      Navigator.pop(sheetCtx);
+                                    }
+                                  }
+                                },
+                                child: Text(
+                                  hasError ? 'మళ్ళీ ప్రయత్నించు' : 'వెతకండి',
+                                  style: const TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'NotoSansTelugu',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+/// Pulsating microphone button for Telugu voice search feedback.
+class _VoicePulseMicButton extends StatefulWidget {
+  final bool isListening;
+  final bool hasError;
+  final VoidCallback onTap;
+
+  const _VoicePulseMicButton({
+    required this.isListening,
+    required this.hasError,
+    required this.onTap,
+  });
+
+  @override
+  State<_VoicePulseMicButton> createState() => _VoicePulseMicButtonState();
+}
+
+class _VoicePulseMicButtonState extends State<_VoicePulseMicButton> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+    if (widget.isListening) {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _VoicePulseMicButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isListening) {
+      _controller.repeat();
+    } else {
+      _controller.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Color baseColor = widget.hasError
+        ? const Color(0xFFD32F2F)
+        : (widget.isListening ? const Color(0xFF2E7D32) : const Color(0xFF4CAF50));
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            if (widget.isListening) ...[
+              Container(
+                width: 90.0 + (30.0 * _controller.value),
+                height: 90.0 + (30.0 * _controller.value),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: baseColor.withValues(alpha: 0.15 * (1.0 - _controller.value)),
+                ),
+              ),
+              Container(
+                width: 90.0 + (15.0 * _controller.value),
+                height: 90.0 + (15.0 * _controller.value),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: baseColor.withValues(alpha: 0.3 * (1.0 - _controller.value)),
+                ),
+              ),
+            ],
+            Container(
+              width: 90.0,
+              height: 90.0,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: baseColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: baseColor.withValues(alpha: 0.3),
+                    blurRadius: 12.0,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: widget.onTap,
+                  customBorder: const CircleBorder(),
+                  child: Icon(
+                    widget.isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
+                    color: Colors.white,
+                    size: 44.0,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

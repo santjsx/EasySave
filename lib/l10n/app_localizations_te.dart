@@ -12,7 +12,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get appName => 'EasySave';
 
   @override
-  String get appTagline => 'మీ సులభమైన సేవ్ యాప్';
+  String get appTagline => 'by santhoshh';
 
   @override
   String get saveContactLabel => 'కొత్త నంబర్ దాచుకోండి';

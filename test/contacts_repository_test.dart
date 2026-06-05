@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:intl/intl.dart';
-
 import 'package:amma_nanna_app/models/contact_model.dart';
 import 'package:amma_nanna_app/repository/contacts_repository.dart';
-import 'package:amma_nanna_app/repository/contacts_repository_impl.dart';
 
 /// Concrete Mock Repository implementation to test boundary parameters,
 /// validation constraints, duplicates, and Telugu sorting logic in isolation.
@@ -101,13 +98,12 @@ void main() {
     test('1. Deterministic Warm Color Avatar generation', () {
       final colorA = ContactModel.generateWarmColor('Ravi');
       final colorB = ContactModel.generateWarmColor('Ravi');
-      final colorC = ContactModel.generateWarmColor('Kumar');
 
       // The color must be deterministic for the same name string
       expect(colorA, equals(colorB));
       
       // Different names might yield different colors (warm palette hash match)
-      expect(colorA.red, isPositive);
+      expect(colorA.r, isPositive);
     });
 
     test('2. Permission Denied triggers PermissionDeniedException', () async {
@@ -143,7 +139,7 @@ void main() {
     test('4. Duplicate Contact check triggers DuplicateContactException', () async {
       contactsRepo.hasPermission = true;
       contactsRepo.mockContacts = [
-        ContactModel(
+        const ContactModel(
           id: '1',
           name: 'రవి కుమార్',
           phone: '9876543210',
@@ -169,19 +165,19 @@ void main() {
       
       // Add out of order Telugu names
       contactsRepo.mockContacts = [
-        ContactModel(
+        const ContactModel(
           id: '1',
           name: 'రవి', // Ravi
           phone: '9876543210',
           avatarColor: Colors.amber,
         ),
-        ContactModel(
+        const ContactModel(
           id: '2',
           name: 'అనిల్', // Anil (starts with 'అ' - vowel first in alphabet)
           phone: '9876543211',
           avatarColor: Colors.amber,
         ),
-        ContactModel(
+        const ContactModel(
           id: '3',
           name: 'కమల్', // Kamal (starts with 'క')
           phone: '9876543212',
@@ -200,7 +196,7 @@ void main() {
     test('6. Update contact details cleanly in repository', () async {
       contactsRepo.hasPermission = true;
       contactsRepo.mockContacts = [
-        ContactModel(
+        const ContactModel(
           id: '1',
           name: 'రవి కుమార్',
           phone: '9876543210',

@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTagline.
   ///
   /// In te, this message translates to:
-  /// **'మీ సులభమైన సేవ్ యాప్'**
+  /// **'by santhoshh'**
   String get appTagline;
 
   /// No description provided for @saveContactLabel.

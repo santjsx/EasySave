@@ -16,7 +16,7 @@ class EasyLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppDesignColors.textPrimary.withOpacity(0.4), // Tint screen
+      color: AppDesignColors.textPrimary.withValues(alpha: 0.4), // Tint screen
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.xxl),
@@ -26,7 +26,7 @@ class EasyLoading extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 24.0,
                   offset: const Offset(0, 8),
                 ),

@@ -31,7 +31,7 @@ class PhotoConfirmScreen extends StatelessWidget {
             child: Semantics(
               label: 'మీరు ఎంచుకున్న ఫోటో', // Accessible screen reader label
               child: Container(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 child: Image.file(
                   imageFile,
                   fit: BoxFit.contain,
@@ -61,7 +61,7 @@ class PhotoConfirmScreen extends StatelessWidget {
                   alignment: Alignment.topLeft,
                   child: CircleAvatar(
                     radius: 28.0,
-                    backgroundColor: Colors.black.withOpacity(0.5),
+                    backgroundColor: Colors.black.withValues(alpha: 0.5),
                     child: IconButton(
                       icon: const Icon(
                         Icons.arrow_back_ios_new_rounded,
@@ -94,7 +94,7 @@ class PhotoConfirmScreen extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 24.0,
                     offset: const Offset(0, -6),
                   ),

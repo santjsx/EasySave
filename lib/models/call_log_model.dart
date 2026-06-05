@@ -106,7 +106,7 @@ class CallLogEntry {
   Color get avatarColor {
     return isSavedContact
         ? _generateWarmColor(contactName)
-        : AppDesignColors.textSecondary.withOpacity(0.12);
+        : AppDesignColors.textSecondary.withValues(alpha: 0.12);
   }
 
   /// Helper to generate a deterministic warm primary color based on contact name.

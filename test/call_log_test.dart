@@ -1,42 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:amma_nanna_app/models/call_log_model.dart';
-import 'package:amma_nanna_app/models/contact_model.dart';
-import 'package:amma_nanna_app/services/call_log_service.dart';
-import 'package:amma_nanna_app/repository/contacts_repository.dart';
-import 'package:amma_nanna_app/services/contacts_service.dart';
-
-/// Fake Contacts Repository to mock address book lookup lists in testing.
-class FakeContactsForCallLogRepo implements ContactsRepository {
-  List<ContactModel> mockedContacts = [];
-
-  @override
-  Future<bool> checkAndRequestPermission({bool readonly = false}) async => true;
-
-  @override
-  Future<List<ContactModel>> getContacts() async => mockedContacts;
-
-  @override
-  Future<bool> saveContact(String name, String phone) async => true;
-
-  @override
-  Future<bool> deleteContact(String id) async => true;
-
-  @override
-  Future<bool> updateContact(String id, String newName, String newPhone) async => true;
-}
 
 void main() {
   group('EasySave Call Log System - Unit Tests', () {
-    late FakeContactsForCallLogRepo fakeContactsRepo;
-    late ContactsService contactsService;
-    late CallLogService callLogService;
-
-    setUp(() {
-      fakeContactsRepo = FakeContactsForCallLogRepo();
-      contactsService = ContactsService(fakeContactsRepo);
-      callLogService = CallLogService(contactsService);
-    });
 
     test('1. CallLogEntry model creation and formatting', () {
       final now = DateTime.now();

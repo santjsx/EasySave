@@ -478,7 +478,7 @@ class HomeScreen extends ConsumerWidget {
                 entry.isSavedContact
                     ? '${entry.contactName}${entry.callCount > 1 ? " (${entry.callCount})" : ""}'
                     : formatPhone(entry.phoneNumber),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.w600, // Semi-bold
                   color: AppDesignColors.textPrimary,
@@ -496,7 +496,7 @@ class HomeScreen extends ConsumerWidget {
                 entry.isSavedContact
                     ? formatPhone(entry.phoneNumber)
                     : localization.unsavedNumber,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 15.0,
                   fontWeight: FontWeight.w500, // Medium
                   color: AppDesignColors.textSecondary,

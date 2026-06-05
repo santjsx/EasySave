@@ -108,7 +108,7 @@ void main() {
 
     test('3. Fetch contacts gets fresh lists records', () async {
       fakeContacts.mockContacts = [
-        ContactModel(
+        const ContactModel(
           id: '1',
           name: 'రవి కుమార్',
           phone: '9876543210',
@@ -135,7 +135,7 @@ void main() {
     test('5. Successful Share Dispatch invokes WhatsAppService', () async {
       notifier.setSelectedImagePath('share_image.jpg');
       notifier.selectRecipient(
-        ContactModel(
+        const ContactModel(
           id: '1',
           name: 'రవి రావు',
           phone: '9876543210',
