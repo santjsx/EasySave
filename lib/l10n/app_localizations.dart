@@ -675,6 +675,72 @@ abstract class AppLocalizations {
   /// In te, this message translates to:
   /// **'ప్రస్తుత వెర్షన్'**
   String get versionLabel;
+
+  /// No description provided for @noContactFoundTitle.
+  ///
+  /// In te, this message translates to:
+  /// **'కాంటాక్ట్ దొరకలేదు'**
+  String get noContactFoundTitle;
+
+  /// No description provided for @noContactFoundSubtitle.
+  ///
+  /// In te, this message translates to:
+  /// **'మీరు వెతికిన పేరు లేదా నంబర్‌తో కాంటాక్ట్ లేదు.'**
+  String get noContactFoundSubtitle;
+
+  /// No description provided for @saveAsNewContactAction.
+  ///
+  /// In te, this message translates to:
+  /// **'కొత్త కాంటాక్ట్‌గా సేవ్ చేయండి'**
+  String get saveAsNewContactAction;
+
+  /// No description provided for @clearSearchAction.
+  ///
+  /// In te, this message translates to:
+  /// **'శోధన క్లియర్ చేయండి'**
+  String get clearSearchAction;
+
+  /// No description provided for @similarContactsHeader.
+  ///
+  /// In te, this message translates to:
+  /// **'సారూప్య కాంటాక్ట్స్ (ఇవి కూడా చూడండి)'**
+  String get similarContactsHeader;
+
+  /// No description provided for @exactMatchesHeader.
+  ///
+  /// In te, this message translates to:
+  /// **'దొరికిన కాంటాక్ట్స్'**
+  String get exactMatchesHeader;
+
+  /// No description provided for @searchTipsTitle.
+  ///
+  /// In te, this message translates to:
+  /// **'సులభమైన సూచనలు:'**
+  String get searchTipsTitle;
+
+  /// No description provided for @searchTip1.
+  ///
+  /// In te, this message translates to:
+  /// **'పేరులోని మొదటి 2-3 అక్షరాలను టైప్ చేయండి'**
+  String get searchTip1;
+
+  /// No description provided for @searchTip2.
+  ///
+  /// In te, this message translates to:
+  /// **'మైక్రోఫోన్ బటన్ నొక్కి పేరును స్పష్టంగా చెప్పండి'**
+  String get searchTip2;
+
+  /// No description provided for @searchRecipientHint.
+  ///
+  /// In te, this message translates to:
+  /// **'ఎవరికి పంపాలో పేరు లేదా నంబర్ వెతకండి...'**
+  String get searchRecipientHint;
+
+  /// No description provided for @voiceSearchListeningPrompt.
+  ///
+  /// In te, this message translates to:
+  /// **'పేరు లేదా నంబర్ స్పష్టంగా చెప్పండి...'**
+  String get voiceSearchListeningPrompt;
 }
 
 class _AppLocalizationsDelegate

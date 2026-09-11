@@ -149,5 +149,26 @@ void main() {
       expect(fakeWhatsApp.shareCalled, isTrue);
       expect(fakeWhatsApp.sharedPhone, equals('9876543210'));
     });
+
+    test('6. Recipient search filters eligible contacts by name and phone', () async {
+      fakeContacts.mockContacts = [
+        const ContactModel(id: '1', name: 'రవి కుమార్', phone: '9876543210', avatarColor: Colors.amber),
+        const ContactModel(id: '2', name: 'సురేష్', phone: '9123456789', avatarColor: Colors.blue),
+      ];
+
+      await notifier.fetchWhatsAppEligibleContacts();
+      expect(notifier.state.eligibleContacts.length, equals(2));
+
+      notifier.search('సురేష్');
+      expect(notifier.state.eligibleContacts.length, equals(1));
+      expect(notifier.state.eligibleContacts.first.name, equals('సురేష్'));
+
+      notifier.search('98765');
+      expect(notifier.state.eligibleContacts.length, equals(1));
+      expect(notifier.state.eligibleContacts.first.name, equals('రవి కుమార్'));
+
+      notifier.search('');
+      expect(notifier.state.eligibleContacts.length, equals(2));
+    });
   });
 }

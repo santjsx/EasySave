@@ -6,18 +6,25 @@ import '../models/contact_model.dart';
 import '../services/contacts_service.dart';
 import '../services/media_service.dart';
 import '../services/whatsapp_service.dart';
+import '../utils/contact_search_matcher.dart';
 import 'system_provider.dart';
 
 /// Flow state model for the WhatsApp Photo Sharer.
 class SharePhotoState {
+  final List<ContactModel> allContacts;
   final List<ContactModel> eligibleContacts;
+  final List<ContactModel> similarContacts;
+  final String searchQuery;
   final String selectedImagePath;
   final ContactModel? selectedContact;
   final bool isLoading;
   final String errorMessage;
 
   const SharePhotoState({
+    this.allContacts = const [],
     this.eligibleContacts = const [],
+    this.similarContacts = const [],
+    this.searchQuery = '',
     this.selectedImagePath = '',
     this.selectedContact,
     this.isLoading = false,
@@ -25,14 +32,20 @@ class SharePhotoState {
   });
 
   SharePhotoState copyWith({
+    List<ContactModel>? allContacts,
     List<ContactModel>? eligibleContacts,
+    List<ContactModel>? similarContacts,
+    String? searchQuery,
     String? selectedImagePath,
     ContactModel? selectedContact,
     bool? isLoading,
     String? errorMessage,
   }) {
     return SharePhotoState(
+      allContacts: allContacts ?? this.allContacts,
       eligibleContacts: eligibleContacts ?? this.eligibleContacts,
+      similarContacts: similarContacts ?? this.similarContacts,
+      searchQuery: searchQuery ?? this.searchQuery,
       selectedImagePath: selectedImagePath ?? this.selectedImagePath,
       selectedContact: selectedContact ?? this.selectedContact,
       isLoading: isLoading ?? this.isLoading,
@@ -162,9 +175,11 @@ class SharePhotoNotifier extends StateNotifier<SharePhotoState> {
     state = state.copyWith(isLoading: true, errorMessage: '');
     try {
       final List<ContactModel> freshContacts = await _contactsService.getContacts();
-      
+      final result = ContactSearchMatcher.evaluate(freshContacts, state.searchQuery);
       state = state.copyWith(
-        eligibleContacts: freshContacts,
+        allContacts: freshContacts,
+        eligibleContacts: result.exactMatches,
+        similarContacts: result.similarMatches,
         isLoading: false,
       );
     } catch (e) {
@@ -174,6 +189,16 @@ class SharePhotoNotifier extends StateNotifier<SharePhotoState> {
         errorMessage: 'పరిచయాలు చదవడం కుదరలేదు', // Failed to read contacts
       );
     }
+  }
+
+  /// Filters recipient contacts by search query with ranked and similar matching.
+  void search(String query) {
+    final result = ContactSearchMatcher.evaluate(state.allContacts, query);
+    state = state.copyWith(
+      searchQuery: query,
+      eligibleContacts: result.exactMatches,
+      similarContacts: result.similarMatches,
+    );
   }
 
   /// Sets active recipient contact.

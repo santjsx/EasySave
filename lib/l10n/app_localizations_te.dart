@@ -307,4 +307,39 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get versionLabel => 'ప్రస్తుత వెర్షన్';
+
+  @override
+  String get noContactFoundTitle => 'కాంటాక్ట్ దొరకలేదు';
+
+  @override
+  String get noContactFoundSubtitle =>
+      'మీరు వెతికిన పేరు లేదా నంబర్‌తో కాంటాక్ట్ లేదు.';
+
+  @override
+  String get saveAsNewContactAction => 'కొత్త కాంటాక్ట్‌గా సేవ్ చేయండి';
+
+  @override
+  String get clearSearchAction => 'శోధన క్లియర్ చేయండి';
+
+  @override
+  String get similarContactsHeader => 'సారూప్య కాంటాక్ట్స్ (ఇవి కూడా చూడండి)';
+
+  @override
+  String get exactMatchesHeader => 'దొరికిన కాంటాక్ట్స్';
+
+  @override
+  String get searchTipsTitle => 'సులభమైన సూచనలు:';
+
+  @override
+  String get searchTip1 => 'పేరులోని మొదటి 2-3 అక్షరాలను టైప్ చేయండి';
+
+  @override
+  String get searchTip2 => 'మైక్రోఫోన్ బటన్ నొక్కి పేరును స్పష్టంగా చెప్పండి';
+
+  @override
+  String get searchRecipientHint => 'ఎవరికి పంపాలో పేరు లేదా నంబర్ వెతకండి...';
+
+  @override
+  String get voiceSearchListeningPrompt =>
+      'పేరు లేదా నంబర్ స్పష్టంగా చెప్పండి...';
 }

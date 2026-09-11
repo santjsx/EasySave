@@ -95,5 +95,16 @@
   "downloadingUpdate": "అప్‌డేట్ డౌన్‌లోడ్ అవుతోంది...",
   "updateError": "అప్‌డేట్ వివరాలు పొందలేకపోయాము. ప్లే స్టోర్‌లో చూడండి.",
   "openInPlayStore": "ప్లే స్టోర్‌లో తెరవండి",
-  "versionLabel": "ప్రస్తుత వెర్షన్"
+  "versionLabel": "ప్రస్తుత వెర్షన్",
+  "noContactFoundTitle": "కాంటాక్ట్ దొరకలేదు",
+  "noContactFoundSubtitle": "మీరు వెతికిన పేరు లేదా నంబర్‌తో కాంటాక్ట్ లేదు.",
+  "saveAsNewContactAction": "కొత్త కాంటాక్ట్‌గా సేవ్ చేయండి",
+  "clearSearchAction": "శోధన క్లియర్ చేయండి",
+  "similarContactsHeader": "సారూప్య కాంటాక్ట్స్ (ఇవి కూడా చూడండి)",
+  "exactMatchesHeader": "దొరికిన కాంటాక్ట్స్",
+  "searchTipsTitle": "సులభమైన సూచనలు:",
+  "searchTip1": "పేరులోని మొదటి 2-3 అక్షరాలను టైప్ చేయండి",
+  "searchTip2": "మైక్రోఫోన్ బటన్ నొక్కి పేరును స్పష్టంగా చెప్పండి",
+  "searchRecipientHint": "ఎవరికి పంపాలో పేరు లేదా నంబర్ వెతకండి...",
+  "voiceSearchListeningPrompt": "పేరు లేదా నంబర్ స్పష్టంగా చెప్పండి..."
 }

@@ -57,11 +57,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) {
               final contact = state.extra as ContactModel?;
               final phone = state.uri.queryParameters['phone'];
+              final name = state.uri.queryParameters['name'];
               return _buildLinearTransitionPage(
                 state: state,
                 child: ContactFormScreen(
                   contactToEdit: contact,
                   initialPhone: phone,
+                  initialName: name,
                 ),
               );
             },

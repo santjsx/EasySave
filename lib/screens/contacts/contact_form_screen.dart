@@ -19,11 +19,13 @@ import '../../widgets/easy_text_field.dart';
 class ContactFormScreen extends ConsumerStatefulWidget {
   final ContactModel? contactToEdit;
   final String? initialPhone;
+  final String? initialName;
 
   const ContactFormScreen({
     super.key,
     this.contactToEdit,
     this.initialPhone,
+    this.initialName,
   });
 
   @override
@@ -43,7 +45,7 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(
-      text: widget.contactToEdit?.name ?? '',
+      text: widget.contactToEdit?.name ?? widget.initialName ?? '',
     );
     _phoneController = TextEditingController(
       text: widget.contactToEdit?.phone ?? widget.initialPhone ?? '',

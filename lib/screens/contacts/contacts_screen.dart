@@ -14,8 +14,8 @@ import '../../theme/typography.dart';
 import '../../widgets/easy_snackbar.dart';
 
 /// Clean, high-performance Contacts Directory screen for EasySave.
-/// Provides Telugu alphabetical collation, instant search, voice search,
-/// and direct navigation to dedicated Contact Details and Contact Form screens.
+/// Provides Telugu alphabetical collation, live search, voice search,
+/// fuzzy/similar contact discovery, and dedicated Contact Details/Form routing.
 class ContactsScreen extends ConsumerStatefulWidget {
   const ContactsScreen({super.key});
 
@@ -33,10 +33,18 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
     super.dispose();
   }
 
-  /// Initiates quick voice search using speech recognition.
-  Future<void> _startVoiceSearch() async {
+  /// Toggles voice search using speech recognition with silence watchdog auto-commit.
+  Future<void> _toggleVoiceSearch() async {
     final speechService = ref.read(speechServiceProvider);
     final localization = AppLocalizations.of(context)!;
+
+    if (_isVoiceSearching) {
+      await speechService.stopListening();
+      if (mounted) {
+        setState(() => _isVoiceSearching = false);
+      }
+      return;
+    }
 
     final hasPermission = await speechService.requestMicrophonePermission();
     if (!hasPermission) {
@@ -97,6 +105,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
   Widget build(BuildContext context) {
     final contactsState = ref.watch(contactsListProvider);
     final localization = AppLocalizations.of(context)!;
+    final hasSearchQuery = contactsState.searchQuery.trim().isNotEmpty;
 
     return Scaffold(
       backgroundColor: AppDesignColors.surface,
@@ -136,7 +145,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // 1. Search Bar with 1-tap Clear and Voice Search
+            // 1. Search Bar with Live 1-tap Clear and Voice Search
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
@@ -150,7 +159,11 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                         color: AppDesignColors.surfaceCard,
                         borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
                         border: Border.all(
-                          color: AppDesignColors.divider,
+                          color: _isVoiceSearching
+                              ? AppDesignColors.error
+                              : (_searchController.text.isNotEmpty
+                                  ? AppDesignColors.primary
+                                  : AppDesignColors.divider),
                           width: 1.5,
                         ),
                         boxShadow: [
@@ -192,6 +205,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                     color: AppDesignColors.textSecondary,
                                     size: 22.0,
                                   ),
+                                  tooltip: localization.clearText,
                                   onPressed: () {
                                     _searchController.clear();
                                     ref.read(contactsListProvider.notifier).search('');
@@ -224,8 +238,8 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                           color: (_isVoiceSearching
                                   ? AppDesignColors.error
                                   : AppDesignColors.primary)
-                              .withValues(alpha: 0.3),
-                          blurRadius: 8.0,
+                              .withValues(alpha: 0.35),
+                          blurRadius: 10.0,
                           offset: const Offset(0, 4),
                         ),
                       ],
@@ -235,7 +249,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                       child: InkWell(
                         onTap: () {
                           HapticFeedback.heavyImpact();
-                          _startVoiceSearch();
+                          _toggleVoiceSearch();
                         },
                         customBorder: const CircleBorder(),
                         child: Icon(
@@ -250,21 +264,36 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
               ),
             ),
 
+            // Real-time Voice Search Listening Banner
             if (_isVoiceSearching)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  localization.listeningLabel,
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                    color: AppDesignColors.primary,
-                    fontFamily: AppTypography.fontFamily,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 10.0,
+                      height: 10.0,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppDesignColors.error,
+                      ),
+                    ),
+                    const SizedBox(width: 8.0),
+                    Text(
+                      localization.voiceSearchListeningPrompt,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: AppDesignColors.error,
+                        fontFamily: AppTypography.fontFamily,
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
-            // 2. Contacts List View
+            // 2. Contacts List View / Empty State / Not Found State
             Expanded(
               child: contactsState.isLoading
                   ? const Center(
@@ -275,28 +304,24 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                     )
                   : contactsState.errorMessage.isNotEmpty
                       ? _buildErrorPlaceholder(contactsState.errorMessage)
-                      : contactsState.filteredContacts.isEmpty
-                          ? _buildEmptyPlaceholder()
-                          : RefreshIndicator(
-                              color: AppDesignColors.primary,
-                              onRefresh: () => ref
-                                  .read(contactsListProvider.notifier)
-                                  .fetchContacts(),
-                              child: ListView.separated(
-                                itemCount: contactsState.filteredContacts.length,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.md,
-                                  vertical: AppSpacing.sm,
+                      : contactsState.contacts.isEmpty && !hasSearchQuery
+                          ? _buildEmptyAddressBookPlaceholder(context, localization)
+                          : hasSearchQuery &&
+                                  contactsState.filteredContacts.isEmpty &&
+                                  contactsState.similarContacts.isEmpty
+                              ? _buildNotFoundScreen(context, localization, contactsState.searchQuery)
+                              : RefreshIndicator(
+                                  color: AppDesignColors.primary,
+                                  onRefresh: () => ref
+                                      .read(contactsListProvider.notifier)
+                                      .fetchContacts(),
+                                  child: _buildContactsListView(
+                                    context,
+                                    localization,
+                                    contactsState,
+                                    hasSearchQuery,
+                                  ),
                                 ),
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(height: 8.0),
-                                itemBuilder: (context, index) {
-                                  final ContactModel contact =
-                                      contactsState.filteredContacts[index];
-                                  return _buildContactTile(context, contact);
-                                },
-                              ),
-                            ),
             ),
           ],
         ),
@@ -304,8 +329,96 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
     );
   }
 
+  /// Builds the contacts list items including primary matches and similar contact recommendations.
+  Widget _buildContactsListView(
+    BuildContext context,
+    AppLocalizations localization,
+    ContactsListState state,
+    bool hasSearchQuery,
+  ) {
+    final List<Widget> items = [];
+
+    // Exact / Primary matches section
+    if (state.filteredContacts.isNotEmpty) {
+      if (hasSearchQuery && state.similarContacts.isNotEmpty) {
+        items.add(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0, top: 4.0),
+            child: Text(
+              localization.exactMatchesHeader,
+              style: AppTypography.sectionHeader.copyWith(
+                fontSize: 16.0,
+                color: AppDesignColors.textSecondary,
+              ),
+            ),
+          ),
+        );
+      }
+
+      for (final contact in state.filteredContacts) {
+        items.add(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: _buildContactTile(context, contact),
+          ),
+        );
+      }
+    }
+
+    // Similar / Fuzzy matches section
+    if (hasSearchQuery && state.similarContacts.isNotEmpty) {
+      items.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.auto_awesome_rounded,
+                color: AppDesignColors.primary,
+                size: 20.0,
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                state.filteredContacts.isEmpty
+                    ? 'ఖచ్చితమైన కాంటాక్ట్ దొరకలేదు. సారూప్య కాంటాక్ట్స్:'
+                    : localization.similarContactsHeader,
+                style: const TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                  color: AppDesignColors.primary,
+                  fontFamily: AppTypography.fontFamily,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      for (final contact in state.similarContacts) {
+        items.add(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: _buildContactTile(context, contact, isSimilar: true),
+          ),
+        );
+      }
+    }
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      children: items,
+    );
+  }
+
   /// Builds an accessible, tactile contact list tile that navigates to dedicated ContactDetailsScreen.
-  Widget _buildContactTile(BuildContext context, ContactModel contact) {
+  Widget _buildContactTile(
+    BuildContext context,
+    ContactModel contact, {
+    bool isSimilar = false,
+  }) {
     String formatPhone(String p) {
       final clean = p.replaceAll(RegExp(r'\s+'), '');
       if (clean.length == 10) {
@@ -320,7 +433,9 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
         color: AppDesignColors.surfaceCard,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
         border: Border.all(
-          color: AppDesignColors.divider,
+          color: isSimilar
+              ? AppDesignColors.primary.withValues(alpha: 0.4)
+              : AppDesignColors.divider,
           width: 1.5,
         ),
         boxShadow: [
@@ -335,7 +450,6 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // Navigate directly to dedicated Contact Details screen
             context.push(
               AppRoutes.contactDetails,
               extra: contact,
@@ -373,16 +487,42 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        contact.name,
-                        style: const TextStyle(
-                          color: AppDesignColors.textPrimary,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: AppTypography.fontFamily,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              contact.name,
+                              style: const TextStyle(
+                                color: AppDesignColors.textPrimary,
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: AppTypography.fontFamily,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (isSimilar)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                                vertical: 2.0,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppDesignColors.primaryLight,
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: const Text(
+                                'సారూప్యత',
+                                style: TextStyle(
+                                   fontSize: 11.0,
+                                   fontWeight: FontWeight.bold,
+                                   color: AppDesignColors.primary,
+                                   fontFamily: AppTypography.fontFamily,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 2.0),
                       Text(
@@ -408,6 +548,198 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  /// Industry-grade empathetic Contact Not Found screen with suggestions and 1-tap actions.
+  Widget _buildNotFoundScreen(
+    BuildContext context,
+    AppLocalizations localization,
+    String query,
+  ) {
+    final bool isPhoneQuery = RegExp(r'^\+?[\d\s-]+$').hasMatch(query.trim()) &&
+        query.replaceAll(RegExp(r'\D'), '').length >= 6;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: AppSpacing.lg),
+
+          // Search Off Illustration Badge
+          Center(
+            child: Container(
+              width: 96.0,
+              height: 96.0,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppDesignColors.primaryLight,
+              ),
+              child: const Icon(
+                Icons.person_search_rounded,
+                size: 52.0,
+                color: AppDesignColors.primaryDark,
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+
+          // Primary Not Found Headline
+          Text(
+            localization.noContactFoundTitle,
+            style: AppTypography.appName.copyWith(
+              fontSize: 24.0,
+              fontWeight: FontWeight.bold,
+              color: AppDesignColors.textPrimary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.xs),
+
+          // User query explanation
+          Text(
+            '"$query" పేరుతో లేదా నంబర్‌తో కాంటాక్ట్ లేదు.',
+            style: AppTypography.bodyText.copyWith(
+              fontSize: 17.0,
+              color: AppDesignColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.xl),
+
+          // Helpful Tips Card
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: AppDesignColors.surfaceCard,
+              borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+              border: Border.all(color: AppDesignColors.divider, width: 1.5),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.lightbulb_outline_rounded,
+                      color: AppDesignColors.primaryDark,
+                      size: 22.0,
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Text(
+                      localization.searchTipsTitle,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: AppDesignColors.textPrimary,
+                        fontFamily: AppTypography.fontFamily,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Expanded(
+                      child: Text(
+                        localization.searchTip1,
+                        style: const TextStyle(
+                          fontSize: 15.0,
+                          color: AppDesignColors.textSecondary,
+                          fontFamily: AppTypography.fontFamily,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6.0),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Expanded(
+                      child: Text(
+                        localization.searchTip2,
+                        style: const TextStyle(
+                          fontSize: 15.0,
+                          color: AppDesignColors.textSecondary,
+                          fontFamily: AppTypography.fontFamily,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xxl),
+
+          // Action 1: Save As New Contact with pre-filled query
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppDesignColors.primary,
+              foregroundColor: Colors.white,
+              minimumSize: const Size(double.infinity, 54.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
+              ),
+              elevation: 2,
+            ),
+            icon: const Icon(Icons.person_add_rounded, size: 24.0),
+            label: Text(
+              localization.saveAsNewContactAction,
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                fontFamily: AppTypography.fontFamily,
+              ),
+            ),
+            onPressed: () {
+              if (isPhoneQuery) {
+                context.push(
+                  '${AppRoutes.contactForm}?phone=${Uri.encodeComponent(query.trim())}',
+                );
+              } else {
+                context.push(
+                  '${AppRoutes.contactForm}?name=${Uri.encodeComponent(query.trim())}',
+                );
+              }
+            },
+          ),
+          const SizedBox(height: AppSpacing.md),
+
+          // Action 2: Clear Search Filter
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: AppDesignColors.divider, width: 1.5),
+              minimumSize: const Size(double.infinity, 50.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
+              ),
+            ),
+            icon: const Icon(Icons.clear_all_rounded, color: AppDesignColors.textPrimary, size: 22.0),
+            label: Text(
+              localization.clearSearchAction,
+              style: const TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+                color: AppDesignColors.textPrimary,
+                fontFamily: AppTypography.fontFamily,
+              ),
+            ),
+            onPressed: () {
+              _searchController.clear();
+              ref.read(contactsListProvider.notifier).search('');
+              setState(() {});
+            },
+          ),
+        ],
       ),
     );
   }
@@ -450,7 +782,10 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
     );
   }
 
-  Widget _buildEmptyPlaceholder() {
+  Widget _buildEmptyAddressBookPlaceholder(
+    BuildContext context,
+    AppLocalizations localization,
+  ) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -475,6 +810,17 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
               'కొత్త నంబర్ సేవ్ చేసుకోవడానికి పైన ఉన్న + బటన్ నొక్కండి',
               style: AppTypography.secondaryText,
               textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppDesignColors.primary,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(200, 52),
+              ),
+              icon: const Icon(Icons.person_add_rounded),
+              label: Text(localization.saveContactLabel),
+              onPressed: () => context.push(AppRoutes.contactForm),
             ),
           ],
         ),

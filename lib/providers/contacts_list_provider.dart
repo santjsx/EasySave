@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/contact_model.dart';
 import '../services/contacts_service.dart';
+import '../utils/contact_search_matcher.dart';
 import 'system_provider.dart';
 
 /// State class for the Contacts List Manager view.
 class ContactsListState {
   final List<ContactModel> contacts;
   final List<ContactModel> filteredContacts;
+  final List<ContactModel> similarContacts;
   final bool isLoading;
   final String errorMessage;
   final String searchQuery;
@@ -16,6 +18,7 @@ class ContactsListState {
   const ContactsListState({
     this.contacts = const [],
     this.filteredContacts = const [],
+    this.similarContacts = const [],
     this.isLoading = false,
     this.errorMessage = '',
     this.searchQuery = '',
@@ -24,6 +27,7 @@ class ContactsListState {
   ContactsListState copyWith({
     List<ContactModel>? contacts,
     List<ContactModel>? filteredContacts,
+    List<ContactModel>? similarContacts,
     bool? isLoading,
     String? errorMessage,
     String? searchQuery,
@@ -31,6 +35,7 @@ class ContactsListState {
     return ContactsListState(
       contacts: contacts ?? this.contacts,
       filteredContacts: filteredContacts ?? this.filteredContacts,
+      similarContacts: similarContacts ?? this.similarContacts,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage ?? this.errorMessage,
       searchQuery: searchQuery ?? this.searchQuery,
@@ -54,9 +59,11 @@ class ContactsListNotifier extends StateNotifier<ContactsListState> {
     state = state.copyWith(isLoading: true, errorMessage: '');
     try {
       final List<ContactModel> list = await _contactsService.getContacts();
+      final result = ContactSearchMatcher.evaluate(list, state.searchQuery);
       state = state.copyWith(
         contacts: list,
-        filteredContacts: _applySearchFilter(list, state.searchQuery),
+        filteredContacts: result.exactMatches,
+        similarContacts: result.similarMatches,
         isLoading: false,
       );
     } catch (e) {
@@ -68,11 +75,13 @@ class ContactsListNotifier extends StateNotifier<ContactsListState> {
     }
   }
 
-  /// Filters contacts list by a search query (checks name and phone number).
+  /// Filters contacts list by a search query (checks name and phone number with ranked and similar matches).
   void search(String query) {
+    final result = ContactSearchMatcher.evaluate(state.contacts, query);
     state = state.copyWith(
       searchQuery: query,
-      filteredContacts: _applySearchFilter(state.contacts, query),
+      filteredContacts: result.exactMatches,
+      similarContacts: result.similarMatches,
     );
   }
 
@@ -116,9 +125,11 @@ class ContactsListNotifier extends StateNotifier<ContactsListState> {
         // Sort the contacts list alphabetically to match our design system Collation (Rule 3)
         updatedContacts.sort((a, b) => a.name.compareTo(b.name));
 
+        final result = ContactSearchMatcher.evaluate(updatedContacts, state.searchQuery);
         state = state.copyWith(
           contacts: updatedContacts,
-          filteredContacts: _applySearchFilter(updatedContacts, state.searchQuery),
+          filteredContacts: result.exactMatches,
+          similarContacts: result.similarMatches,
           isLoading: false,
         );
 
@@ -139,18 +150,6 @@ class ContactsListNotifier extends StateNotifier<ContactsListState> {
       state = state.copyWith(isLoading: false, errorMessage: 'సేవ్ చేయడం కుదరలేదు');
       return false;
     }
-  }
-
-  /// Helper to filter list by query.
-  List<ContactModel> _applySearchFilter(List<ContactModel> list, String query) {
-    if (query.trim().isEmpty) return list;
-    
-    final cleanQuery = query.trim().toLowerCase();
-    return list.where((item) {
-      final nameMatch = item.name.toLowerCase().contains(cleanQuery);
-      final phoneMatch = item.phone.toLowerCase().contains(cleanQuery);
-      return nameMatch || phoneMatch;
-    }).toList();
   }
 }
 
