@@ -342,4 +342,24 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get voiceSearchListeningPrompt =>
       'పేరు లేదా నంబర్ స్పష్టంగా చెప్పండి...';
+
+  @override
+  String get unknownNumber => 'తెలియని నంబర్';
+
+  @override
+  String get callButtonTooltip => 'కాల్ చేయండి';
+
+  @override
+  String get noRecentCallsSub =>
+      'మీరు చేసిన లేదా వచ్చిన కాల్స్ ఇక్కడ కనిపిస్తాయి.';
+
+  @override
+  String get noContactsSub =>
+      'మీ ప్రియమైన వారి నంబర్లను సులభంగా సేవ్ చేసుకోండి.';
+
+  @override
+  String get viewContactsAction => 'కాంటాక్ట్స్ చూడండి';
+
+  @override
+  String get callInitiated => 'కాల్ కనెక్ట్ అవుతోంది...';
 }

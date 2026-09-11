@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../models/call_log_model.dart';
@@ -12,6 +10,7 @@ import '../../routing/routes.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../theme/typography.dart';
+import '../../services/call_service.dart';
 
 /// Full Dedicated Screen for System Call Logs.
 /// Features All vs Missed Call filter chips, 1-tap direct dialing,
@@ -202,6 +201,9 @@ class _RecentCallsScreenState extends ConsumerState<RecentCallsScreen> {
 
     String formatPhone(String p) {
       final clean = p.replaceAll(RegExp(r'\s+'), '');
+      if (clean.isEmpty) {
+        return localization.unknownNumber;
+      }
       if (clean.length == 10) {
         return '${clean.substring(0, 5)} ${clean.substring(5)}';
       }
@@ -224,6 +226,16 @@ class _RecentCallsScreenState extends ConsumerState<RecentCallsScreen> {
         break;
     }
 
+    final String displayTitle = entry.isSavedContact
+        ? (entry.contactName.isNotEmpty
+            ? entry.contactName
+            : formatPhone(entry.phoneNumber))
+        : formatPhone(entry.phoneNumber);
+
+    final String titleText = entry.callCount > 1
+        ? '$displayTitle (${entry.callCount})'
+        : displayTitle;
+
     return Container(
       decoration: BoxDecoration(
         color: AppDesignColors.surfaceCard,
@@ -240,7 +252,7 @@ class _RecentCallsScreenState extends ConsumerState<RecentCallsScreen> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => _dialDirect(entry.phoneNumber),
+          onTap: () => ref.read(callServiceProvider).makeCall(context, entry.phoneNumber),
           borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -251,21 +263,21 @@ class _RecentCallsScreenState extends ConsumerState<RecentCallsScreen> {
               children: [
                 // Avatar
                 CircleAvatar(
-                  radius: 28.0,
+                  radius: 26.0,
                   backgroundColor: entry.avatarColor,
                   child: Text(
                     entry.isSavedContact && entry.contactName.isNotEmpty
                         ? entry.contactName.substring(0, 1).toUpperCase()
                         : '?',
                     style: const TextStyle(
-                      fontSize: 24.0,
+                      fontSize: 22.0,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontFamily: AppTypography.fontFamily,
                     ),
                   ),
                 ),
-                const SizedBox(width: AppSpacing.md),
+                const SizedBox(width: AppSpacing.sm),
 
                 // Caller info
                 Expanded(
@@ -273,11 +285,9 @@ class _RecentCallsScreenState extends ConsumerState<RecentCallsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        entry.isSavedContact
-                            ? '${entry.contactName}${entry.callCount > 1 ? " (${entry.callCount})" : ""}'
-                            : formatPhone(entry.phoneNumber),
+                        titleText,
                         style: const TextStyle(
-                          fontSize: 19.0,
+                          fontSize: 18.0,
                           fontWeight: FontWeight.bold,
                           color: AppDesignColors.textPrimary,
                           fontFamily: AppTypography.fontFamily,
@@ -288,24 +298,29 @@ class _RecentCallsScreenState extends ConsumerState<RecentCallsScreen> {
                       const SizedBox(height: 3.0),
                       Row(
                         children: [
-                          Icon(entry.typeIcon, size: 16.0, color: entry.typeColor),
+                          Icon(entry.typeIcon, size: 15.0, color: entry.typeColor),
                           const SizedBox(width: 4.0),
                           Text(
                             callTypeLabel,
                             style: TextStyle(
-                              fontSize: 14.0,
+                              fontSize: 13.0,
                               fontWeight: FontWeight.w600,
                               color: entry.typeColor,
                               fontFamily: AppTypography.fontFamily,
                             ),
                           ),
-                          const Spacer(),
-                          Text(
-                            entry.telugifiedTime,
-                            style: const TextStyle(
-                              fontSize: 13.0,
-                              color: AppDesignColors.textSecondary,
-                              fontFamily: AppTypography.fontFamily,
+                          const SizedBox(width: 6.0),
+                          Expanded(
+                            child: Text(
+                              entry.telugifiedTime,
+                              style: const TextStyle(
+                                fontSize: 12.0,
+                                color: AppDesignColors.textSecondary,
+                                fontFamily: AppTypography.fontFamily,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.end,
                             ),
                           ),
                         ],
@@ -315,43 +330,104 @@ class _RecentCallsScreenState extends ConsumerState<RecentCallsScreen> {
                 ),
                 const SizedBox(width: AppSpacing.sm),
 
-                // Trailing: Direct call or Quick save
-                entry.isSavedContact
-                    ? IconButton(
-                        icon: const Icon(
-                          Icons.phone_in_talk_rounded,
-                          color: AppDesignColors.success,
-                          size: 28.0,
+                // Trailing actions:
+                // Saved contacts get 1-Click Call button.
+                // Unsaved contacts get BOTH Quick Save and 1-Click Call buttons.
+                if (entry.isSavedContact)
+                  Tooltip(
+                    message: localization.callButtonTooltip,
+                    child: Container(
+                      width: 44.0,
+                      height: 44.0,
+                      decoration: BoxDecoration(
+                        color: AppDesignColors.successLight,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppDesignColors.success.withValues(alpha: 0.3),
+                          width: 1.5,
                         ),
-                        onPressed: () => _dialDirect(entry.phoneNumber),
-                      )
-                    : ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppDesignColors.primary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10.0,
-                            vertical: 8.0,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                        ),
-                        icon: const Icon(Icons.person_add_alt_1_rounded, size: 18.0),
-                        label: Text(
-                          localization.saveCallText,
-                          style: const TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: AppTypography.fontFamily,
-                          ),
-                        ),
-                        onPressed: () {
-                          context.push(
-                            '${AppRoutes.quickSave}?phone=${Uri.encodeComponent(entry.phoneNumber)}',
-                          );
-                        },
                       ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () => ref.read(callServiceProvider).makeCall(context, entry.phoneNumber),
+                          child: const Icon(
+                            Icons.phone_in_talk_rounded,
+                            color: AppDesignColors.success,
+                            size: 22.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Quick Save Button (Warm Amber)
+                      Tooltip(
+                        message: localization.saveCallText,
+                        child: Container(
+                          width: 38.0,
+                          height: 38.0,
+                          decoration: BoxDecoration(
+                            color: AppDesignColors.primaryLight,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppDesignColors.primary.withValues(alpha: 0.4),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              customBorder: const CircleBorder(),
+                              onTap: () {
+                                context.push(
+                                  '${AppRoutes.quickSave}?phone=${Uri.encodeComponent(entry.phoneNumber)}',
+                                );
+                              },
+                              child: const Icon(
+                                Icons.person_add_alt_1_rounded,
+                                color: AppDesignColors.primaryDark,
+                                size: 19.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      // 1-Click Direct Call Button (Green)
+                      Tooltip(
+                        message: localization.callButtonTooltip,
+                        child: Container(
+                          width: 44.0,
+                          height: 44.0,
+                          decoration: BoxDecoration(
+                            color: AppDesignColors.successLight,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppDesignColors.success.withValues(alpha: 0.3),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              customBorder: const CircleBorder(),
+                              onTap: () => ref.read(callServiceProvider).makeCall(context, entry.phoneNumber),
+                              child: const Icon(
+                                Icons.phone_in_talk_rounded,
+                                color: AppDesignColors.success,
+                                size: 22.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),
@@ -360,39 +436,66 @@ class _RecentCallsScreenState extends ConsumerState<RecentCallsScreen> {
     );
   }
 
-  Future<void> _dialDirect(String phoneNumber) async {
-    final status = await Permission.phone.request();
-    if (status.isGranted) {
-      const platform = MethodChannel('com.ammananna.app/direct_call');
-      try {
-        await platform.invokeMethod('makeCall', {'phoneNumber': phoneNumber});
-      } catch (_) {
-        final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
-        try {
-          await launchUrl(phoneUri);
-        } catch (_) {}
-      }
-    }
-  }
-
   Widget _buildEmptyPlaceholder() {
+    final localization = AppLocalizations.of(context)!;
+
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.phone_missed_rounded,
-            size: 72.0,
-            color: AppDesignColors.textSecondary,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            AppLocalizations.of(context)!.noCallLogs,
-            style: AppTypography.sectionHeader.copyWith(
-              color: AppDesignColors.textSecondary,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 84.0,
+              height: 84.0,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppDesignColors.primaryLight,
+              ),
+              child: const Icon(
+                Icons.history_toggle_off_rounded,
+                size: 44.0,
+                color: AppDesignColors.primaryDark,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              localization.noCallLogs,
+              style: AppTypography.sectionHeader.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppDesignColors.textPrimary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              localization.noRecentCallsSub,
+              style: AppTypography.secondaryText,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppDesignColors.primary,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(200, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
+                ),
+              ),
+              icon: const Icon(Icons.contacts_rounded, size: 20.0),
+              label: Text(
+                localization.viewContactsAction,
+                style: const TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: AppTypography.fontFamily,
+                ),
+              ),
+              onPressed: () => context.push(AppRoutes.contactsList),
+            ),
+          ],
+        ),
       ),
     );
   }

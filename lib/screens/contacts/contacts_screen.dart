@@ -12,6 +12,7 @@ import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../theme/typography.dart';
 import '../../widgets/easy_snackbar.dart';
+import '../../services/call_service.dart';
 
 /// Clean, high-performance Contacts Directory screen for EasySave.
 /// Provides Telugu alphabetical collation, live search, voice search,
@@ -419,6 +420,8 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
     ContactModel contact, {
     bool isSimilar = false,
   }) {
+    final localization = AppLocalizations.of(context)!;
+
     String formatPhone(String p) {
       final clean = p.replaceAll(RegExp(r'\s+'), '');
       if (clean.length == 10) {
@@ -538,11 +541,35 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                   ),
                 ),
 
-                // Trailing chevron
-                const Icon(
-                  Icons.chevron_right_rounded,
-                  color: AppDesignColors.textSecondary,
-                  size: 28.0,
+                // 1-Click Direct Call Action Button (Tactile Green)
+                Tooltip(
+                  message: localization.callButtonTooltip,
+                  child: Container(
+                    width: 48.0,
+                    height: 48.0,
+                    decoration: BoxDecoration(
+                      color: AppDesignColors.successLight,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppDesignColors.success.withValues(alpha: 0.3),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: () {
+                          ref.read(callServiceProvider).makeCall(context, contact.phone);
+                        },
+                        child: const Icon(
+                          Icons.phone_in_talk_rounded,
+                          color: AppDesignColors.success,
+                          size: 24.0,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -792,22 +819,31 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.contacts_outlined,
-              size: 72.0,
-              color: AppDesignColors.textSecondary,
+            Container(
+              width: 88.0,
+              height: 88.0,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppDesignColors.primaryLight,
+              ),
+              child: const Icon(
+                Icons.contact_phone_rounded,
+                size: 48.0,
+                color: AppDesignColors.primaryDark,
+              ),
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
               'కాంటాక్ట్స్ ఏమీ లేవు',
               style: AppTypography.sectionHeader.copyWith(
-                color: AppDesignColors.textSecondary,
+                fontWeight: FontWeight.bold,
+                color: AppDesignColors.textPrimary,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.xs),
             Text(
-              'కొత్త నంబర్ సేవ్ చేసుకోవడానికి పైన ఉన్న + బటన్ నొక్కండి',
+              localization.noContactsSub,
               style: AppTypography.secondaryText,
               textAlign: TextAlign.center,
             ),
@@ -817,6 +853,9 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                 backgroundColor: AppDesignColors.primary,
                 foregroundColor: Colors.white,
                 minimumSize: const Size(200, 52),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
+                ),
               ),
               icon: const Icon(Icons.person_add_rounded),
               label: Text(localization.saveContactLabel),

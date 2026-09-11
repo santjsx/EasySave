@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/app_localizations.dart';
@@ -14,6 +12,7 @@ import '../../theme/spacing.dart';
 import '../../theme/typography.dart';
 import '../../widgets/easy_button.dart';
 import '../../widgets/easy_snackbar.dart';
+import '../../services/call_service.dart';
 
 /// Dedicated full screen for viewing a single contact's details and operations.
 /// Eliminates cluttered bottom sheets and nested dialogs.
@@ -146,7 +145,7 @@ class ContactDetailsScreen extends ConsumerWidget {
                 label: localization.callNowButton,
                 icon: Icons.phone_in_talk_rounded,
                 color: AppDesignColors.success,
-                onPressed: () => _makePhoneCall(context),
+                onPressed: () => _makePhoneCall(context, ref),
               ),
               const SizedBox(height: AppSpacing.md),
 
@@ -187,31 +186,9 @@ class ContactDetailsScreen extends ConsumerWidget {
     );
   }
 
-  /// Triggers direct calling via native method channel or url_launcher fallback.
-  Future<void> _makePhoneCall(BuildContext context) async {
-    final localization = AppLocalizations.of(context)!;
-    final status = await Permission.phone.request();
-    if (status.isGranted) {
-      const platform = MethodChannel('com.ammananna.app/direct_call');
-      try {
-        await platform.invokeMethod('makeCall', {
-          'phoneNumber': contact.phone,
-        });
-      } catch (_) {
-        final Uri phoneUri = Uri(scheme: 'tel', path: contact.phone);
-        try {
-          await launchUrl(phoneUri);
-        } catch (_) {
-          if (context.mounted) {
-            EasySnackBar.showError(context, localization.callFailed);
-          }
-        }
-      }
-    } else {
-      if (context.mounted) {
-        EasySnackBar.showError(context, localization.callPermissionNeeded);
-      }
-    }
+  /// Triggers direct calling via CallService with zero-permission fallback.
+  Future<void> _makePhoneCall(BuildContext context, WidgetRef ref) async {
+    await ref.read(callServiceProvider).makeCall(context, contact.phone);
   }
 
   /// Direct WhatsApp chat intent opening.

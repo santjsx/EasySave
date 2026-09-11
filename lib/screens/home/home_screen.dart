@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../models/call_log_model.dart';
@@ -14,6 +12,7 @@ import '../../theme/spacing.dart';
 import '../../theme/typography.dart';
 import '../../providers/update_provider.dart';
 import '../../services/update_service.dart';
+import '../../services/call_service.dart';
 
 /// Clean, beautiful, and accessible Home Dashboard of EasySave.
 /// Adheres strictly to Hick's Law, Fitts's Law, and WCAG AAA standards.
@@ -372,19 +371,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     WidgetRef ref,
     List<CallLogEntry> logs,
   ) {
+    final localization = AppLocalizations.of(context)!;
+
     if (logs.isEmpty) {
       return Container(
-        padding: const EdgeInsets.all(AppSpacing.xl),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
         decoration: BoxDecoration(
           color: AppDesignColors.surfaceCard,
           borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
           border: Border.all(color: AppDesignColors.divider, width: 1.5),
         ),
-        child: Center(
-          child: Text(
-            AppLocalizations.of(context)!.noCallLogs,
-            style: AppTypography.secondaryText,
-          ),
+        child: Row(
+          children: [
+            Container(
+              width: 48.0,
+              height: 48.0,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppDesignColors.primaryLight,
+              ),
+              child: const Icon(
+                Icons.history_toggle_off_rounded,
+                size: 26.0,
+                color: AppDesignColors.primaryDark,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    localization.noCallLogs,
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                      color: AppDesignColors.textPrimary,
+                      fontFamily: AppTypography.fontFamily,
+                    ),
+                  ),
+                  const SizedBox(height: 2.0),
+                  Text(
+                    localization.noRecentCallsSub,
+                    style: AppTypography.secondaryText.copyWith(fontSize: 13.0),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       );
     }
@@ -429,6 +466,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         break;
     }
 
+    final String displayTitle = entry.isSavedContact
+        ? (entry.contactName.isNotEmpty
+            ? entry.contactName
+            : formatPhone(entry.phoneNumber))
+        : formatPhone(entry.phoneNumber);
+
+    final String titleText = entry.callCount > 1
+        ? '$displayTitle (${entry.callCount})'
+        : displayTitle;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8.0),
       decoration: BoxDecoration(
@@ -446,7 +493,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => _dialDirect(context, entry.phoneNumber),
+          onTap: () => ref.read(callServiceProvider).makeCall(context, entry.phoneNumber),
           borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -457,21 +504,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               children: [
                 // Avatar
                 CircleAvatar(
-                  radius: 26.0,
+                  radius: 24.0,
                   backgroundColor: entry.avatarColor,
                   child: Text(
                     entry.isSavedContact && entry.contactName.isNotEmpty
                         ? entry.contactName.substring(0, 1).toUpperCase()
                         : '?',
                     style: const TextStyle(
-                      fontSize: 22.0,
+                      fontSize: 20.0,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontFamily: AppTypography.fontFamily,
                     ),
                   ),
                 ),
-                const SizedBox(width: AppSpacing.md),
+                const SizedBox(width: AppSpacing.sm),
 
                 // Caller Info
                 Expanded(
@@ -479,11 +526,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        entry.isSavedContact
-                            ? '${entry.contactName}${entry.callCount > 1 ? " (${entry.callCount})" : ""}'
-                            : formatPhone(entry.phoneNumber),
+                        titleText,
                         style: const TextStyle(
-                          fontSize: 18.0,
+                          fontSize: 17.0,
                           fontWeight: FontWeight.bold,
                           color: AppDesignColors.textPrimary,
                           fontFamily: AppTypography.fontFamily,
@@ -494,24 +539,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       const SizedBox(height: 2.0),
                       Row(
                         children: [
-                          Icon(entry.typeIcon, size: 16.0, color: entry.typeColor),
+                          Icon(entry.typeIcon, size: 14.0, color: entry.typeColor),
                           const SizedBox(width: 4.0),
                           Text(
                             callTypeLabel,
                             style: TextStyle(
-                              fontSize: 14.0,
+                              fontSize: 13.0,
                               fontWeight: FontWeight.w600,
                               color: entry.typeColor,
                               fontFamily: AppTypography.fontFamily,
                             ),
                           ),
-                          const Spacer(),
-                          Text(
-                            entry.telugifiedTime,
-                            style: const TextStyle(
-                              fontSize: 13.0,
-                              color: AppDesignColors.textSecondary,
-                              fontFamily: AppTypography.fontFamily,
+                          const SizedBox(width: 6.0),
+                          Expanded(
+                            child: Text(
+                              entry.telugifiedTime,
+                              style: const TextStyle(
+                                fontSize: 12.0,
+                                color: AppDesignColors.textSecondary,
+                                fontFamily: AppTypography.fontFamily,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.end,
                             ),
                           ),
                         ],
@@ -521,21 +571,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 const SizedBox(width: AppSpacing.sm),
 
-                // Action: Direct Call Button or Quick Save
-                entry.isSavedContact
-                    ? IconButton(
-                        icon: const Icon(
-                          Icons.phone_in_talk_rounded,
-                          color: AppDesignColors.success,
-                          size: 26.0,
-                        ),
-                        onPressed: () => _dialDirect(context, entry.phoneNumber),
-                      )
-                    : IconButton(
+                // Actions: 1-Click Direct Call & Quick Save for unsaved
+                if (entry.isSavedContact)
+                  IconButton(
+                    icon: const Icon(
+                      Icons.phone_in_talk_rounded,
+                      color: AppDesignColors.success,
+                      size: 24.0,
+                    ),
+                    tooltip: localization.callButtonTooltip,
+                    onPressed: () => ref.read(callServiceProvider).makeCall(context, entry.phoneNumber),
+                  )
+                else
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
                         icon: const Icon(
                           Icons.person_add_alt_1_rounded,
                           color: AppDesignColors.primary,
-                          size: 26.0,
+                          size: 22.0,
                         ),
                         tooltip: localization.saveCallText,
                         onPressed: () {
@@ -544,27 +599,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           );
                         },
                       ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.phone_in_talk_rounded,
+                          color: AppDesignColors.success,
+                          size: 24.0,
+                        ),
+                        tooltip: localization.callButtonTooltip,
+                        onPressed: () => ref.read(callServiceProvider).makeCall(context, entry.phoneNumber),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  Future<void> _dialDirect(BuildContext context, String phoneNumber) async {
-    final status = await Permission.phone.request();
-    if (status.isGranted) {
-      const platform = MethodChannel('com.ammananna.app/direct_call');
-      try {
-        await platform.invokeMethod('makeCall', {'phoneNumber': phoneNumber});
-      } catch (_) {
-        final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
-        try {
-          await launchUrl(phoneUri);
-        } catch (_) {}
-      }
-    }
   }
 
   Widget _buildPermissionNotice(BuildContext context, WidgetRef ref) {

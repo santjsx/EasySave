@@ -65,7 +65,7 @@ class CallLogService {
 
       // 4. Parse system logs and execute contacts matching
       for (var entry in nativeLogs) {
-        final String rawNumber = entry.number ?? '';
+        final String rawNumber = entry.number?.trim() ?? '';
         final String cleanNumber = _normalizePhoneNumber(rawNumber);
 
         // Edge Cases: Skip or handle empty, blocked, or private numbers
@@ -90,6 +90,12 @@ class CallLogService {
             matchedName = last10MatchMap[last10]!;
             isSaved = true;
           }
+        }
+
+        // Fallback to native cached contact name from Android CallLog
+        if (!isSaved && entry.name != null && entry.name!.trim().isNotEmpty) {
+          matchedName = entry.name!.trim();
+          isSaved = true;
         }
 
         // Map native call type to local enum representation

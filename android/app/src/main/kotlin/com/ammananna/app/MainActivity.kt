@@ -65,15 +65,39 @@ class MainActivity: FlutterActivity() {
     }
 
     private fun makeDirectCall(phoneNumber: String): Boolean {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-            val intent = Intent(Intent.ACTION_CALL).apply {
-                data = Uri.parse("tel:$phoneNumber")
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
+        if (cleanNumber.isEmpty()) return false
+
+        return try {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                val callIntent = Intent(Intent.ACTION_CALL).apply {
+                    data = Uri.parse("tel:$cleanNumber")
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                startActivity(callIntent)
+                true
+            } else {
+                val dialIntent = Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:$cleanNumber")
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                startActivity(dialIntent)
+                true
             }
-            startActivity(intent)
-            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            try {
+                val fallbackDial = Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:$cleanNumber")
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                startActivity(fallbackDial)
+                true
+            } catch (e2: Exception) {
+                e2.printStackTrace()
+                false
+            }
         }
-        return false
     }
 
     private fun shareToWhatsApp(imagePath: String, phoneNumber: String): Boolean {

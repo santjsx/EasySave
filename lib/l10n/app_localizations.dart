@@ -741,6 +741,42 @@ abstract class AppLocalizations {
   /// In te, this message translates to:
   /// **'పేరు లేదా నంబర్ స్పష్టంగా చెప్పండి...'**
   String get voiceSearchListeningPrompt;
+
+  /// No description provided for @unknownNumber.
+  ///
+  /// In te, this message translates to:
+  /// **'తెలియని నంబర్'**
+  String get unknownNumber;
+
+  /// No description provided for @callButtonTooltip.
+  ///
+  /// In te, this message translates to:
+  /// **'కాల్ చేయండి'**
+  String get callButtonTooltip;
+
+  /// No description provided for @noRecentCallsSub.
+  ///
+  /// In te, this message translates to:
+  /// **'మీరు చేసిన లేదా వచ్చిన కాల్స్ ఇక్కడ కనిపిస్తాయి.'**
+  String get noRecentCallsSub;
+
+  /// No description provided for @noContactsSub.
+  ///
+  /// In te, this message translates to:
+  /// **'మీ ప్రియమైన వారి నంబర్లను సులభంగా సేవ్ చేసుకోండి.'**
+  String get noContactsSub;
+
+  /// No description provided for @viewContactsAction.
+  ///
+  /// In te, this message translates to:
+  /// **'కాంటాక్ట్స్ చూడండి'**
+  String get viewContactsAction;
+
+  /// No description provided for @callInitiated.
+  ///
+  /// In te, this message translates to:
+  /// **'కాల్ కనెక్ట్ అవుతోంది...'**
+  String get callInitiated;
 }
 
 class _AppLocalizationsDelegate
