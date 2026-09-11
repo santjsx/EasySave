@@ -1,3 +1,19 @@
+# EasySave v1.3.4 Release - Clean Dialer Targeting & White Screen Eradication 🚀📞
+
+We are proud to release version **1.3.4**, completely eliminating the blank white screen issue on Realme 8 5G and ColorOS/Realme UI devices. Outgoing calls are now explicitly targeted and locked to the official **Google Phone / System Dialer**, preventing third-party Caller ID apps and adware from intercepting outgoing calls with broken, blank white screens.
+
+---
+
+## 🛠️ What's Changed in v1.3.4
+### 📞 Official Dialer Lock & Caller ID Adware Isolation
+*   **Targeted System Dialer Routing:** Outbound calls now explicitly target official, trusted system dialers (`com.google.android.dialer`, `com.android.phone`, `com.samsung.android.dialer`, `com.coloros.phoneno`). This completely bypasses third-party Caller ID adware apps that cause frozen blank white screens.
+*   **Adware & Hijacker Filter:** Implemented real-time package checking to detect and reject known caller ID/spam packages from receiving calling intents.
+*   **Android 11+ Package Visibility (`<queries>`):** Added explicit `<queries>` declarations for Google Dialer, AOSP Telephony, Samsung Dialer, ColorOS Phone, and `ACTION_CALL` in `AndroidManifest.xml` so the OS never conceals trusted dialer targets.
+*   **Dual-SIM Modem Routing Extras:** Preserves multi-SIM slot metadata for seamless direct calling without keypad interaction.
+*   **Multi-Tiered Dialer Fallback:** Automatically falls back through trusted dialers to ensure zero possibility of being stuck on an unrendered screen.
+
+---
+
 # EasySave v1.3.3 Release - Direct 1-Click Calling Without Keypad 🚀📞
 
 We are proud to release version **1.3.3**, implementing true 1-click **Direct Calling** without opening the Google dialer keypad on Realme 8 5G and all Android devices, complete with dual-SIM routing extras and graceful dialer fallback.

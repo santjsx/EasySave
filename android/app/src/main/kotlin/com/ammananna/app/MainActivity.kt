@@ -66,6 +66,23 @@ class MainActivity: FlutterActivity() {
         }
     }
 
+    private fun isSuspectedCallerIdAdware(packageName: String): Boolean {
+        val lower = packageName.lowercase()
+        return lower.contains("callerid") ||
+               lower.contains("caller.id") ||
+               lower.contains("showcaller") ||
+               lower.contains("truecaller") ||
+               lower.contains("callapp") ||
+               lower.contains("whoscall") ||
+               lower.contains("eyecon") ||
+               lower.contains("drupe") ||
+               lower.contains("sync.me") ||
+               lower.contains("numcaller") ||
+               lower.contains("callblocker") ||
+               lower.contains("spam") ||
+               lower.contains("adware")
+    }
+
     private fun makeDirectCall(phoneNumber: String): Boolean {
         val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
         if (cleanNumber.isEmpty()) return false
@@ -75,42 +92,103 @@ class MainActivity: FlutterActivity() {
             Manifest.permission.CALL_PHONE
         ) == PackageManager.PERMISSION_GRANTED
 
+        val tm = getSystemService(Context.TELECOM_SERVICE) as? TelecomManager
+        val defaultDialer = tm?.defaultDialerPackage
+        val userAccount = try {
+            tm?.userSelectedOutgoingPhoneAccount
+        } catch (e: Exception) {
+            null
+        }
+
+        // Build list of trusted system dialers in order of priority:
+        // 1. Google Phone (standard on Realme 8 5G, Moto, Pixel, Xiaomi, OnePlus)
+        // 2. Default dialer (if set and NOT a third-party adware app)
+        // 3. AOSP / standard Android telephony
+        // 4. Samsung OneUI dialer
+        // 5. Realme / ColorOS native dialer
+        val trustedDialers = mutableListOf<String>()
+        trustedDialers.add("com.google.android.dialer")
+        if (!defaultDialer.isNullOrBlank() && !isSuspectedCallerIdAdware(defaultDialer) && !trustedDialers.contains(defaultDialer)) {
+            trustedDialers.add(defaultDialer)
+        }
+        if (!trustedDialers.contains("com.android.phone")) trustedDialers.add("com.android.phone")
+        if (!trustedDialers.contains("com.samsung.android.dialer")) trustedDialers.add("com.samsung.android.dialer")
+        if (!trustedDialers.contains("com.coloros.phoneno")) trustedDialers.add("com.coloros.phoneno")
+
         if (hasCallPermission) {
+            // Priority 1: Target clean system dialer explicitly with ACTION_CALL
+            // This directly bypasses third-party adware / Caller ID overlays that produce blank white screens!
+            for (pkg in trustedDialers) {
+                try {
+                    val callIntent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$cleanNumber")).apply {
+                        setPackage(pkg)
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        // Multi-SIM routing extras for MediaTek / Realme / ColorOS modems
+                        putExtra("com.android.phone.extra.slot", 0)
+                        putExtra("simSlot", 0)
+                        putExtra("sim_slot", 0)
+                        putExtra("slot", 0)
+                        putExtra("Cdma_Supp", true)
+                        if (userAccount != null) {
+                            putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, userAccount)
+                        }
+                    }
+
+                    if (callIntent.resolveActivity(packageManager) != null) {
+                        startActivity(callIntent)
+                        return true
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            // Priority 2: Generic ACTION_CALL, but ONLY if the resolved handler is NOT suspected adware
             try {
-                val callIntent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$cleanNumber")).apply {
-                    // Attach multi-SIM routing extras for MediaTek / Realme / ColorOS modems
+                val genericCallIntent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$cleanNumber")).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     putExtra("com.android.phone.extra.slot", 0)
                     putExtra("simSlot", 0)
                     putExtra("sim_slot", 0)
                     putExtra("slot", 0)
                     putExtra("Cdma_Supp", true)
-                }
-
-                // If a preferred outgoing phone account is designated in TelecomManager, attach it
-                try {
-                    val tm = getSystemService(Context.TELECOM_SERVICE) as? TelecomManager
-                    val userAccount = tm?.userSelectedOutgoingPhoneAccount
                     if (userAccount != null) {
-                        callIntent.putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, userAccount)
+                        putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, userAccount)
                     }
-                } catch (e: Exception) {
-                    // Ignore telecom reflection errors
                 }
-
-                // Start directly from Activity context without FLAG_ACTIVITY_NEW_TASK
-                // to prevent Realme UI task detachment / blank screen freeze
-                startActivity(callIntent)
-                return true
+                val resolveInfo = genericCallIntent.resolveActivity(packageManager)
+                val resolvedPackage = resolveInfo?.packageName ?: ""
+                if (resolvedPackage.isNotEmpty() && !isSuspectedCallerIdAdware(resolvedPackage)) {
+                    startActivity(genericCallIntent)
+                    return true
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
-                // If direct ACTION_CALL failed, fall back to ACTION_DIAL below
             }
         }
 
-        // Zero-permission / Safe fallback: Launch dialer
+        // Priority 3: Safe fallback using ACTION_DIAL targeted to a trusted dialer (zero permission required)
+        for (pkg in trustedDialers) {
+            try {
+                val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$cleanNumber")).apply {
+                    setPackage(pkg)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                if (dialIntent.resolveActivity(packageManager) != null) {
+                    startActivity(dialIntent)
+                    return true
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        // Priority 4: Ultimate generic dialer fallback
         return try {
-            val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$cleanNumber"))
-            startActivity(dialIntent)
+            val fallbackDial = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$cleanNumber")).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            startActivity(fallbackDial)
             true
         } catch (e: Exception) {
             e.printStackTrace()
