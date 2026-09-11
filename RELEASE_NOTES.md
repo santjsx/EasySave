@@ -1,3 +1,39 @@
+# EasySave v1.3.1 Release - 1-Click Calling, Intelligent Live Search & Recent Calls Fix 🚀📞
+
+We are proud to release version **1.3.1**, bringing a zero-edge-case 1-Click Calling engine across the entire app, layout overflow fixes for recent calls, intelligent multi-tiered live search with fuzzy matching, voice recipient selection for WhatsApp photo sharing, and empathetic Telugu empty states.
+
+---
+
+## 🛠️ What's Changed in v1.3.1
+### 📞 1-Click Calling System (Zero-Edge Cases)
+*   **Dual-Tier Calling Architecture:** Initiates direct native calls via `ACTION_CALL` when permission is present, and seamlessly falls back to `Intent.ACTION_DIAL` (`tel:<number>`) without requiring any runtime permissions if denied.
+*   **E.164-Compatible Phone Sanitization:** Strips all spaces, dashes, and parentheses while preserving international `+` prefixes, preventing dialer launch failures.
+*   **1-Click Call Buttons Everywhere:** Available directly on every contact card in the directory, all recent call log entries, contact details screen, and home screen preview.
+
+### 🐛 Recent Calls Blank Cards & RenderFlex Overflow Fix
+*   **Solved Silent Flex Overflow:** Replaced oversized text buttons on unsaved callers that exceeded mobile viewports with compact 1-click call and quick-save icons.
+*   **Zero Blank Cards:** Completely eliminates release-mode layout crashes on narrow devices.
+
+### 🔍 Multi-Tiered Live Search & Fuzzy Matching
+*   **Intelligent Ranking:** Exact, token prefix, substring, and Damerau-Levenshtein fuzzy matching with Telugu phonetic transliteration.
+*   **Empathetic Contact Not Found Screen:** Displays searched term, helpful advice, 1-tap "Save as New Contact", and 1-tap "Clear Search".
+*   **WhatsApp Photo Voice Recipient Selection:** Voice search mic in photo share contact picker for effortless Telugu/English recipient selection.
+
+### 🌟 Elderly-Friendly Empty States
+*   **Engaging Guidance:** Illustrated empty state cards with 1-tap action buttons in Recent Calls, Contacts Directory, and Home Screen.
+
+---
+
+# EasySave v1.3.0 Senior Experience & Google Play In-App Updates 🌟📱
+
+- **Complete UI/UX Redesign**: Clean, accessible, elderly-friendly screens adhering to Hick's and Fitts's laws with WCAG AAA compliance.
+- **Natural Conversational Telugu**: Full localization overhaul replacing literal translations with genuine, everyday conversational Telugu understood by elders across all regions.
+- **Dedicated Screens**: Contact Details, Contact Form, Recent Calls, and Settings & Permissions.
+- **Hardened Voice Input Engine**: Silence watchdog timer prevents Android 12+ recognition freezes; added real-time sound level feedback and stutter deduplication.
+- **Google Play In-App OTA Updates**: Official Google Play Core API integration with silent background downloading, home screen restart banner, and settings management.
+
+---
+
 # EasySave v1.2.13 Senior-Optimistic Hotfix Release 🛠️📱
 
 We are happy to release version **1.2.13**, which implements a production-grade, double-guaranteed background contact editor and optimistic UI updates to completely solve lag, sync inconsistencies, and race conditions.
