@@ -54,7 +54,7 @@
   "editPhoneLabel": "ఫోన్ నంబర్",
   "contactUpdatedSuccess": "వివరాలు సేవ్ అయ్యాయి!",
   "contactDeletedSuccess": "కాంటాక్ట్ డిలీట్ అయింది!",
-  "cancelButton": "రద్దు",
+  "cancelButton": "వద్దు",
   "recentCallsTitle": "ఇటీవలి కాల్స్",
   "viewAllCalls": "అన్నీ చూడండి",
   "allCalls": "అన్నీ",
@@ -73,7 +73,7 @@
   "unsavedNumber": "సేవ్ చేయని నంబర్",
   "pasteFromClipboard": "పేస్ట్ చేయండి",
   "keyboardToggleTooltip": "కీబోర్డ్ మార్చండి",
-  "clearText": "తుడిచివేయి",
+  "clearText": "తీసివేయండి",
   "invalidPhoneError": "సరైన ఫోన్ నంబర్ ఇవ్వండి (7-12 అంకెలు)",
   "invalidNameError": "పేరు చెప్పండి లేదా టైప్ చేయండి",
   "contactSavedToast": "కాంటాక్ట్ విజయవంతంగా సేవ్ అయింది!",
@@ -99,8 +99,8 @@
   "noContactFoundTitle": "కాంటాక్ట్ దొరకలేదు",
   "noContactFoundSubtitle": "మీరు వెతికిన పేరు లేదా నంబర్‌తో కాంటాక్ట్ లేదు.",
   "saveAsNewContactAction": "కొత్త కాంటాక్ట్‌గా సేవ్ చేయండి",
-  "clearSearchAction": "శోధన క్లియర్ చేయండి",
-  "similarContactsHeader": "సారూప్య కాంటాక్ట్స్ (ఇవి కూడా చూడండి)",
+  "clearSearchAction": "మొత్తం తీసివేయండి",
+  "similarContactsHeader": "దగ్గరి పేర్లు (ఇవి కూడా చూడండి)",
   "exactMatchesHeader": "దొరికిన కాంటాక్ట్స్",
   "searchTipsTitle": "సులభమైన సూచనలు:",
   "searchTip1": "పేరులోని మొదటి 2-3 అక్షరాలను టైప్ చేయండి",
@@ -112,5 +112,36 @@
   "noRecentCallsSub": "మీరు చేసిన లేదా వచ్చిన కాల్స్ ఇక్కడ కనిపిస్తాయి.",
   "noContactsSub": "మీ ప్రియమైన వారి నంబర్లను సులభంగా సేవ్ చేసుకోండి.",
   "viewContactsAction": "కాంటాక్ట్స్ చూడండి",
-  "callInitiated": "కాల్ కనెక్ట్ అవుతోంది..."
+  "callInitiated": "కాల్ కనెక్ట్ అవుతోంది...",
+  "similarBadge": "దగ్గరి పేరు",
+  "noExactMatchesPrefix": "దొరకలేదు, దగ్గరి పేర్లు:",
+  "whereToSendFrom": "ఎక్కడి నుండి ఫోటో పంపించాలి?",
+  "phoneGalleryTitle": "ఫోన్ గ్యాలరీ",
+  "phoneGallerySub": "గ్యాలరీ నుండి ఫోటో ఎంచుకోవడానికి",
+  "cameraSnapTitle": "కెమెరాతో ఫోటో తీయండి",
+  "cameraSnapSub": "వెంటనే ఫోటో తీసి పంపించడానికి",
+  "isPhotoGood": "ఈ ఫోటో సరిగ్గా ఉందా?",
+  "sendPhotoAction": "ఈ ఫోటో పంపండి",
+  "numberPastedToast": "నంబర్ పేస్ట్ అయింది!",
+  "whatsappOpeningLoading": "వాట్సాప్ ఓపెన్ అవుతోంది...",
+  "photoLoading": "ఫోటో లోడ్ అవుతోంది...",
+  "appPermissionsTitle": "యాప్ అనుమతులు",
+  "contactsPermissionLabel": "కాంటాక్ట్స్",
+  "phoneCallsPermissionLabel": "ఫోన్ కాల్స్",
+  "microphonePermissionLabel": "మైక్రోఫోన్ (వాయిస్)",
+  "photosPermissionLabel": "ఫోటోలు & గ్యాలరీ",
+  "tryAgainTooltip": "మళ్లీ ప్రయత్నించండి",
+  "updateCheckSubtitle": "తాజా ఫీచర్లు మరియు సెక్యూరిటీ కోసం యాప్‌ను అప్‌డేట్ చేసుకోండి.",
+  "downloadingUpdateWithProgress": "అప్‌డేట్ డౌన్‌లోడ్ అవుతోంది... {progress}%",
+  "@downloadingUpdateWithProgress": {
+    "placeholders": {
+      "progress": {
+        "type": "int"
+      }
+    }
+  },
+  "readyToInstallUpdate": "అప్‌డేట్ డౌన్‌లోడ్ అయింది. ఇప్పుడే ఇన్‌స్టాల్ చేసుకోండి.",
+  "installNowAction": "ఇప్పుడే ఇన్‌స్టాల్ చేయండి",
+  "sendingViaWhatsApp": "వాట్సాప్ ద్వారా పంపిస్తున్నాము",
+  "shareFailedCheckWhatsApp": "పంపడం కుదరలేదు, వాట్సాప్ ఉందో లేదో సరిచూసుకోండి"
 }

@@ -1,3 +1,34 @@
+# EasySave v1.3.5 Release - Dual-Engine In-App OTA Updates & Full Number Display 🚀📦
+
+We are proud to release version **1.3.5**, featuring a production-grade **Dual-Engine In-App OTA Update System** delivering Play Store & App Store level polish directly for sideloaded GitHub Releases, **Zero-Ellipsis Full Phone Number Display** in call logs, and a complete **Everyday Conversational Telugu** localization overhaul.
+
+---
+
+## 🛠️ What's Changed in v1.3.5
+### 📦 Dual-Engine In-App OTA Update System (Play Store Polish Everywhere)
+*   **Direct GitHub Releases Engine:** Sideloaded APK builds now query GitHub Releases directly (`https://api.github.com/repos/santjsx/EasySave/releases/latest`), bypassing Google Play Core restrictions (`ERROR_APP_NOT_OWNED`).
+*   **Live Chunked Streaming Download:** Displays real-time download progress (`0%..100%`) with animated progress indicators in Settings and Home Screen.
+*   **1-Tap Native Package Installer Handoff:** Uses Android's native package installer via secure `FileProvider` (`REQUEST_INSTALL_PACKAGES`) so users can update the app seamlessly in one tap.
+*   **Automatic Fallback & Dual Support:** Preserves Google Play In-App Updates for Play Store distributions while giving sideloaded users an equally seamless experience.
+
+### 🔢 Full Phone Number Display (Zero Truncation / Ellipsis)
+*   **Dynamic `FittedBox` Scaling:** Squeezed call log tiles on small screens or devices with enlarged system font scales now scale down smoothly to guarantee that 100% of digits are visible, completely eliminating `...` truncation.
+*   **Intelligent Phone Formatting:** Automatically chunks Indian phone numbers (`+91 98499 88701`, `09849 988701`, `98499 88701`) for clear readability.
+
+### 🗣️ Everyday Conversational Telugu Refinement
+*   **Colloquial Naturalization:** Replaced formal and bookish Sanskritized terms with warm, everyday Telugu words used at home:
+    *   `రద్దు` ➔ `వద్దు` (Natural for Cancel/Dismiss)
+    *   `తుడిచివేయి` ➔ `తీసివేయండి` (Clear text)
+    *   `సారూప్యత` / `సారూప్య కాంటాక్ట్స్` ➔ `దగ్గరి పేరు` / `దగ్గరి పేర్లు`
+    *   `శోధన క్లియర్ చేయండి` ➔ `మొత్తం తీసివేయండి`
+*   **100% Localized Strings:** Migrated all scattered hardcoded strings in Gallery Selection, Camera Snap, Photo Confirmation, and Permissions into centralized `AppLocalizations`.
+
+### 🛡️ Industry Standards & Fitts's Law
+*   **High-Comfort Hitboxes:** Enlarged call action touch targets to ensure effortless 1-tap dialing for elderly users.
+*   **Direct Calling Intact:** Preserves Google dialer locking (`com.google.android.dialer`), dual-SIM routing, and anti-adware safeguards from v1.3.4.
+
+---
+
 # EasySave v1.3.4 Release - Clean Dialer Targeting & White Screen Eradication 🚀📞
 
 We are proud to release version **1.3.4**, completely eliminating the blank white screen issue on Realme 8 5G and ColorOS/Realme UI devices. Outgoing calls are now explicitly targeted and locked to the official **Google Phone / System Dialer**, preventing third-party Caller ID apps and adware from intercepting outgoing calls with broken, blank white screens.

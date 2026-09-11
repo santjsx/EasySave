@@ -381,7 +381,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
               const SizedBox(width: AppSpacing.xs),
               Text(
                 state.filteredContacts.isEmpty
-                    ? 'ఖచ్చితమైన కాంటాక్ట్ దొరకలేదు. సారూప్య కాంటాక్ట్స్:'
+                    ? localization.noExactMatchesPrefix
                     : localization.similarContactsHeader,
                 style: const TextStyle(
                   fontSize: 16.0,
@@ -424,6 +424,12 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
 
     String formatPhone(String p) {
       final clean = p.replaceAll(RegExp(r'\s+'), '');
+      if (clean.startsWith('+91') && clean.length == 13) {
+        return '+91 ${clean.substring(3, 8)} ${clean.substring(8)}';
+      }
+      if (clean.startsWith('0') && clean.length == 11) {
+        return '${clean.substring(0, 5)} ${clean.substring(5)}';
+      }
       if (clean.length == 10) {
         return '${clean.substring(0, 5)} ${clean.substring(5)}';
       }
@@ -515,9 +521,9 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                 color: AppDesignColors.primaryLight,
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
-                              child: const Text(
-                                'సారూప్యత',
-                                style: TextStyle(
+                              child: Text(
+                                localization.similarBadge,
+                                style: const TextStyle(
                                    fontSize: 11.0,
                                    fontWeight: FontWeight.bold,
                                    color: AppDesignColors.primary,

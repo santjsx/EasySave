@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../providers/media_provider.dart';
 import '../../routing/routes.dart';
 import '../../theme/colors.dart';
@@ -18,6 +19,7 @@ class GalleryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final localization = AppLocalizations.of(context)!;
     final state = ref.watch(sharePhotoProvider);
     final notifier = ref.read(sharePhotoProvider.notifier);
 
@@ -27,14 +29,14 @@ class GalleryScreen extends ConsumerWidget {
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new_rounded),
-              tooltip: 'వెనక్కి', // Accessible tooltip
+              tooltip: localization.backButton,
               onPressed: () {
                 notifier.resetState();
                 context.pop();
               },
             ),
             title: Text(
-              'ఫోటో ఎంచుకోండి', // Telugu: "Choose a Photo"
+              localization.choosePhoto,
               style: AppTypography.appName,
             ),
           ),
@@ -49,7 +51,7 @@ class GalleryScreen extends ConsumerWidget {
                 children: [
                   const SizedBox(height: AppSpacing.xl),
                   Text(
-                    'ఎక్కడి నుండి ఫోటో పంపించాలి?', // Telugu: "Where to send photo from?"
+                    localization.whereToSendFrom,
                     style: AppTypography.sectionHeader.copyWith(
                       color: AppDesignColors.textPrimary,
                       fontWeight: FontWeight.bold,
@@ -87,7 +89,7 @@ class GalleryScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: AppSpacing.md),
                             Text(
-                              'ఫోన్ గ్యాలరీ', // Telugu: "Phone Gallery"
+                              localization.phoneGalleryTitle,
                               style: AppTypography.primaryLabel.copyWith(
                                 color: AppDesignColors.textPrimary,
                               ),
@@ -95,7 +97,7 @@ class GalleryScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: AppSpacing.xs),
                             Text(
-                              'గ్యాలరీ నుండి ఫోటో ఎంచుకోవడానికి', // Telugu description
+                              localization.phoneGallerySub,
                               style: AppTypography.secondaryText,
                               textAlign: TextAlign.center,
                             ),
@@ -135,7 +137,7 @@ class GalleryScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: AppSpacing.md),
                             Text(
-                              'కెమెరాతో ఫోటో తీయండి', // Telugu: "Snap with Camera"
+                              localization.cameraSnapTitle,
                               style: AppTypography.primaryLabel.copyWith(
                                 color: AppDesignColors.textPrimary,
                               ),
@@ -143,7 +145,7 @@ class GalleryScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: AppSpacing.xs),
                             Text(
-                              'వెంటనే ఫోటో తీసి పంపించడానికి', // Telugu description
+                              localization.cameraSnapSub,
                               style: AppTypography.secondaryText,
                               textAlign: TextAlign.center,
                             ),
@@ -159,8 +161,8 @@ class GalleryScreen extends ConsumerWidget {
           ),
         ),
         if (state.isLoading)
-          const EasyLoading(
-            label: 'ఫోటో లోడ్ అవుతోంది...', // Telugu: "Photo loading..."
+          EasyLoading(
+            label: localization.photoLoading,
           ),
       ],
     );

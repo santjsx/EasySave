@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -13,10 +14,13 @@ class MockUpdateService implements IUpdateService {
   );
 
   AppUpdateInfo? mockUpdateInfo;
+  GitHubReleaseInfo? mockGitHubRelease;
   AppUpdateResult flexibleResult = AppUpdateResult.success;
   AppUpdateResult immediateResult = AppUpdateResult.success;
   bool completeFlexibleCalled = false;
   bool openPlayStoreCalled = false;
+  bool installApkCalled = false;
+  String? installedApkPath;
 
   @override
   Future<PackageInfo> getPackageInfo() async => packageInfo;
@@ -40,6 +44,26 @@ class MockUpdateService implements IUpdateService {
     openPlayStoreCalled = true;
     return true;
   }
+
+  @override
+  Future<GitHubReleaseInfo?> checkGitHubRelease() async => mockGitHubRelease;
+
+  @override
+  Future<File?> downloadGitHubApk(
+    String downloadUrl,
+    void Function(double progress) onProgress,
+  ) async {
+    onProgress(0.5);
+    onProgress(1.0);
+    return File('/mock/cache/EasySave-update.apk');
+  }
+
+  @override
+  Future<bool> installApk(String filePath) async {
+    installApkCalled = true;
+    installedApkPath = filePath;
+    return true;
+  }
 }
 
 void main() {
@@ -53,7 +77,6 @@ void main() {
     });
 
     test('1. Initial state loads dynamic PackageInfo version and build number', () async {
-      // Allow microtasks to complete initial _loadVersionInfo
       await Future<void>.delayed(Duration.zero);
 
       expect(notifier.state.currentVersion, equals('1.2.14'));
@@ -62,7 +85,7 @@ void main() {
       expect(notifier.state.status, equals(UpdateStatus.idle));
     });
 
-    test('2. checkForUpdate marks upToDate when no update is available on Play Store', () async {
+    test('2. checkForUpdate marks upToDate when no update is available on Play Store or GitHub', () async {
       mockService.mockUpdateInfo = AppUpdateInfo(
         updateAvailability: UpdateAvailability.updateNotAvailable,
         immediateUpdateAllowed: false,
@@ -75,6 +98,7 @@ void main() {
         clientVersionStalenessDays: null,
         updatePriority: 0,
       );
+      mockService.mockGitHubRelease = null;
 
       await notifier.checkForUpdate(silent: false);
 
@@ -83,7 +107,7 @@ void main() {
       expect(notifier.state.errorMessage, isNull);
     });
 
-    test('3. checkForUpdate identifies available flexible update correctly', () async {
+    test('3. checkForUpdate identifies available flexible update correctly from Google Play', () async {
       mockService.mockUpdateInfo = AppUpdateInfo(
         updateAvailability: UpdateAvailability.updateAvailable,
         immediateUpdateAllowed: false,
@@ -103,9 +127,10 @@ void main() {
       expect(notifier.state.availableVersionCode, equals(31));
       expect(notifier.state.isFlexibleAllowed, isTrue);
       expect(notifier.state.isImmediateAllowed, isFalse);
+      expect(notifier.state.isGitHubSource, isFalse);
     });
 
-    test('4. startFlexibleUpdate transitions to downloading and then downloaded', () async {
+    test('4. startFlexibleUpdate transitions to downloading and then downloaded for Google Play', () async {
       mockService.flexibleResult = AppUpdateResult.success;
 
       await notifier.startFlexibleUpdate();
@@ -120,7 +145,8 @@ void main() {
     });
 
     test('6. Sideload or non-Play Store error gracefully handles fallback', () async {
-      mockService.mockUpdateInfo = null; // Emulates PlatformException caught in service
+      mockService.mockUpdateInfo = null; // Emulates PlatformException from Play Core
+      mockService.mockGitHubRelease = null; // Offline or no release available
 
       // In silent mode (e.g. background startup check), status remains idle
       await notifier.checkForUpdate(silent: true);
@@ -134,6 +160,55 @@ void main() {
       // User taps open Play Store
       await notifier.openPlayStore();
       expect(mockService.openPlayStoreCalled, isTrue);
+    });
+
+    test('7. GitHub Releases OTA update detected when newer version available for sideloaded app', () async {
+      mockService.mockUpdateInfo = null; // Sideloaded APK has no Play Core connection
+      mockService.mockGitHubRelease = const GitHubReleaseInfo(
+        tagName: 'v1.3.5',
+        version: '1.3.5',
+        name: 'v1.3.5 Release',
+        body: 'New features and bugfixes',
+        apkDownloadUrl: 'https://github.com/santjsx/EasySave/releases/download/v1.3.5/app-release.apk',
+        apkSizeBytes: 25000000,
+      );
+
+      await notifier.checkForUpdate(silent: false);
+
+      expect(notifier.state.status, equals(UpdateStatus.available));
+      expect(notifier.state.isGitHubSource, isTrue);
+      expect(notifier.state.availableVersionName, equals('1.3.5'));
+      expect(notifier.state.downloadUrl, contains('v1.3.5/app-release.apk'));
+    });
+
+    test('8. GitHub streaming OTA download and native package installation handoff', () async {
+      mockService.mockUpdateInfo = null;
+      mockService.mockGitHubRelease = const GitHubReleaseInfo(
+        tagName: 'v1.3.5',
+        version: '1.3.5',
+        name: 'v1.3.5 Release',
+        body: 'Bugfixes',
+        apkDownloadUrl: 'https://github.com/santjsx/EasySave/releases/download/v1.3.5/app-release.apk',
+        apkSizeBytes: 25000000,
+      );
+
+      await notifier.checkForUpdate(silent: false);
+      expect(notifier.state.status, equals(UpdateStatus.available));
+
+      await notifier.startFlexibleUpdate();
+
+      expect(notifier.state.status, equals(UpdateStatus.downloaded));
+      expect(notifier.state.downloadProgress, equals(1.0));
+      expect(mockService.installApkCalled, isTrue);
+      expect(mockService.installedApkPath, equals('/mock/cache/EasySave-update.apk'));
+    });
+
+    test('9. Semantic version comparator behaves accurately across major, minor, and patch', () {
+      expect(UpdateService.compareSemVer('1.3.5', '1.3.4'), greaterThan(0));
+      expect(UpdateService.compareSemVer('1.4.0', '1.3.9'), greaterThan(0));
+      expect(UpdateService.compareSemVer('2.0.0', '1.99.99'), greaterThan(0));
+      expect(UpdateService.compareSemVer('v1.3.4', '1.3.4'), equals(0));
+      expect(UpdateService.compareSemVer('1.3.4', '1.3.5'), lessThan(0));
     });
   });
 }

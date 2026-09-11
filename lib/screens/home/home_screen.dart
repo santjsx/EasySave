@@ -94,9 +94,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // 0. Update Downloaded Notice Banner (If flexible update downloaded)
+                // 0. Update Downloaded / Downloading Notice Banner
                 if (updateState.status == UpdateStatus.downloaded) ...[
-                  _buildUpdateDownloadedBanner(context, localization),
+                  _buildUpdateDownloadedBanner(context, localization, updateState),
+                  const SizedBox(height: AppSpacing.md),
+                ],
+                if (updateState.status == UpdateStatus.downloading) ...[
+                  _buildUpdateDownloadingBanner(context, localization, updateState),
                   const SizedBox(height: AppSpacing.md),
                 ],
 
@@ -200,7 +204,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 icon: Icons.person_add_alt_1_rounded,
                 iconColor: AppDesignColors.primary,
                 title: localization.saveContactLabel,
-                subtitle: 'కొత్త నంబర్ కోసం',
+                subtitle: localization.saveContactSub,
                 onTap: () => context.push(AppRoutes.saveContact),
               ),
             ),
@@ -212,7 +216,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 icon: Icons.chat_bubble_rounded,
                 iconColor: AppDesignColors.whatsapp,
                 title: localization.sharePhotoLabel,
-                subtitle: 'వాట్సాప్ ద్వారా',
+                subtitle: localization.sharePhotoSub,
                 onTap: () => context.push(AppRoutes.sharePhoto),
               ),
             ),
@@ -444,6 +448,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     String formatPhone(String p) {
       final clean = p.replaceAll(RegExp(r'\s+'), '');
+      if (clean.isEmpty) {
+        return localization.unknownNumber;
+      }
+      if (clean.startsWith('+91') && clean.length == 13) {
+        return '+91 ${clean.substring(3, 8)} ${clean.substring(8)}';
+      }
+      if (clean.startsWith('0') && clean.length == 11) {
+        return '${clean.substring(0, 5)} ${clean.substring(5)}';
+      }
       if (clean.length == 10) {
         return '${clean.substring(0, 5)} ${clean.substring(5)}';
       }
@@ -525,17 +538,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        titleText,
-                        style: const TextStyle(
-                          fontSize: 17.0,
-                          fontWeight: FontWeight.bold,
-                          color: AppDesignColors.textPrimary,
-                          fontFamily: AppTypography.fontFamily,
+                      if (!entry.isSavedContact)
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            titleText,
+                            style: const TextStyle(
+                              fontSize: 17.0,
+                              fontWeight: FontWeight.bold,
+                              color: AppDesignColors.textPrimary,
+                              fontFamily: AppTypography.fontFamily,
+                            ),
+                            maxLines: 1,
+                            softWrap: false,
+                          ),
+                        )
+                      else
+                        Text(
+                          titleText,
+                          style: const TextStyle(
+                            fontSize: 17.0,
+                            fontWeight: FontWeight.bold,
+                            color: AppDesignColors.textPrimary,
+                            fontFamily: AppTypography.fontFamily,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
                       const SizedBox(height: 2.0),
                       Row(
                         children: [
@@ -664,6 +694,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildUpdateDownloadedBanner(
     BuildContext context,
     AppLocalizations localization,
+    UpdateState updateState,
   ) {
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -698,7 +729,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: Text(
-                  localization.updateDownloaded,
+                  updateState.isGitHubSource
+                      ? localization.readyToInstallUpdate
+                      : localization.updateDownloaded,
                   style: const TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
@@ -719,9 +752,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 borderRadius: BorderRadius.circular(12.0),
               ),
             ),
-            icon: const Icon(Icons.restart_alt_rounded, size: 22.0),
+            icon: Icon(
+              updateState.isGitHubSource
+                  ? Icons.system_update_rounded
+                  : Icons.restart_alt_rounded,
+              size: 22.0,
+            ),
             label: Text(
-              localization.restartToUpdate,
+              updateState.isGitHubSource
+                  ? localization.installNowAction
+                  : localization.restartToUpdate,
               style: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -731,6 +771,68 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             onPressed: () {
               ref.read(updateProvider.notifier).completeFlexibleUpdate();
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUpdateDownloadingBanner(
+    BuildContext context,
+    AppLocalizations localization,
+    UpdateState updateState,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
+      decoration: BoxDecoration(
+        color: AppDesignColors.primaryLight,
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        border: Border.all(
+          color: AppDesignColors.primary,
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              const SizedBox(
+                width: 20.0,
+                height: 20.0,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: AppDesignColors.primary,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(
+                  updateState.isGitHubSource && updateState.downloadProgress > 0
+                      ? localization.downloadingUpdateWithProgress(
+                          (updateState.downloadProgress * 100).toInt(),
+                        )
+                      : localization.downloadingUpdate,
+                  style: const TextStyle(
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.bold,
+                    color: AppDesignColors.primaryDark,
+                    fontFamily: AppTypography.fontFamily,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          LinearProgressIndicator(
+            value: updateState.downloadProgress > 0 ? updateState.downloadProgress : null,
+            backgroundColor: Colors.white,
+            color: AppDesignColors.primary,
+            minHeight: 6.0,
+            borderRadius: BorderRadius.circular(3.0),
           ),
         ],
       ),

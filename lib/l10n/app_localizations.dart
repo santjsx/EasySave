@@ -427,7 +427,7 @@ abstract class AppLocalizations {
   /// No description provided for @cancelButton.
   ///
   /// In te, this message translates to:
-  /// **'రద్దు'**
+  /// **'వద్దు'**
   String get cancelButton;
 
   /// No description provided for @recentCallsTitle.
@@ -541,7 +541,7 @@ abstract class AppLocalizations {
   /// No description provided for @clearText.
   ///
   /// In te, this message translates to:
-  /// **'తుడిచివేయి'**
+  /// **'తీసివేయండి'**
   String get clearText;
 
   /// No description provided for @invalidPhoneError.
@@ -697,13 +697,13 @@ abstract class AppLocalizations {
   /// No description provided for @clearSearchAction.
   ///
   /// In te, this message translates to:
-  /// **'శోధన క్లియర్ చేయండి'**
+  /// **'మొత్తం తీసివేయండి'**
   String get clearSearchAction;
 
   /// No description provided for @similarContactsHeader.
   ///
   /// In te, this message translates to:
-  /// **'సారూప్య కాంటాక్ట్స్ (ఇవి కూడా చూడండి)'**
+  /// **'దగ్గరి పేర్లు (ఇవి కూడా చూడండి)'**
   String get similarContactsHeader;
 
   /// No description provided for @exactMatchesHeader.
@@ -777,6 +777,150 @@ abstract class AppLocalizations {
   /// In te, this message translates to:
   /// **'కాల్ కనెక్ట్ అవుతోంది...'**
   String get callInitiated;
+
+  /// No description provided for @similarBadge.
+  ///
+  /// In te, this message translates to:
+  /// **'దగ్గరి పేరు'**
+  String get similarBadge;
+
+  /// No description provided for @noExactMatchesPrefix.
+  ///
+  /// In te, this message translates to:
+  /// **'దొరకలేదు, దగ్గరి పేర్లు:'**
+  String get noExactMatchesPrefix;
+
+  /// No description provided for @whereToSendFrom.
+  ///
+  /// In te, this message translates to:
+  /// **'ఎక్కడి నుండి ఫోటో పంపించాలి?'**
+  String get whereToSendFrom;
+
+  /// No description provided for @phoneGalleryTitle.
+  ///
+  /// In te, this message translates to:
+  /// **'ఫోన్ గ్యాలరీ'**
+  String get phoneGalleryTitle;
+
+  /// No description provided for @phoneGallerySub.
+  ///
+  /// In te, this message translates to:
+  /// **'గ్యాలరీ నుండి ఫోటో ఎంచుకోవడానికి'**
+  String get phoneGallerySub;
+
+  /// No description provided for @cameraSnapTitle.
+  ///
+  /// In te, this message translates to:
+  /// **'కెమెరాతో ఫోటో తీయండి'**
+  String get cameraSnapTitle;
+
+  /// No description provided for @cameraSnapSub.
+  ///
+  /// In te, this message translates to:
+  /// **'వెంటనే ఫోటో తీసి పంపించడానికి'**
+  String get cameraSnapSub;
+
+  /// No description provided for @isPhotoGood.
+  ///
+  /// In te, this message translates to:
+  /// **'ఈ ఫోటో సరిగ్గా ఉందా?'**
+  String get isPhotoGood;
+
+  /// No description provided for @sendPhotoAction.
+  ///
+  /// In te, this message translates to:
+  /// **'ఈ ఫోటో పంపండి'**
+  String get sendPhotoAction;
+
+  /// No description provided for @numberPastedToast.
+  ///
+  /// In te, this message translates to:
+  /// **'నంబర్ పేస్ట్ అయింది!'**
+  String get numberPastedToast;
+
+  /// No description provided for @whatsappOpeningLoading.
+  ///
+  /// In te, this message translates to:
+  /// **'వాట్సాప్ ఓపెన్ అవుతోంది...'**
+  String get whatsappOpeningLoading;
+
+  /// No description provided for @photoLoading.
+  ///
+  /// In te, this message translates to:
+  /// **'ఫోటో లోడ్ అవుతోంది...'**
+  String get photoLoading;
+
+  /// No description provided for @appPermissionsTitle.
+  ///
+  /// In te, this message translates to:
+  /// **'యాప్ అనుమతులు'**
+  String get appPermissionsTitle;
+
+  /// No description provided for @contactsPermissionLabel.
+  ///
+  /// In te, this message translates to:
+  /// **'కాంటాక్ట్స్'**
+  String get contactsPermissionLabel;
+
+  /// No description provided for @phoneCallsPermissionLabel.
+  ///
+  /// In te, this message translates to:
+  /// **'ఫోన్ కాల్స్'**
+  String get phoneCallsPermissionLabel;
+
+  /// No description provided for @microphonePermissionLabel.
+  ///
+  /// In te, this message translates to:
+  /// **'మైక్రోఫోన్ (వాయిస్)'**
+  String get microphonePermissionLabel;
+
+  /// No description provided for @photosPermissionLabel.
+  ///
+  /// In te, this message translates to:
+  /// **'ఫోటోలు & గ్యాలరీ'**
+  String get photosPermissionLabel;
+
+  /// No description provided for @tryAgainTooltip.
+  ///
+  /// In te, this message translates to:
+  /// **'మళ్లీ ప్రయత్నించండి'**
+  String get tryAgainTooltip;
+
+  /// No description provided for @updateCheckSubtitle.
+  ///
+  /// In te, this message translates to:
+  /// **'తాజా ఫీచర్లు మరియు సెక్యూరిటీ కోసం యాప్‌ను అప్‌డేట్ చేసుకోండి.'**
+  String get updateCheckSubtitle;
+
+  /// No description provided for @downloadingUpdateWithProgress.
+  ///
+  /// In te, this message translates to:
+  /// **'అప్‌డేట్ డౌన్‌లోడ్ అవుతోంది... {progress}%'**
+  String downloadingUpdateWithProgress(int progress);
+
+  /// No description provided for @readyToInstallUpdate.
+  ///
+  /// In te, this message translates to:
+  /// **'అప్‌డేట్ డౌన్‌లోడ్ అయింది. ఇప్పుడే ఇన్‌స్టాల్ చేసుకోండి.'**
+  String get readyToInstallUpdate;
+
+  /// No description provided for @installNowAction.
+  ///
+  /// In te, this message translates to:
+  /// **'ఇప్పుడే ఇన్‌స్టాల్ చేయండి'**
+  String get installNowAction;
+
+  /// No description provided for @sendingViaWhatsApp.
+  ///
+  /// In te, this message translates to:
+  /// **'వాట్సాప్ ద్వారా పంపిస్తున్నాము'**
+  String get sendingViaWhatsApp;
+
+  /// No description provided for @shareFailedCheckWhatsApp.
+  ///
+  /// In te, this message translates to:
+  /// **'పంపడం కుదరలేదు, వాట్సాప్ ఉందో లేదో సరిచూసుకోండి'**
+  String get shareFailedCheckWhatsApp;
 }
 
 class _AppLocalizationsDelegate

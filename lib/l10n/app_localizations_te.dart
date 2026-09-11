@@ -178,7 +178,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get contactDeletedSuccess => 'కాంటాక్ట్ డిలీట్ అయింది!';
 
   @override
-  String get cancelButton => 'రద్దు';
+  String get cancelButton => 'వద్దు';
 
   @override
   String get recentCallsTitle => 'ఇటీవలి కాల్స్';
@@ -236,7 +236,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get keyboardToggleTooltip => 'కీబోర్డ్ మార్చండి';
 
   @override
-  String get clearText => 'తుడిచివేయి';
+  String get clearText => 'తీసివేయండి';
 
   @override
   String get invalidPhoneError => 'సరైన ఫోన్ నంబర్ ఇవ్వండి (7-12 అంకెలు)';
@@ -319,10 +319,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get saveAsNewContactAction => 'కొత్త కాంటాక్ట్‌గా సేవ్ చేయండి';
 
   @override
-  String get clearSearchAction => 'శోధన క్లియర్ చేయండి';
+  String get clearSearchAction => 'మొత్తం తీసివేయండి';
 
   @override
-  String get similarContactsHeader => 'సారూప్య కాంటాక్ట్స్ (ఇవి కూడా చూడండి)';
+  String get similarContactsHeader => 'దగ్గరి పేర్లు (ఇవి కూడా చూడండి)';
 
   @override
   String get exactMatchesHeader => 'దొరికిన కాంటాక్ట్స్';
@@ -362,4 +362,81 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get callInitiated => 'కాల్ కనెక్ట్ అవుతోంది...';
+
+  @override
+  String get similarBadge => 'దగ్గరి పేరు';
+
+  @override
+  String get noExactMatchesPrefix => 'దొరకలేదు, దగ్గరి పేర్లు:';
+
+  @override
+  String get whereToSendFrom => 'ఎక్కడి నుండి ఫోటో పంపించాలి?';
+
+  @override
+  String get phoneGalleryTitle => 'ఫోన్ గ్యాలరీ';
+
+  @override
+  String get phoneGallerySub => 'గ్యాలరీ నుండి ఫోటో ఎంచుకోవడానికి';
+
+  @override
+  String get cameraSnapTitle => 'కెమెరాతో ఫోటో తీయండి';
+
+  @override
+  String get cameraSnapSub => 'వెంటనే ఫోటో తీసి పంపించడానికి';
+
+  @override
+  String get isPhotoGood => 'ఈ ఫోటో సరిగ్గా ఉందా?';
+
+  @override
+  String get sendPhotoAction => 'ఈ ఫోటో పంపండి';
+
+  @override
+  String get numberPastedToast => 'నంబర్ పేస్ట్ అయింది!';
+
+  @override
+  String get whatsappOpeningLoading => 'వాట్సాప్ ఓపెన్ అవుతోంది...';
+
+  @override
+  String get photoLoading => 'ఫోటో లోడ్ అవుతోంది...';
+
+  @override
+  String get appPermissionsTitle => 'యాప్ అనుమతులు';
+
+  @override
+  String get contactsPermissionLabel => 'కాంటాక్ట్స్';
+
+  @override
+  String get phoneCallsPermissionLabel => 'ఫోన్ కాల్స్';
+
+  @override
+  String get microphonePermissionLabel => 'మైక్రోఫోన్ (వాయిస్)';
+
+  @override
+  String get photosPermissionLabel => 'ఫోటోలు & గ్యాలరీ';
+
+  @override
+  String get tryAgainTooltip => 'మళ్లీ ప్రయత్నించండి';
+
+  @override
+  String get updateCheckSubtitle =>
+      'తాజా ఫీచర్లు మరియు సెక్యూరిటీ కోసం యాప్‌ను అప్‌డేట్ చేసుకోండి.';
+
+  @override
+  String downloadingUpdateWithProgress(int progress) {
+    return 'అప్‌డేట్ డౌన్‌లోడ్ అవుతోంది... $progress%';
+  }
+
+  @override
+  String get readyToInstallUpdate =>
+      'అప్‌డేట్ డౌన్‌లోడ్ అయింది. ఇప్పుడే ఇన్‌స్టాల్ చేసుకోండి.';
+
+  @override
+  String get installNowAction => 'ఇప్పుడే ఇన్‌స్టాల్ చేయండి';
+
+  @override
+  String get sendingViaWhatsApp => 'వాట్సాప్ ద్వారా పంపిస్తున్నాము';
+
+  @override
+  String get shareFailedCheckWhatsApp =>
+      'పంపడం కుదరలేదు, వాట్సాప్ ఉందో లేదో సరిచూసుకోండి';
 }

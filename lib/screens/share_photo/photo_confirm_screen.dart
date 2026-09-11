@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../routing/routes.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
@@ -20,6 +21,7 @@ class PhotoConfirmScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
     final imageFile = File(imagePath);
 
     return Scaffold(
@@ -29,7 +31,7 @@ class PhotoConfirmScreen extends StatelessWidget {
           Positioned.fill(
             bottom: 180.0, // Leave breathing space for bottom drawer sheet
             child: Semantics(
-              label: 'మీరు ఎంచుకున్న ఫోటో', // Accessible screen reader label
+              label: localization.isPhotoGood, // Accessible screen reader label
               child: Container(
                 color: Colors.black.withValues(alpha: 0.05),
                 child: Image.file(
@@ -68,7 +70,7 @@ class PhotoConfirmScreen extends StatelessWidget {
                         color: Colors.white,
                         size: 28.0,
                       ),
-                      tooltip: 'వెనక్కి', // Accessible tooltip
+                      tooltip: localization.backButton,
                       onPressed: () {
                         context.pop();
                       },
@@ -114,7 +116,7 @@ class PhotoConfirmScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'ఈ ఫోటో సరిగ్గా ఉందా?', // Telugu: "Is this photo okay?"
+                    localization.isPhotoGood,
                     style: AppTypography.sectionHeader.copyWith(
                       color: AppDesignColors.textPrimary,
                       fontWeight: FontWeight.bold,
@@ -123,7 +125,7 @@ class PhotoConfirmScreen extends StatelessWidget {
                   const SizedBox(height: AppSpacing.lg),
                   // Giant trigger push to recipient picker
                   EasyButton(
-                    label: 'ఈ ఫోటో పంపండి →', // Telugu: "Send this Photo"
+                    label: '${localization.sendPhotoAction} →',
                     onPressed: () {
                       context.push(
                         '${AppRoutes.contactPicker}?imagePath=${Uri.encodeComponent(imagePath)}',

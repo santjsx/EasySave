@@ -302,8 +302,8 @@ class _ContactPickerScreenState extends ConsumerState<ContactPickerScreen> {
         ),
         // Modal loading screen locks actions during compress & share routines
         if (state.isLoading && state.selectedImagePath.isNotEmpty && state.selectedContact != null)
-          const EasyLoading(
-            label: 'వాట్సాప్ తెరుస్తున్నాము...',
+          EasyLoading(
+            label: localization.whatsappOpeningLoading,
           ),
       ],
     );
@@ -364,7 +364,7 @@ class _ContactPickerScreenState extends ConsumerState<ContactPickerScreen> {
               const SizedBox(width: AppSpacing.xs),
               Text(
                 state.eligibleContacts.isEmpty
-                    ? 'ఖచ్చితమైన కాంటాక్ట్ దొరకలేదు. సారూప్య కాంటాక్ట్స్:'
+                    ? localization.noExactMatchesPrefix
                     : localization.similarContactsHeader,
                 style: const TextStyle(
                   fontSize: 15.0,
@@ -405,6 +405,7 @@ class _ContactPickerScreenState extends ConsumerState<ContactPickerScreen> {
     SharePhotoNotifier notifier,
     ContactModel contact,
   ) async {
+    final localization = AppLocalizations.of(context)!;
     notifier.selectRecipient(contact);
     final bool dispatched = await notifier.dispatchWhatsAppShare();
 
@@ -412,7 +413,7 @@ class _ContactPickerScreenState extends ConsumerState<ContactPickerScreen> {
       if (dispatched) {
         EasySnackBar.showSuccess(
           context,
-          'వాట్సాప్ ద్వారా పంపిస్తున్నాము',
+          localization.sendingViaWhatsApp,
         );
         notifier.resetState();
         context.go(AppRoutes.home);
@@ -421,7 +422,7 @@ class _ContactPickerScreenState extends ConsumerState<ContactPickerScreen> {
           context,
           ref.read(sharePhotoProvider).errorMessage.isNotEmpty
               ? ref.read(sharePhotoProvider).errorMessage
-              : 'పంపడం కుదరలేదు, వాట్సాప్ ఉందో లేదో సరిచూసుకోండి',
+              : localization.shareFailedCheckWhatsApp,
         );
       }
     }

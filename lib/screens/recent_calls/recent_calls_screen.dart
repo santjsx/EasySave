@@ -204,6 +204,12 @@ class _RecentCallsScreenState extends ConsumerState<RecentCallsScreen> {
       if (clean.isEmpty) {
         return localization.unknownNumber;
       }
+      if (clean.startsWith('+91') && clean.length == 13) {
+        return '+91 ${clean.substring(3, 8)} ${clean.substring(8)}';
+      }
+      if (clean.startsWith('0') && clean.length == 11) {
+        return '${clean.substring(0, 5)} ${clean.substring(5)}';
+      }
       if (clean.length == 10) {
         return '${clean.substring(0, 5)} ${clean.substring(5)}';
       }
@@ -284,17 +290,34 @@ class _RecentCallsScreenState extends ConsumerState<RecentCallsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        titleText,
-                        style: const TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                          color: AppDesignColors.textPrimary,
-                          fontFamily: AppTypography.fontFamily,
+                      if (!entry.isSavedContact)
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            titleText,
+                            style: const TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: AppDesignColors.textPrimary,
+                              fontFamily: AppTypography.fontFamily,
+                            ),
+                            maxLines: 1,
+                            softWrap: false,
+                          ),
+                        )
+                      else
+                        Text(
+                          titleText,
+                          style: const TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: AppDesignColors.textPrimary,
+                            fontFamily: AppTypography.fontFamily,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
                       const SizedBox(height: 3.0),
                       Row(
                         children: [

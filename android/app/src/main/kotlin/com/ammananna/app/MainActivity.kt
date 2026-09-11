@@ -60,9 +60,50 @@ class MainActivity: FlutterActivity() {
                 } else {
                     result.error("INVALID_ARGUMENT", "ID, Name, or Phone is null", null)
                 }
+            } else if (call.method == "installApk") {
+                val filePath = call.argument<String>("filePath")
+                if (filePath != null) {
+                    val installed = installApk(filePath)
+                    result.success(installed)
+                } else {
+                    result.error("INVALID_ARGUMENT", "File path is null", null)
+                }
             } else {
                 result.notImplemented()
             }
+        }
+    }
+
+    private fun installApk(filePath: String): Boolean {
+        return try {
+            val file = java.io.File(filePath)
+            if (!file.exists()) return false
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                if (!packageManager.canRequestPackageInstalls()) {
+                    val settingsIntent = Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                        data = Uri.parse("package:$packageName")
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
+                    startActivity(settingsIntent)
+                }
+            }
+
+            val uri = androidx.core.content.FileProvider.getUriForFile(
+                this,
+                "${applicationContext.packageName}.fileprovider",
+                file
+            )
+
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/vnd.android.package-archive")
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+            }
+            startActivity(intent)
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 

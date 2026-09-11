@@ -141,7 +141,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     Text(
                       updateState.fullVersionString.isNotEmpty
                           ? '${localization.versionLabel}: ${updateState.fullVersionString}'
-                          : 'వెర్షన్ 1.2.14 (30)',
+                          : 'వెర్షన్ 1.3.4 (35)',
                       style: const TextStyle(
                         fontSize: 14.0,
                         color: AppDesignColors.textSecondary,
@@ -155,14 +155,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
               const SizedBox(height: AppSpacing.xl),
 
-              // 2. Google Play In-App Updates Card
+              // 2. Dual-Engine In-App Updates Card
               _buildUpdateCard(context, localization, updateState, updateNotifier),
 
               const SizedBox(height: AppSpacing.xl),
 
               // 3. Permissions Status Section
               Text(
-                'యాప్ అనుమతులు',
+                localization.appPermissionsTitle,
                 style: AppTypography.sectionHeader.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppDesignColors.textPrimary,
@@ -172,7 +172,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
               _buildPermissionTile(
                 icon: Icons.contacts_rounded,
-                title: 'కాంటాక్ట్స్',
+                title: localization.contactsPermissionLabel,
                 isGranted: _contactsGranted,
                 onRequest: () async {
                   await Permission.contacts.request();
@@ -183,7 +183,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
               _buildPermissionTile(
                 icon: Icons.phone_in_talk_rounded,
-                title: 'ఫోన్ కాల్స్',
+                title: localization.phoneCallsPermissionLabel,
                 isGranted: _phoneGranted,
                 onRequest: () async {
                   await Permission.phone.request();
@@ -194,7 +194,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
               _buildPermissionTile(
                 icon: Icons.mic_rounded,
-                title: 'మైక్రోఫోన్ (వాయిస్)',
+                title: localization.microphonePermissionLabel,
                 isGranted: _micGranted,
                 onRequest: () async {
                   await Permission.microphone.request();
@@ -205,7 +205,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
               _buildPermissionTile(
                 icon: Icons.photo_library_rounded,
-                title: 'ఫోటోలు & గ్యాలరీ',
+                title: localization.photosPermissionLabel,
                 isGranted: _photosGranted,
                 onRequest: () async {
                   await Permission.photos.request();
@@ -378,9 +378,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
           // Dynamic status content based on UpdateStatus
           if (updateState.status == UpdateStatus.checking) ...[
-            const Row(
+            Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 20.0,
                   height: 20.0,
                   child: CircularProgressIndicator(
@@ -388,10 +388,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     color: AppDesignColors.primary,
                   ),
                 ),
-                SizedBox(width: AppSpacing.sm),
+                const SizedBox(width: AppSpacing.sm),
                 Text(
-                  'అప్‌డేట్ తనిఖీ చేస్తున్నాము...',
-                  style: TextStyle(
+                  localization.checkingForUpdates,
+                  style: const TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.w600,
                     color: AppDesignColors.textSecondary,
@@ -402,7 +402,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             ),
           ] else if (updateState.status == UpdateStatus.downloading) ...[
             Text(
-              localization.downloadingUpdate,
+              updateState.isGitHubSource && updateState.downloadProgress > 0
+                  ? localization.downloadingUpdateWithProgress(
+                      (updateState.downloadProgress * 100).toInt(),
+                    )
+                  : localization.downloadingUpdate,
               style: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w600,
@@ -411,14 +415,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
-            const LinearProgressIndicator(
+            LinearProgressIndicator(
+              value: updateState.downloadProgress > 0 ? updateState.downloadProgress : null,
               backgroundColor: AppDesignColors.primaryLight,
               color: AppDesignColors.primary,
-              minHeight: 6.0,
+              minHeight: 8.0,
+              borderRadius: BorderRadius.circular(4.0),
             ),
           ] else if (updateState.status == UpdateStatus.downloaded) ...[
             Text(
-              localization.updateDownloaded,
+              updateState.isGitHubSource
+                  ? localization.readyToInstallUpdate
+                  : localization.updateDownloaded,
               style: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -436,9 +444,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   borderRadius: BorderRadius.circular(14.0),
                 ),
               ),
-              icon: const Icon(Icons.restart_alt_rounded, size: 24.0),
+              icon: Icon(
+                updateState.isGitHubSource
+                    ? Icons.system_update_rounded
+                    : Icons.restart_alt_rounded,
+                size: 24.0,
+              ),
               label: Text(
-                localization.restartToUpdate,
+                updateState.isGitHubSource
+                    ? localization.installNowAction
+                    : localization.restartToUpdate,
                 style: const TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
@@ -486,7 +501,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             ),
           ] else if (updateState.status == UpdateStatus.error) ...[
             Text(
-              localization.updateError,
+              updateState.errorMessage ?? localization.updateError,
               style: const TextStyle(
                 fontSize: 15.0,
                 color: AppDesignColors.textSecondary,
@@ -520,7 +535,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 const SizedBox(width: AppSpacing.sm),
                 IconButton(
                   icon: const Icon(Icons.refresh_rounded, color: AppDesignColors.primaryDark),
-                  tooltip: 'మళ్లీ ప్రయత్నించండి',
+                  tooltip: localization.tryAgainTooltip,
                   onPressed: () => updateNotifier.checkForUpdate(silent: false),
                 ),
               ],
@@ -530,7 +545,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             Text(
               updateState.status == UpdateStatus.upToDate
                   ? localization.upToDate
-                  : 'తాజా ఫీచర్లు మరియు సెక్యూరిటీ కోసం యాప్‌ను అప్‌డేట్ చేసుకోండి.',
+                  : localization.updateCheckSubtitle,
               style: const TextStyle(
                 fontSize: 15.0,
                 color: AppDesignColors.textSecondary,

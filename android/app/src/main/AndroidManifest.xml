@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.INTERNET"/> <!-- Required for font fetching or fallbacks -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/> <!-- Required for in-app OTA APK installation -->
 
     <!-- Queries declared for Android 11+ package visibility of WhatsApp, Dialer, and Speech Recognition -->
     <queries>
