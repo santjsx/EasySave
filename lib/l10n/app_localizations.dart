@@ -577,7 +577,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyTitle.
   ///
   /// In te, this message translates to:
-  /// **'గోప్యతా విధానం (Privacy Policy)'**
+  /// **'గోప్యతా విధానం'**
   String get privacyPolicyTitle;
 
   /// No description provided for @privacyPolicyText.
@@ -589,7 +589,7 @@ abstract class AppLocalizations {
   /// No description provided for @termsOfServiceTitle.
   ///
   /// In te, this message translates to:
-  /// **'నిబంధనలు (Terms of Service)'**
+  /// **'నిబంధనలు'**
   String get termsOfServiceTitle;
 
   /// No description provided for @termsOfServiceText.

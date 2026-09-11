@@ -162,7 +162,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
               // 3. Permissions Status Section
               Text(
-                'యాప్ అనుమతులు (Permissions)',
+                'యాప్ అనుమతులు',
                 style: AppTypography.sectionHeader.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppDesignColors.textPrimary,
@@ -172,7 +172,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
               _buildPermissionTile(
                 icon: Icons.contacts_rounded,
-                title: 'కాంటాక్ట్స్ (Contacts)',
+                title: 'కాంటాక్ట్స్',
                 isGranted: _contactsGranted,
                 onRequest: () async {
                   await Permission.contacts.request();
@@ -183,7 +183,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
               _buildPermissionTile(
                 icon: Icons.phone_in_talk_rounded,
-                title: 'ఫోన్ & కాల్స్ (Phone & Calls)',
+                title: 'ఫోన్ కాల్స్',
                 isGranted: _phoneGranted,
                 onRequest: () async {
                   await Permission.phone.request();
@@ -194,7 +194,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
               _buildPermissionTile(
                 icon: Icons.mic_rounded,
-                title: 'మైక్రోఫోన్ (Voice Input)',
+                title: 'మైక్రోఫోన్ (వాయిస్)',
                 isGranted: _micGranted,
                 onRequest: () async {
                   await Permission.microphone.request();
@@ -205,7 +205,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
               _buildPermissionTile(
                 icon: Icons.photo_library_rounded,
-                title: 'ఫోటోలు (Gallery & Photos)',
+                title: 'ఫోటోలు & గ్యాలరీ',
                 isGranted: _photosGranted,
                 onRequest: () async {
                   await Permission.photos.request();
@@ -256,11 +256,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                           size: 28.0,
                         ),
                         const SizedBox(width: AppSpacing.xs),
-                        Text(
-                          localization.privacyPolicyTitle,
-                          style: AppTypography.sectionHeader.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppDesignColors.textPrimary,
+                        Expanded(
+                          child: Text(
+                            localization.privacyPolicyTitle,
+                            style: AppTypography.sectionHeader.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppDesignColors.textPrimary,
+                            ),
                           ),
                         ),
                       ],

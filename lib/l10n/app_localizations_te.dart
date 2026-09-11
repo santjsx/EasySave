@@ -254,14 +254,14 @@ class AppLocalizationsTe extends AppLocalizations {
   String get developerCredits => 'Developed with ❤️ by Santosh Reddy';
 
   @override
-  String get privacyPolicyTitle => 'గోప్యతా విధానం (Privacy Policy)';
+  String get privacyPolicyTitle => 'గోప్యతా విధానం';
 
   @override
   String get privacyPolicyText =>
       'EasySave మీ గోప్యతను గౌరవిస్తుంది. ఈ యాప్ పూర్తిగా మీ ఫోన్ లోనే పనిచేస్తుంది (100% ఆఫ్‌లైన్). మీ నంబర్లు, కాల్స్, ఫోటోలు ఏ సర్వర్‌కు పంపబడవు. పూర్తి భద్రత మరియు నమ్మకం.';
 
   @override
-  String get termsOfServiceTitle => 'నిబంధనలు (Terms of Service)';
+  String get termsOfServiceTitle => 'నిబంధనలు';
 
   @override
   String get termsOfServiceText =>

@@ -69,34 +69,15 @@ class MainActivity: FlutterActivity() {
         if (cleanNumber.isEmpty()) return false
 
         return try {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                val callIntent = Intent(Intent.ACTION_CALL).apply {
-                    data = Uri.parse("tel:$cleanNumber")
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                }
-                startActivity(callIntent)
-                true
-            } else {
-                val dialIntent = Intent(Intent.ACTION_DIAL).apply {
-                    data = Uri.parse("tel:$cleanNumber")
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                }
-                startActivity(dialIntent)
-                true
+            val dialIntent = Intent(Intent.ACTION_DIAL).apply {
+                data = Uri.parse("tel:$cleanNumber")
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
+            startActivity(dialIntent)
+            true
         } catch (e: Exception) {
             e.printStackTrace()
-            try {
-                val fallbackDial = Intent(Intent.ACTION_DIAL).apply {
-                    data = Uri.parse("tel:$cleanNumber")
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                }
-                startActivity(fallbackDial)
-                true
-            } catch (e2: Exception) {
-                e2.printStackTrace()
-                false
-            }
+            false
         }
     }
 

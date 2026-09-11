@@ -37,13 +37,15 @@ class AmmaNannaApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
 
-      // Ensure text scaling and layouts remain readable (minimum 18sp bounds)
+      // Ensure text scaling and layouts remain readable without ballooning into giant sizes
+      // EasySave's base typography is already enlarged for seniors (18sp - 26sp).
+      // Clamping between 0.95 and 1.15 prevents OS "Large / Largest" display zoom
+      // from breaking layouts, clipping text, or making UI comically oversized.
       builder: (context, child) {
         final TextScaler textScaler = MediaQuery.textScalerOf(context);
         return MediaQuery(
-          // Protect against very small systems font settings by mapping to a minimum scale
           data: MediaQuery.of(context).copyWith(
-            textScaler: textScaler.clamp(minScaleFactor: 1.0),
+            textScaler: textScaler.clamp(minScaleFactor: 0.95, maxScaleFactor: 1.15),
           ),
           child: child!,
         );

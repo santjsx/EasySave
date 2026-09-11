@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
@@ -26,9 +25,10 @@ class CallService {
 
   /// Initiates a phone call in a single click with dual-tier fallback.
   ///
-  /// - Tier 1: Attempts instant direct calling via `Intent.ACTION_CALL` if permission is granted.
-  /// - Tier 2: Seamlessly falls back to `Intent.ACTION_DIAL` (`tel:<cleanNumber>`), which
-  ///   requires ZERO permissions on Android and opens the system dialer with the number ready.
+  /// - Tier 1: Launches Android's official dialer via `Intent.ACTION_DIAL` (`tel:<cleanNumber>`).
+  ///   This is Google's recommended standard for non-dialer apps. It requires ZERO permissions,
+  ///   never freezes on dual-SIM devices (allows selecting SIM 1 or SIM 2), and opens instantly.
+  /// - Tier 2: Seamlessly falls back to native platform channel if url_launcher is restricted.
   Future<bool> makeCall(BuildContext context, String rawPhone) async {
     final localization = AppLocalizations.of(context);
     final String cleanPhone = sanitizePhoneNumber(rawPhone);
@@ -42,28 +42,7 @@ class CallService {
 
     HapticFeedback.mediumImpact();
 
-    // 1. Check if CALL_PHONE permission is already granted for direct connection
-    bool directCallSucceeded = false;
-    try {
-      final phoneStatus = await Permission.phone.status;
-      if (phoneStatus.isGranted) {
-        final result = await _platform.invokeMethod<bool>(
-          'makeCall',
-          {'phoneNumber': cleanPhone},
-        );
-        directCallSucceeded = result == true;
-      }
-    } catch (e) {
-      debugPrint('Native direct call invocation error: $e');
-      directCallSucceeded = false;
-    }
-
-    if (directCallSucceeded) {
-      return true;
-    }
-
-    // 2. Zero-permission fallback: Launch Android dialer via ACTION_DIAL
-    // This NEVER fails on any Android version, regardless of user permissions.
+    // 1. Primary: Launch Android system dialer via ACTION_DIAL (Zero permissions, 100% reliable across dual-SIM)
     try {
       final Uri telUri = Uri.parse('tel:$cleanPhone');
       final bool launched = await launchUrl(
@@ -74,17 +53,19 @@ class CallService {
         return true;
       }
     } catch (e) {
-      debugPrint('url_launcher externalApplication fallback error: $e');
+      debugPrint('url_launcher ACTION_DIAL error: $e');
     }
 
-    // 3. Ultimate native fallback through platform channel if URL launcher was blocked
+    // 2. Fallback: Native platform channel dialer dispatch if url_launcher failed
     try {
       final fallbackResult = await _platform.invokeMethod<bool>(
         'makeCall',
         {'phoneNumber': cleanPhone},
       );
       if (fallbackResult == true) return true;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Native platform fallback error: $e');
+    }
 
     if (context.mounted && localization != null) {
       EasySnackBar.showError(context, localization.callFailed);

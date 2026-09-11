@@ -1,3 +1,28 @@
+# EasySave v1.3.2 Release - Dual-SIM Calling Fix & Text Scaling Safeguards 🚀📱
+
+We are proud to release version **1.3.2**, fixing the dual-SIM calling freeze (blank white screen on Realme / Oppo / ColorOS devices) and preventing oversized layout ballooning when Android system display/font size is set to Large or Largest.
+
+---
+
+## 🛠️ What's Changed in v1.3.2
+### 📞 Dual-SIM Universal Calling (Zero-Freeze & Zero-Blank Screen)
+*   **Google-Standard ACTION_DIAL Architecture:** Dispatches phone numbers directly to Android's official dialer via `Intent.ACTION_DIAL` (`tel:<number>`), completely eradicating the dual-SIM blank screen freeze caused by `ACTION_CALL` on Realme, Oppo, OnePlus, and ColorOS devices.
+*   **Seamless SIM 1 / SIM 2 Selection:** On dual-SIM phones, the native dialer cleanly presents SIM 1 and SIM 2 call buttons with the number prefilled, allowing effortless 1-tap dialing.
+*   **Zero Permissions Required:** Eliminates dependency on dangerous `CALL_PHONE` runtime permissions, ensuring 100% reliable calling on all Android versions (8 through 16).
+*   **Caller ID Conflicts Eradicated:** Prevents third-party and OEM Caller ID scanners from intercepting and freezing the calling UI.
+
+### 📐 Text Scaling Safeguards & Layout Overflow Fix ("Too Much Big" Solved)
+*   **Clamped Text Scaling (`0.95` to `1.15`):** Protects EasySave's already-enlarged elder-friendly base typography from multiplying uncontrollably into gigantic proportions when Android system display settings are set to Large or Largest.
+*   **Settings Header Overflow Fixed:** Wrapped the Privacy Policy title in `Expanded` to prevent horizontal text clipping.
+*   **Natural Conversational Telugu in Permissions:** Simplified permission titles to clean, natural Telugu without redundant English parentheticals:
+    *   `కాంటాక్ట్స్`
+    *   `ఫోన్ కాల్స్`
+    *   `మైక్రోఫోన్ (వాయిస్)`
+    *   `ఫోటోలు & గ్యాలరీ`
+    *   `యాప్ అనుమతులు`
+
+---
+
 # EasySave v1.3.1 Release - 1-Click Calling, Intelligent Live Search & Recent Calls Fix 🚀📞
 
 We are proud to release version **1.3.1**, bringing a zero-edge-case 1-Click Calling engine across the entire app, layout overflow fixes for recent calls, intelligent multi-tiered live search with fuzzy matching, voice recipient selection for WhatsApp photo sharing, and empathetic Telugu empty states.
