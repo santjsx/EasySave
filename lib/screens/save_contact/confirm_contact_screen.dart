@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../providers/save_contact_provider.dart';
 import '../../routing/routes.dart';
 import '../../theme/colors.dart';
@@ -20,21 +21,27 @@ class ConfirmContactScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(saveContactProvider);
     final notifier = ref.read(saveContactProvider.notifier);
+    final localization = AppLocalizations.of(context)!;
 
     return Stack(
       children: [
         Scaffold(
+          backgroundColor: AppDesignColors.surface,
           appBar: AppBar(
+            backgroundColor: AppDesignColors.surface,
+            elevation: 0,
+            centerTitle: true,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new_rounded),
-              tooltip: 'వెనక్కి', // Accessible tooltip
-              onPressed: () {
-                context.pop();
-              },
+              tooltip: localization.backButton,
+              onPressed: () => context.pop(),
             ),
             title: Text(
-              'సరిచూసుకోండి', // Telugu: "Confirm details"
-              style: AppTypography.appName,
+              localization.confirmLabel,
+              style: AppTypography.appName.copyWith(
+                color: AppDesignColors.textPrimary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           body: SafeArea(
@@ -66,6 +73,7 @@ class ConfirmContactScreen extends ConsumerWidget {
                           state.recognizedName,
                           style: AppTypography.confirmedName.copyWith(
                             color: AppDesignColors.textPrimary,
+                            fontSize: 30.0,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -73,7 +81,7 @@ class ConfirmContactScreen extends ConsumerWidget {
                         Text(
                           _formatPhoneNumber(state.phoneNumber),
                           style: AppTypography.numberDisplay.copyWith(
-                            fontSize: 32.0,
+                            fontSize: 26.0,
                             color: AppDesignColors.textSecondary,
                             letterSpacing: 2.0,
                           ),
@@ -83,23 +91,23 @@ class ConfirmContactScreen extends ConsumerWidget {
                     ),
                   ),
                   const Spacer(),
+
                   // 2. Commit save action button
                   EasyButton(
-                    label: 'సేవ్ చేయండి', // Save in Telugu script
+                    label: localization.saveButton,
+                    color: AppDesignColors.primary,
                     onPressed: () async {
                       final bool success = await notifier.commitContact();
-                      
+
                       if (context.mounted) {
                         if (success) {
-                          // Clean flow: navigate to Success screen
                           context.push(AppRoutes.saveSuccess);
                         } else {
-                          // Display specific error message using localized snackbars
                           EasySnackBar.showError(
                             context,
                             state.errorMessage.isNotEmpty
                                 ? state.errorMessage
-                                : 'సేవ్ చేయడం కుదరలేదు, మళ్ళీ ప్రయత్నించండి',
+                                : localization.generalErrorMessage,
                           );
                         }
                       }
@@ -113,17 +121,18 @@ class ConfirmContactScreen extends ConsumerWidget {
         // Overlays modal loading block during async write process
         if (state.isSaving)
           const EasyLoading(
-            label: 'సేవ్ చేస్తున్నాము...', // "Saving..." in Telugu
+            label: 'సేవ్ చేస్తున్నాము...',
           ),
       ],
     );
   }
 
-  /// Splitting string for high readability: +91 XXXXX XXXXX (or XXXXX XXXXX)
   String _formatPhoneNumber(String raw) {
-    if (raw.length != 10) return raw;
-    final String partA = raw.substring(0, 5);
-    final String partB = raw.substring(5, 10);
-    return '+91 $partA $partB';
+    if (raw.length == 10) {
+      final String partA = raw.substring(0, 5);
+      final String partB = raw.substring(5, 10);
+      return '+91 $partA $partB';
+    }
+    return raw;
   }
 }

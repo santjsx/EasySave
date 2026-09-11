@@ -88,6 +88,12 @@ class EasyNumberPad extends StatelessWidget {
               HapticFeedback.lightImpact(); // Native light tap ripple haptics
               onDigitTap(digit);
             },
+            onLongPress: digit == '0'
+                ? () {
+                    HapticFeedback.mediumImpact();
+                    onDigitTap('+');
+                  }
+                : null,
             splashColor: AppDesignColors.primaryLight,
             highlightColor: AppDesignColors.primaryLight.withValues(alpha: 0.5),
             child: Center(

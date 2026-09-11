@@ -12,10 +12,9 @@ import '../../theme/typography.dart';
 import '../../widgets/easy_button.dart';
 import '../../widgets/easy_card.dart';
 import '../../widgets/easy_microphone_button.dart';
-import '../../widgets/easy_snackbar.dart';
 
-/// Screen 1 of Save Contact: Voice Name Entry
-/// Guides the user to tap the pulsing microphone and speak the name in Telugu.
+/// Screen 1 of Save Contact: Voice Name Entry.
+/// Guides the user to tap the pulsing microphone and speak the name in natural daily Telugu.
 class VoiceNameScreen extends ConsumerWidget {
   const VoiceNameScreen({super.key});
 
@@ -23,6 +22,7 @@ class VoiceNameScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(saveContactProvider);
     final notifier = ref.read(saveContactProvider.notifier);
+    final localization = AppLocalizations.of(context)!;
 
     // Dynamic state evaluation
     final bool isListening = state.speechState == SpeechState.listening;
@@ -30,18 +30,25 @@ class VoiceNameScreen extends ConsumerWidget {
     final bool hasError = state.speechState == SpeechState.error;
 
     return Scaffold(
+      backgroundColor: AppDesignColors.surface,
       appBar: AppBar(
+        backgroundColor: AppDesignColors.surface,
+        elevation: 0,
+        centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          tooltip: 'వెనక్కి', // Accessible tooltip
+          tooltip: localization.backButton,
           onPressed: () {
             notifier.resetWizard();
             context.pop();
           },
         ),
         title: Text(
-          'పేరు చెప్పండి', // Telugu: "Speak the Name"
-          style: AppTypography.appName,
+          localization.speakName,
+          style: AppTypography.appName.copyWith(
+            color: AppDesignColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: SafeArea(
@@ -54,6 +61,7 @@ class VoiceNameScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: AppSpacing.xl),
+
               // Main Microphone Pulser Area
               Expanded(
                 child: Center(
@@ -71,16 +79,21 @@ class VoiceNameScreen extends ConsumerWidget {
                         },
                       ),
                       const SizedBox(height: AppSpacing.xxl),
+
                       // Instruction label changes reactively
                       Text(
                         isListening
-                            ? 'వింటున్నాము...' // "Listening..." in Telugu
-                            : 'పై బటన్ నొక్కి పేరు చెప్పండి', // "Tap mic and say name" in Telugu
+                            ? localization.listeningLabel
+                            : localization.pressMicPrompt,
                         style: AppTypography.primaryLabel.copyWith(
-                          color: isListening ? AppDesignColors.success : AppDesignColors.textPrimary,
+                          color: isListening
+                              ? AppDesignColors.success
+                              : AppDesignColors.textPrimary,
+                          fontSize: 24.0,
                         ),
                         textAlign: TextAlign.center,
                       ),
+
                       // Live speech recognition feedback
                       if (isListening && state.recognizedName.isNotEmpty) ...[
                         const SizedBox(height: AppSpacing.lg),
@@ -90,7 +103,7 @@ class VoiceNameScreen extends ConsumerWidget {
                             vertical: AppSpacing.md,
                           ),
                           decoration: BoxDecoration(
-                            color: AppDesignColors.primaryLight.withValues(alpha: 0.4),
+                            color: AppDesignColors.primaryLight.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
                             border: Border.all(
                               color: AppDesignColors.primary.withValues(alpha: 0.3),
@@ -101,10 +114,11 @@ class VoiceNameScreen extends ConsumerWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                AppLocalizations.of(context)!.hearingLabel,
+                                localization.hearingLabel,
                                 style: AppTypography.secondaryText.copyWith(
                                   color: AppDesignColors.textSecondary,
                                   fontWeight: FontWeight.bold,
+                                  fontSize: 18.0,
                                 ),
                               ),
                               const SizedBox(height: AppSpacing.xs),
@@ -113,6 +127,7 @@ class VoiceNameScreen extends ConsumerWidget {
                                 style: AppTypography.confirmedName.copyWith(
                                   color: AppDesignColors.primaryDark,
                                   fontWeight: FontWeight.bold,
+                                  fontSize: 28.0,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -136,14 +151,16 @@ class VoiceNameScreen extends ConsumerWidget {
                         state.recognizedName,
                         style: AppTypography.confirmedName.copyWith(
                           color: AppDesignColors.textPrimary,
+                          fontSize: 30.0,
                         ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       Text(
-                        'ఇది కరెక్టేనా?', // Telugu: "Is this correct?"
+                        localization.isCorrectQuestion,
                         style: AppTypography.sectionHeader.copyWith(
                           color: AppDesignColors.textSecondary,
+                          fontSize: 20.0,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -152,9 +169,9 @@ class VoiceNameScreen extends ConsumerWidget {
                         children: [
                           Expanded(
                             child: EasyButton(
-                              label: 'అవును', // Yes in Telugu
+                              label: localization.yesButton,
+                              color: AppDesignColors.primary,
                               onPressed: () {
-                                // Navigate to Dialer Keypad Screen
                                 context.push(AppRoutes.numberEntry);
                               },
                             ),
@@ -162,7 +179,7 @@ class VoiceNameScreen extends ConsumerWidget {
                           const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: EasyButton(
-                              label: 'మళ్ళీ చెప్పండి', // Retry in Telugu
+                              label: localization.tryAgainButton,
                               variant: EasyButtonVariant.outlined,
                               onPressed: () {
                                 notifier.resetVoiceName();
@@ -189,8 +206,14 @@ class VoiceNameScreen extends ConsumerWidget {
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: Text(
-                          state.errorMessage.isNotEmpty ? state.errorMessage : 'అర్థం కాలేదు, మళ్ళీ చెప్పండి',
-                          style: AppTypography.bodyText.copyWith(color: AppDesignColors.error),
+                          state.errorMessage.isNotEmpty
+                              ? state.errorMessage
+                              : localization.speechNotRecognized,
+                          style: AppTypography.bodyText.copyWith(
+                            color: AppDesignColors.error,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -200,14 +223,15 @@ class VoiceNameScreen extends ConsumerWidget {
               ],
 
               const Spacer(),
-              // Fallback Keyboard Entry trigger (satisfies PRD fallbacks)
+
+              // Fallback Keyboard Entry trigger
               TextButton(
                 onPressed: () => _showManualKeyboardEntry(context, ref),
                 style: TextButton.styleFrom(
                   minimumSize: const Size(double.infinity, AppSpacing.minTouchTarget),
                 ),
                 child: Text(
-                  'కీబోర్డ్ తో టైప్ చేయండి', // "Type with keyboard" in Telugu
+                  localization.typeWithKeyboard,
                   style: AppTypography.secondaryText.copyWith(
                     decoration: TextDecoration.underline,
                     color: AppDesignColors.primaryDark,
@@ -222,7 +246,6 @@ class VoiceNameScreen extends ConsumerWidget {
     );
   }
 
-  /// Launches a custom text entry dialog allowing Telugu keyboard input (Fallback)
   void _showManualKeyboardEntry(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
@@ -230,7 +253,6 @@ class VoiceNameScreen extends ConsumerWidget {
         return _ManualNameDialog(
           onConfirm: (typedName) {
             ref.read(saveContactProvider.notifier).setManualName(typedName);
-            // Pushes direct to dialer screen
             context.push(AppRoutes.numberEntry);
           },
         );
@@ -239,81 +261,96 @@ class VoiceNameScreen extends ConsumerWidget {
   }
 }
 
-/// Private stateful widget to securely manage TextEditingController's lifecycle and prevent memory leaks.
 class _ManualNameDialog extends StatefulWidget {
   final Function(String typedName) onConfirm;
 
-  const _ManualNameDialog({
-    required this.onConfirm,
-  });
+  const _ManualNameDialog({required this.onConfirm});
 
   @override
   State<_ManualNameDialog> createState() => _ManualNameDialogState();
 }
 
 class _ManualNameDialogState extends State<_ManualNameDialog> {
-  late final TextEditingController _textController;
+  late final TextEditingController _nameTextController;
 
   @override
   void initState() {
     super.initState();
-    _textController = TextEditingController();
+    _nameTextController = TextEditingController();
   }
 
   @override
   void dispose() {
-    _textController.dispose(); // Securely dispose controller to prevent leaks!
+    _nameTextController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
+
     return AlertDialog(
+      backgroundColor: AppDesignColors.surfaceCard,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        side: const BorderSide(color: AppDesignColors.divider, width: 1.5),
+      ),
       title: Text(
-        'పేరు టైప్ చేయండి', // Telugu: "Type the name"
-        style: AppTypography.sectionHeader,
+        localization.editNameLabel,
+        style: AppTypography.sectionHeader.copyWith(
+          fontWeight: FontWeight.bold,
+          color: AppDesignColors.textPrimary,
+        ),
       ),
       content: TextField(
-        controller: _textController,
+        controller: _nameTextController,
         autofocus: true,
-        style: AppTypography.bodyText,
+        style: const TextStyle(
+          fontSize: 20.0,
+          fontWeight: FontWeight.bold,
+          fontFamily: AppTypography.fontFamily,
+        ),
         decoration: InputDecoration(
-          hintText: 'రవి కుమార్', // Example in Telugu script
-          hintStyle: AppTypography.hintText,
-          fillColor: AppDesignColors.surfaceMuted,
-          filled: true,
+          hintText: localization.invalidNameError,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
-            borderSide: BorderSide.none,
           ),
         ),
-        textCapitalization: TextCapitalization.words,
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(
-            'వెనక్కి', // Back in Telugu
-            style: AppTypography.secondaryText,
+            localization.cancelButton,
+            style: const TextStyle(
+              fontSize: 18.0,
+              color: AppDesignColors.textSecondary,
+              fontFamily: AppTypography.fontFamily,
+            ),
           ),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            minimumSize: const Size(120, 56),
             backgroundColor: AppDesignColors.primary,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
           ),
           onPressed: () {
-            final typedName = _textController.text.trim();
-            if (typedName.isNotEmpty) {
+            final name = _nameTextController.text.trim();
+            if (name.isNotEmpty) {
               Navigator.of(context).pop();
-              widget.onConfirm(typedName);
-            } else {
-              EasySnackBar.showError(context, 'సరైన పేరు ఇవ్వండి');
+              widget.onConfirm(name);
             }
           },
           child: Text(
-            'సరే', // OK in Telugu
-            style: AppTypography.buttonText.copyWith(fontSize: 20),
+            localization.nextButton,
+            style: const TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: AppTypography.fontFamily,
+            ),
           ),
         ),
       ],

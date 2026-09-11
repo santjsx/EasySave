@@ -27,6 +27,7 @@ class QuickSaveScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(quickSaveProvider(phoneNumber));
     final notifier = ref.read(quickSaveProvider(phoneNumber).notifier);
+    final localization = AppLocalizations.of(context)!;
 
     // Dynamic state checks
     final bool isListening = state.speechState == SpeechState.listening;
@@ -34,14 +35,18 @@ class QuickSaveScreen extends ConsumerWidget {
     final bool hasError = state.speechState == SpeechState.error;
 
     return Scaffold(
+      backgroundColor: AppDesignColors.surface,
       appBar: AppBar(
+        backgroundColor: AppDesignColors.surface,
+        elevation: 0,
+        centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          tooltip: 'వెనక్కి',
+          tooltip: localization.backButton,
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'కాల్ సేవ్ చేయండి', // Telugu: "Save Call"
+          localization.saveContactLabel,
           style: AppTypography.appName.copyWith(
             color: AppDesignColors.textPrimary,
             fontWeight: FontWeight.bold,
@@ -62,18 +67,19 @@ class QuickSaveScreen extends ConsumerWidget {
                 phoneNumber,
                 style: AppTypography.appName.copyWith(
                   color: AppDesignColors.primaryDark,
-                  fontSize: 34.0,
+                  fontSize: 32.0,
                   letterSpacing: 2.0,
                   fontWeight: FontWeight.w900,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.xs),
               Text(
-                'ఈ నంబర్‌కు పేరు ఇవ్వండి', // Telugu: "Give a name to this number"
+                'ఈ నంబర్‌కు పేరు చెప్పండి',
                 style: AppTypography.secondaryText.copyWith(
                   color: AppDesignColors.textSecondary,
                   fontSize: 18.0,
+                  fontWeight: FontWeight.w600,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -99,11 +105,13 @@ class QuickSaveScreen extends ConsumerWidget {
                       const SizedBox(height: AppSpacing.xxl),
                       Text(
                         isListening
-                            ? 'వింటున్నాము...' // Telugu: "Listening..."
-                            : 'పై బటన్ నొక్కి పేరు చెప్పండి', // Telugu: "Tap mic and say name"
+                            ? localization.listeningLabel
+                            : localization.pressMicPrompt,
                         style: AppTypography.primaryLabel.copyWith(
-                          color: isListening ? AppDesignColors.success : AppDesignColors.textPrimary,
-                          fontSize: 24.0,
+                          color: isListening
+                              ? AppDesignColors.success
+                              : AppDesignColors.textPrimary,
+                          fontSize: 22.0,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -116,7 +124,7 @@ class QuickSaveScreen extends ConsumerWidget {
                             vertical: AppSpacing.md,
                           ),
                           decoration: BoxDecoration(
-                            color: AppDesignColors.primaryLight.withValues(alpha: 0.4),
+                            color: AppDesignColors.primaryLight.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
                             border: Border.all(
                               color: AppDesignColors.primary.withValues(alpha: 0.3),
@@ -127,7 +135,7 @@ class QuickSaveScreen extends ConsumerWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                AppLocalizations.of(context)!.hearingLabel,
+                                localization.hearingLabel,
                                 style: AppTypography.secondaryText.copyWith(
                                   color: AppDesignColors.textSecondary,
                                   fontWeight: FontWeight.bold,
@@ -157,7 +165,7 @@ class QuickSaveScreen extends ConsumerWidget {
               if (hasResult) ...[
                 EasyCard(
                   borderColor: AppDesignColors.primary,
-                  borderWidth: 2.5,
+                  borderWidth: 2.0,
                   child: Column(
                     children: [
                       Text(
@@ -171,7 +179,7 @@ class QuickSaveScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       Text(
-                        'ఇది కరెక్టేనా?', // Telugu: "Is this correct?"
+                        localization.isCorrectQuestion,
                         style: AppTypography.sectionHeader.copyWith(
                           color: AppDesignColors.textSecondary,
                           fontSize: 20.0,
@@ -183,14 +191,18 @@ class QuickSaveScreen extends ConsumerWidget {
                         children: [
                           Expanded(
                             child: EasyButton(
-                              label: 'సేవ్ చేయండి', // Save in Telugu
+                              label: localization.saveButton,
+                              color: AppDesignColors.primary,
                               onPressed: state.isSaving
                                   ? null
                                   : () async {
                                       final bool ok = await notifier.commitContact();
                                       if (ok && context.mounted) {
-                                        EasySnackBar.showSuccess(context, 'నంబర్ సేవ్ అయింది'); // Contact saved
-                                        context.pop(); // Returns directly to call log
+                                        EasySnackBar.showSuccess(
+                                          context,
+                                          localization.contactSavedToast,
+                                        );
+                                        context.pop();
                                       }
                                     },
                             ),
@@ -198,7 +210,7 @@ class QuickSaveScreen extends ConsumerWidget {
                           const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: EasyButton(
-                              label: 'మళ్లీ చెప్పు', // Say again in Telugu
+                              label: localization.tryAgainButton,
                               variant: EasyButtonVariant.outlined,
                               onPressed: () {
                                 notifier.resetVoiceName();
@@ -227,7 +239,9 @@ class QuickSaveScreen extends ConsumerWidget {
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: Text(
-                          state.errorMessage.isNotEmpty ? state.errorMessage : 'అర్థం కాలేదు, మళ్ళీ చెప్పండి',
+                          state.errorMessage.isNotEmpty
+                              ? state.errorMessage
+                              : localization.speechNotRecognized,
                           style: AppTypography.bodyText.copyWith(
                             color: AppDesignColors.error,
                             fontSize: 18.0,
@@ -250,12 +264,11 @@ class QuickSaveScreen extends ConsumerWidget {
                   minimumSize: const Size(double.infinity, AppSpacing.minTouchTarget),
                 ),
                 child: Text(
-                  'కీబోర్డ్ తో టైప్ చేయండి', // "Type with keyboard" in Telugu
+                  localization.typeWithKeyboard,
                   style: AppTypography.secondaryText.copyWith(
                     decoration: TextDecoration.underline,
                     color: AppDesignColors.primaryDark,
                     fontWeight: FontWeight.bold,
-                    fontSize: 18.0,
                   ),
                 ),
               ),
@@ -266,18 +279,19 @@ class QuickSaveScreen extends ConsumerWidget {
     );
   }
 
-  /// Launches fallback dialogue and triggers direct contact persist upon keyboard entry confirm.
   void _showManualKeyboardEntry(BuildContext context, WidgetRef ref, QuickSaveNotifier notifier) {
+    final localization = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return _ManualNameDialog(
-          onConfirm: (typedName) async {
-            notifier.setManualName(typedName);
-            final bool ok = await notifier.commitContact();
+      builder: (dialogCtx) {
+        return _QuickSaveManualDialog(
+          onConfirm: (name) async {
+            notifier.setManualName(name);
+            final ok = await notifier.commitContact();
             if (ok && context.mounted) {
-              EasySnackBar.showSuccess(context, 'నంబర్ సేవ్ అయింది'); // Contact saved
-              context.pop(); // Close dialog or navigate back
+              EasySnackBar.showSuccess(context, localization.contactSavedToast);
+              context.pop();
             }
           },
         );
@@ -286,79 +300,96 @@ class QuickSaveScreen extends ConsumerWidget {
   }
 }
 
-/// Private stateful manual entry dialogue to cleanly secure TextEditingController lifecycle.
-class _ManualNameDialog extends StatefulWidget {
-  final Function(String typedName) onConfirm;
+class _QuickSaveManualDialog extends StatefulWidget {
+  final Function(String name) onConfirm;
 
-  const _ManualNameDialog({required this.onConfirm});
+  const _QuickSaveManualDialog({required this.onConfirm});
 
   @override
-  State<_ManualNameDialog> createState() => _ManualNameDialogState();
+  State<_QuickSaveManualDialog> createState() => _QuickSaveManualDialogState();
 }
 
-class _ManualNameDialogState extends State<_ManualNameDialog> {
-  late final TextEditingController _textController;
+class _QuickSaveManualDialogState extends State<_QuickSaveManualDialog> {
+  late final TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
-    _textController = TextEditingController();
+    _controller = TextEditingController();
   }
 
   @override
   void dispose() {
-    _textController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
+
     return AlertDialog(
+      backgroundColor: AppDesignColors.surfaceCard,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        side: const BorderSide(color: AppDesignColors.divider, width: 1.5),
+      ),
       title: Text(
-        'పేరు టైప్ చేయండి', // Telugu: "Type the name"
-        style: AppTypography.sectionHeader.copyWith(fontSize: 22.0),
+        localization.editNameLabel,
+        style: AppTypography.sectionHeader.copyWith(
+          fontWeight: FontWeight.bold,
+          color: AppDesignColors.textPrimary,
+        ),
       ),
       content: TextField(
-        controller: _textController,
+        controller: _controller,
         autofocus: true,
-        style: AppTypography.bodyText.copyWith(fontSize: 18.0),
+        style: const TextStyle(
+          fontSize: 20.0,
+          fontWeight: FontWeight.bold,
+          fontFamily: AppTypography.fontFamily,
+        ),
         decoration: InputDecoration(
-          hintText: 'రవి కుమార్',
-          hintStyle: AppTypography.hintText.copyWith(fontSize: 18.0),
-          fillColor: AppDesignColors.surfaceMuted,
-          filled: true,
+          hintText: localization.invalidNameError,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
-            borderSide: BorderSide.none,
           ),
         ),
-        textCapitalization: TextCapitalization.words,
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(
-            'వెనక్కి',
-            style: AppTypography.secondaryText.copyWith(fontSize: 18.0),
+            localization.cancelButton,
+            style: const TextStyle(
+              fontSize: 18.0,
+              color: AppDesignColors.textSecondary,
+              fontFamily: AppTypography.fontFamily,
+            ),
           ),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            minimumSize: const Size(120, 56),
             backgroundColor: AppDesignColors.primary,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
           ),
           onPressed: () {
-            final typedName = _textController.text.trim();
-            if (typedName.isNotEmpty) {
+            final name = _controller.text.trim();
+            if (name.isNotEmpty) {
               Navigator.of(context).pop();
-              widget.onConfirm(typedName);
-            } else {
-              EasySnackBar.showError(context, 'సరైన పేరు ఇవ్వండి');
+              widget.onConfirm(name);
             }
           },
           child: Text(
-            'సరే',
-            style: AppTypography.buttonText.copyWith(fontSize: 20),
+            localization.saveButton,
+            style: const TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: AppTypography.fontFamily,
+            ),
           ),
         ),
       ],

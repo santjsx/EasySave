@@ -153,6 +153,35 @@ class AppDesignTheme {
       ),
 
       // -------------------------------------------------------------
+      // Input Decoration Design System
+      // -------------------------------------------------------------
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppDesignColors.surfaceCard,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: 18.0,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
+          borderSide: const BorderSide(color: AppDesignColors.divider, width: 1.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
+          borderSide: const BorderSide(color: AppDesignColors.divider, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
+          borderSide: const BorderSide(color: AppDesignColors.primary, width: 2.0),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
+          borderSide: const BorderSide(color: AppDesignColors.error, width: 2.0),
+        ),
+        hintStyle: AppTypography.hintText,
+      ),
+
+      // -------------------------------------------------------------
       // Progress Indicator Theme
       // -------------------------------------------------------------
       progressIndicatorTheme: const ProgressIndicatorThemeData(

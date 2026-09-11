@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../providers/save_contact_provider.dart';
 import '../../routing/routes.dart';
 import '../../theme/colors.dart';
@@ -11,7 +12,7 @@ import '../../theme/typography.dart';
 import '../../widgets/easy_button.dart';
 
 /// Screen 4 of Save Contact: Success notification views.
-/// Enforces Rule 15: Timed auto-dismissal back to home after exactly 2500ms.
+/// Features high-contrast checkmark and auto-dismissal back to home after 2500ms.
 class SaveContactSuccessScreen extends ConsumerStatefulWidget {
   const SaveContactSuccessScreen({super.key});
 
@@ -25,8 +26,6 @@ class _SaveContactSuccessScreenState extends ConsumerState<SaveContactSuccessScr
   @override
   void initState() {
     super.initState();
-
-    // Enforce Rule 15: Trigger 2500ms timer to return to Home dashboard
     _dismissTimer = Timer(const Duration(milliseconds: 2500), () {
       _returnToHome();
     });
@@ -34,14 +33,12 @@ class _SaveContactSuccessScreenState extends ConsumerState<SaveContactSuccessScr
 
   @override
   void dispose() {
-    // Enforce Rule 15: Cancel timer explicitly on dispose to prevent leaks
     _dismissTimer?.cancel();
     super.dispose();
   }
 
   void _returnToHome() {
     if (mounted) {
-      // Clear wizard registers in Riverpod
       ref.read(saveContactProvider.notifier).resetWizard();
       context.go(AppRoutes.home);
     }
@@ -50,9 +47,10 @@ class _SaveContactSuccessScreenState extends ConsumerState<SaveContactSuccessScr
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(saveContactProvider);
+    final localization = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: AppDesignColors.successLight, // Warm green success tint
+      backgroundColor: AppDesignColors.successLight,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -64,7 +62,7 @@ class _SaveContactSuccessScreenState extends ConsumerState<SaveContactSuccessScr
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Spacer(),
-              // 1. Success check circle indicator (80dp)
+              // 1. Success check circle indicator
               Container(
                 width: 120.0,
                 height: 120.0,
@@ -83,19 +81,23 @@ class _SaveContactSuccessScreenState extends ConsumerState<SaveContactSuccessScr
                 ),
               ),
               const SizedBox(height: AppSpacing.xxl),
-              // 2. High visibility success titles
+
+              // 2. High visibility success title
               Text(
-                'సేవ్ అయింది!', // "Saved!" in Telugu
-                style: AppTypography.successHeading,
+                localization.savedSuccess,
+                style: AppTypography.successHeading.copyWith(
+                  fontSize: 34.0,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.lg),
-              
-              // 3. Render saved details card
+
+              // 3. Render saved details
               Text(
                 state.recognizedName,
                 style: AppTypography.confirmedName.copyWith(
                   color: AppDesignColors.textPrimary,
+                  fontSize: 30.0,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -104,14 +106,17 @@ class _SaveContactSuccessScreenState extends ConsumerState<SaveContactSuccessScr
                 _formatPhoneNumber(state.phoneNumber),
                 style: AppTypography.sectionHeader.copyWith(
                   color: AppDesignColors.textSecondary,
+                  fontSize: 22.0,
+                  letterSpacing: 1.5,
                 ),
                 textAlign: TextAlign.center,
               ),
               const Spacer(),
-              
+
               // 4. Manual override home exit button
               EasyButton(
-                label: 'హోమ్ కి వెళ్ళు', // "Go to Home" in Telugu
+                label: localization.goHome,
+                color: AppDesignColors.success,
                 onPressed: _returnToHome,
               ),
             ],
@@ -122,9 +127,11 @@ class _SaveContactSuccessScreenState extends ConsumerState<SaveContactSuccessScr
   }
 
   String _formatPhoneNumber(String raw) {
-    if (raw.length != 10) return raw;
-    final String partA = raw.substring(0, 5);
-    final String partB = raw.substring(5, 10);
-    return '+91 $partA $partB';
+    if (raw.length == 10) {
+      final String partA = raw.substring(0, 5);
+      final String partB = raw.substring(5, 10);
+      return '+91 $partA $partB';
+    }
+    return raw;
   }
 }

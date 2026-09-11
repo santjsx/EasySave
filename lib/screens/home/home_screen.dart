@@ -12,22 +12,36 @@ import '../../routing/routes.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../theme/typography.dart';
-import '../../widgets/easy_snackbar.dart';
+import '../../providers/update_provider.dart';
+import '../../services/update_service.dart';
 
-/// Overhauled Home Screen Dashboard of EasyConnect (Amma Nanna App).
-/// Strictly adheres to modern accessibility-first mobile UI/UX principles:
-/// utilizes the Turmeric & Terracotta Warm Design System, large avatars,
-/// generous 56dp touch targets, and a fully scrollable Slivers-based call history.
-class HomeScreen extends ConsumerWidget {
+/// Clean, beautiful, and accessible Home Dashboard of EasySave.
+/// Adheres strictly to Hick's Law, Fitts's Law, and WCAG AAA standards.
+/// Presents 3 prominent actions and a preview of recent calls.
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(updateProvider.notifier).checkForUpdate(silent: true);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final callLogsState = ref.watch(callLogProvider);
+    final updateState = ref.watch(updateProvider);
     final localization = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: AppDesignColors.surface, // Sandstone global background
+      backgroundColor: AppDesignColors.surface,
       appBar: AppBar(
         backgroundColor: AppDesignColors.surface,
         elevation: 0,
@@ -38,7 +52,7 @@ class HomeScreen extends ConsumerWidget {
             Text(
               localization.appName,
               style: AppTypography.appName.copyWith(
-                color: AppDesignColors.primary,
+                color: AppDesignColors.primaryDark,
                 fontSize: 32.0,
                 fontWeight: FontWeight.w900,
               ),
@@ -56,867 +70,619 @@ class HomeScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(
-              Icons.settings,
-              size: 32.0,
-              color: AppDesignColors.primary,
+              Icons.settings_outlined,
+              size: 30.0,
+              color: AppDesignColors.primaryDark,
             ),
             tooltip: localization.settingsTitle,
-            onPressed: () => _showSettingsExplanationDialog(context),
+            onPressed: () => context.push(AppRoutes.settings),
           ),
           const SizedBox(width: AppSpacing.sm),
         ],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
-          ),
-          child: CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              // Sliver 1: Quick Actions (Top)
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    _buildQuickActions(context),
-                    const SizedBox(height: AppSpacing.xl),
-                  ],
-                ),
-              ),
+        child: RefreshIndicator(
+          color: AppDesignColors.primary,
+          onRefresh: () => ref.read(callLogProvider.notifier).refreshCalls(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // 0. Update Downloaded Notice Banner (If flexible update downloaded)
+                if (updateState.status == UpdateStatus.downloaded) ...[
+                  _buildUpdateDownloadedBanner(context, localization),
+                  const SizedBox(height: AppSpacing.md),
+                ],
 
-              // Sliver 2: Sticky "Recent Calls" Section Header Row
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: _StickyHeaderDelegate(
-                  minHeight: 60.0,
-                  maxHeight: 60.0,
-                  child: Container(
-                    color: AppDesignColors.surface, // Solid sandstone background
-                    padding: const EdgeInsets.only(
-                      bottom: AppSpacing.sm,
-                      left: AppSpacing.xs,
-                      top: AppSpacing.xs,
-                    ),
-                    child: Row(
+                // 1. Primary Action Bento Cards
+                _buildActionCards(context),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                // 2. Recent Calls Section Header with "View All" Navigation
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
                       children: [
                         const Icon(
-                          Icons.phone_in_talk_rounded,
-                          color: AppDesignColors.primary,
-                          size: 28.0,
+                          Icons.history_rounded,
+                          color: AppDesignColors.primaryDark,
+                          size: 26.0,
                         ),
                         const SizedBox(width: AppSpacing.xs),
                         Text(
                           localization.recentCallsTitle,
                           style: AppTypography.sectionHeader.copyWith(
-                            color: AppDesignColors.textPrimary,
                             fontWeight: FontWeight.bold,
+                            color: AppDesignColors.textPrimary,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ),
-              ),
-
-              // Sliver 3: Call Logs Feed Sliver List
-              callLogsState.when(
-                data: (logs) => _buildRecentCallsSliverList(context, ref, logs),
-                loading: () => const SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: AppDesignColors.primary,
-                      strokeWidth: 4.0,
-                    ),
-                  ),
-                ),
-                error: (error, stack) => SliverToBoxAdapter(
-                  child: _buildPermissionCTACard(context, ref),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Builds a beautifully styled horizontal and vertical grid of primary accessible actions.
-  Widget _buildQuickActions(BuildContext context) {
-    final localization = AppLocalizations.of(context)!;
-    
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // Card 1: My Contacts (Full Width)
-        Container(
-          height: 96.0, // Expanded accessible height
-          decoration: BoxDecoration(
-            color: AppDesignColors.primaryLight,
-            borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-            border: Border.all(
-              color: AppDesignColors.primary.withValues(alpha: 0.3),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 10.0,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                context.push(AppRoutes.contactsList);
-              },
-              borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.contacts_rounded,
-                      color: AppDesignColors.primaryDark,
-                      size: 40.0,
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    TextButton(
+                      onPressed: () => context.push(AppRoutes.recentCalls),
+                      child: Row(
                         children: [
                           Text(
-                            localization.viewMyContacts,
-                            style: AppTypography.sectionHeader.copyWith(
-                              color: AppDesignColors.textPrimary,
+                            localization.viewAllCalls,
+                            style: const TextStyle(
+                              color: AppDesignColors.primaryDark,
+                              fontSize: 16.0,
                               fontWeight: FontWeight.bold,
+                              fontFamily: AppTypography.fontFamily,
                             ),
                           ),
-                          Text(
-                            localization.viewMyContactsSub,
-                            style: AppTypography.secondaryText.copyWith(
-                              color: AppDesignColors.textSecondary,
-                            ),
+                          const SizedBox(width: 4.0),
+                          const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 14.0,
+                            color: AppDesignColors.primaryDark,
                           ),
                         ],
                       ),
                     ),
-                    const Icon(
-                      Icons.chevron_right_rounded,
-                      color: AppDesignColors.primaryDark,
-                      size: 28.0,
-                    ),
                   ],
                 ),
-              ),
+                const SizedBox(height: AppSpacing.xs),
+
+                // 3. Recent Calls Preview (Top 4 calls)
+                callLogsState.when(
+                  data: (logs) => _buildRecentCallsPreview(context, ref, logs),
+                  loading: () => const Padding(
+                    padding: EdgeInsets.all(AppSpacing.xxl),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: AppDesignColors.primary,
+                      ),
+                    ),
+                  ),
+                  error: (error, stack) => _buildPermissionNotice(context, ref),
+                ),
+              ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  /// Builds the 3 core action cards in a calm, balanced, accessible layout.
+  Widget _buildActionCards(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
+
+    return Column(
+      children: [
+        // Card 1: My Contacts Directory (Full Width Card)
+        _buildBentoTile(
+          color: AppDesignColors.primaryLight,
+          borderColor: AppDesignColors.primary.withValues(alpha: 0.3),
+          icon: Icons.contacts_rounded,
+          iconColor: AppDesignColors.primaryDark,
+          title: localization.viewMyContacts,
+          subtitle: localization.viewMyContactsSub,
+          onTap: () => context.push(AppRoutes.contactsList),
         ),
         const SizedBox(height: AppSpacing.md),
 
-        // Row of Card 2 and Card 3
-        SizedBox(
-          height: 108.0, // Generous height for side-by-side tiles
-          child: Row(
-            children: [
-              // Card 2: Save Contact (Turmeric theme)
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppDesignColors.surfaceCard,
-                    borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-                    border: Border.all(
-                      color: AppDesignColors.divider,
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
-                        blurRadius: 10.0,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        context.push(AppRoutes.saveContact);
-                      },
-                      borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.person_add_alt_1_rounded,
-                              color: AppDesignColors.primary,
-                              size: 32.0,
-                            ),
-                            const SizedBox(width: AppSpacing.xs),
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      localization.saveContactLabel.split(' ').take(2).join(' '), // కొత్త నంబర్
-                                      style: AppTypography.bodyText.copyWith(
-                                        color: AppDesignColors.textPrimary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      maxLines: 1,
-                                      softWrap: false,
-                                    ),
-                                  ),
-                                  FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      localization.saveCallText, // సేవ్ చేయండి
-                                      style: AppTypography.bodyText.copyWith(
-                                        color: AppDesignColors.textPrimary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      maxLines: 1,
-                                      softWrap: false,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+        // Row of 2 Cards: Save Contact + Share Photo
+        Row(
+          children: [
+            // Card 2: Save New Contact
+            Expanded(
+              child: _buildSquareActionTile(
+                icon: Icons.person_add_alt_1_rounded,
+                iconColor: AppDesignColors.primary,
+                title: localization.saveContactLabel,
+                subtitle: 'కొత్త నంబర్ కోసం',
+                onTap: () => context.push(AppRoutes.saveContact),
               ),
-              const SizedBox(width: AppSpacing.md),
+            ),
+            const SizedBox(width: AppSpacing.md),
 
-              // Card 3: WhatsApp Share (Blue/Sandalwood theme)
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppDesignColors.surfaceCard,
-                    borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-                    border: Border.all(
-                      color: AppDesignColors.divider,
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
-                        blurRadius: 10.0,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        context.push(AppRoutes.sharePhoto);
-                      },
-                      borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.chat_bubble_outline_rounded,
-                              color: AppDesignColors.primary,
-                              size: 32.0,
-                            ),
-                            const SizedBox(width: AppSpacing.xs),
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      localization.sharePhotoLabel, // ఫోటో పంపండి
-                                      style: AppTypography.bodyText.copyWith(
-                                        color: AppDesignColors.textPrimary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      maxLines: 1,
-                                      softWrap: false,
-                                    ),
-                                  ),
-                                  FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      "(WhatsApp)",
-                                      style: AppTypography.secondaryText.copyWith(
-                                        color: AppDesignColors.textSecondary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      maxLines: 1,
-                                      softWrap: false,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+            // Card 3: WhatsApp Photo Share
+            Expanded(
+              child: _buildSquareActionTile(
+                icon: Icons.chat_bubble_rounded,
+                iconColor: AppDesignColors.whatsapp,
+                title: localization.sharePhotoLabel,
+                subtitle: 'వాట్సాప్ ద్వారా',
+                onTap: () => context.push(AppRoutes.sharePhoto),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );
   }
 
-  /// Builds the complete scrollable list of recent calls directly inside CustomScrollView.
-  Widget _buildRecentCallsSliverList(BuildContext context, WidgetRef ref, List<CallLogEntry> logs) {
-    if (logs.isEmpty) {
-      return SliverToBoxAdapter(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.xl),
-            child: Text(
-              AppLocalizations.of(context)!.noCallLogs,
-              style: AppTypography.sectionHeader.copyWith(
-                color: AppDesignColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      );
-    }
-
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final CallLogEntry entry = logs[index];
-          return _buildCallLogTile(context, ref, entry);
-        },
-        childCount: logs.length,
-      ),
-    );
-  }
-
-  /// Redesigns each call log tile.
-  Widget _buildCallLogTile(BuildContext context, WidgetRef ref, CallLogEntry entry) {
-    final localization = AppLocalizations.of(context)!;
-
-    String formatPhone(String p) {
-      final clean = p.replaceAll(RegExp(r'\s+'), '');
-      if (clean.length == 10) {
-        return '${clean.substring(0, 5)} ${clean.substring(5)}';
-      } else if (clean.length == 13 && clean.startsWith('+91')) {
-        return '+91 ${clean.substring(3, 8)} ${clean.substring(8)}';
-      } else if (clean.length == 12 && clean.startsWith('91')) {
-        return '+91 ${clean.substring(2, 7)} ${clean.substring(7)}';
-      }
-      return p;
-    }
-
-    final String shortCallType;
-    switch (entry.callType) {
-      case CallEntryType.incoming:
-        shortCallType = 'వచ్చిన';
-        break;
-      case CallEntryType.outgoing:
-        shortCallType = 'చేసిన';
-        break;
-      case CallEntryType.missed:
-        shortCallType = 'మిస్';
-        break;
-      case CallEntryType.rejected:
-        shortCallType = 'కట్';
-        break;
-    }
-
-    final Widget detailsRow = Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // 1. CircleAvatar (64dp size -> radius: 32.0)
-        CircleAvatar(
-          radius: 32.0,
-          backgroundColor: entry.avatarColor,
-          child: Text(
-            entry.isSavedContact
-                ? entry.contactName.substring(0, 1).toUpperCase()
-                : 'అ',
-            style: const TextStyle(
-              fontSize: 24.0, // Bold initial letter size
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontFamily: AppTypography.fontFamily,
-            ),
-          ),
-        ),
-        const SizedBox(width: 16.0), // 16dp horizontal padding spacing
-
-        // 2. Middle column: Clean visual hierarchy with strict typography sizes
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Row 1: Contact Name (18sp SemiBold, maxLines=1, ellipsis)
-              Text(
-                entry.isSavedContact
-                    ? '${entry.contactName}${entry.callCount > 1 ? " (${entry.callCount})" : ""}'
-                    : formatPhone(entry.phoneNumber),
-                style: const TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w600, // Semi-bold
-                  color: AppDesignColors.textPrimary,
-                  fontFamily: AppTypography.fontFamily,
-                  height: 1.2,
-                  letterSpacing: 0.15,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4.0),
-
-              // Row 2: Phone Number (15sp Medium, grey, standardized format)
-              Text(
-                entry.isSavedContact
-                    ? formatPhone(entry.phoneNumber)
-                    : localization.unsavedNumber,
-                style: const TextStyle(
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.w500, // Medium
-                  color: AppDesignColors.textSecondary,
-                  fontFamily: AppTypography.fontFamily,
-                  height: 1.2,
-                  letterSpacing: 0.5,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4.0),
-
-              // Row 3: Call Status (left, clean Material icon + short Telugu status text) and Time (right)
-              Row(
-                children: [
-                  Icon(
-                    entry.typeIcon,
-                    size: 16.0,
-                    color: entry.typeColor,
-                  ),
-                  const SizedBox(width: 6.0),
-                  Flexible(
-                    child: Text(
-                      shortCallType,
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w500, // 14sp Medium call status
-                        color: entry.typeColor,
-                        fontFamily: AppTypography.fontFamily,
-                        height: 1.2,
-                        letterSpacing: 0.1,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const Spacer(),
-                  const SizedBox(width: 8.0),
-                  // Time must always remain fully visible, visually secondary (12sp regular)
-                  Text(
-                    entry.telugifiedTime,
-                    style: TextStyle(
-                      fontSize: 12.0, // Reduced size (12sp)
-                      fontWeight: FontWeight.w400, // Reduced weight (regular)
-                      color: AppDesignColors.textSecondary.withValues(alpha: 0.5), // Reduced contrast
-                      fontFamily: AppTypography.fontFamily,
-                      height: 1.2,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 16.0), // 16dp horizontal spacing before chevron
-
-        // 3. Trailing action: chevron for saved contacts, compact save button for unsaved
-        entry.isSavedContact
-            ? const Icon(
-                Icons.chevron_right_rounded,
-                color: AppDesignColors.textSecondary,
-                size: 28.0,
-              )
-            : IconButton(
-                icon: const Icon(
-                  Icons.person_add_alt_1_rounded,
-                  color: AppDesignColors.success, // Tactical green
-                  size: 28.0,
-                ),
-                tooltip: localization.saveCallText,
-                onPressed: () {
-                  context.push(
-                    '${AppRoutes.quickSave}?phone=${Uri.encodeComponent(entry.phoneNumber)}',
-                  );
-                },
-              ),
-      ],
-    );
-
-    final Widget detailsInkWell = InkWell(
-      onTap: () async {
-        // Direct dialing logic
-        final status = await Permission.phone.request();
-        if (status.isGranted) {
-          const platform = MethodChannel('com.ammananna.app/direct_call');
-          try {
-            await platform.invokeMethod('makeCall', {
-              'phoneNumber': entry.phoneNumber,
-            });
-          } catch (e) {
-            final Uri phoneUri = Uri(scheme: 'tel', path: entry.phoneNumber);
-            try {
-              await launchUrl(phoneUri);
-            } catch (_) {
-              if (context.mounted) {
-                EasySnackBar.showError(context, localization.callFailed);
-              }
-            }
-          }
-        } else {
-          if (context.mounted) {
-            EasySnackBar.showError(context, localization.callPermissionNeeded);
-          }
-        }
-      },
-      borderRadius: BorderRadius.circular(20.0),
-      child: Container(
-        height: 100.0, // Strict 100dp fixed card height
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16.0,
-          vertical: 12.0,
-        ), // 16dp horizontal padding, 12dp vertical spacing
-        alignment: Alignment.center,
-        child: detailsRow,
-      ),
-    );
-
+  Widget _buildBentoTile({
+    required Color color,
+    required Color borderColor,
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8.0), // 8dp grid spacing
+      height: 94.0,
       decoration: BoxDecoration(
-        color: AppDesignColors.surfaceCard,
-        borderRadius: BorderRadius.circular(20.0), // Rounded corners 20dp
-        border: Border.all(
-          color: AppDesignColors.divider,
-          width: 1.5,
-        ),
+        color: color,
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        border: Border.all(color: borderColor, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8.0,
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10.0,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
-        child: detailsInkWell,
-      ),
-    );
-  }
-
-  /// Builds a graceful permission call-to-action block if access is denied.
-  Widget _buildPermissionCTACard(BuildContext context, WidgetRef ref) {
-    final localization = AppLocalizations.of(context)!;
-    
-    return Center(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.security_rounded,
-                color: AppDesignColors.error,
-                size: 56.0,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                localization.permissionRequired,
-                style: AppTypography.sectionHeader.copyWith(
-                  color: AppDesignColors.textPrimary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                localization.callLogPermissionExplanation,
-                style: AppTypography.bodyText.copyWith(
-                  color: AppDesignColors.textSecondary,
-                  height: 1.5,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppDesignColors.primary,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(200, AppSpacing.minTouchTarget),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
+        child: InkWell(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onTap();
+          },
+          borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: Row(
+              children: [
+                Icon(icon, color: iconColor, size: 40.0),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: AppTypography.sectionHeader.copyWith(
+                          color: AppDesignColors.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        subtitle,
+                        style: AppTypography.secondaryText.copyWith(
+                          color: AppDesignColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                onPressed: () {
-                  ref.read(callLogProvider.notifier).requestPermissionAndFetch();
-                },
-                child: Text(
-                  localization.grantPermission,
-                  style: AppTypography.buttonText.copyWith(
-                    color: Colors.white,
-                    fontSize: 20.0,
-                  ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: iconColor,
+                  size: 20.0,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  /// Opens a friendly Settings & Info dialog on gear tap.
-  void _showSettingsExplanationDialog(BuildContext context) {
-    final localization = AppLocalizations.of(context)!;
-    
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogCtx) {
-        return AlertDialog(
-          backgroundColor: AppDesignColors.surfaceCard,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-            side: const BorderSide(color: AppDesignColors.divider, width: 1.5),
+  Widget _buildSquareActionTile({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      height: 120.0,
+      decoration: BoxDecoration(
+        color: AppDesignColors.surfaceCard,
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        border: Border.all(color: AppDesignColors.divider, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8.0,
+            offset: const Offset(0, 3),
           ),
-          title: Text(
-            localization.settingsTitle,
-            style: AppTypography.sectionHeader.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppDesignColors.primary,
-            ),
-          ),
-          content: SingleChildScrollView(
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onTap();
+          },
+          borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // 1. Developer Credits
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  decoration: BoxDecoration(
-                    color: AppDesignColors.primaryLight,
-                    borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.code_rounded, color: AppDesignColors.primaryDark, size: 24.0),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: Text(
-                          localization.developerCredits,
-                          style: AppTypography.secondaryText.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppDesignColors.primaryDark,
-                          ),
-                        ),
+                Icon(icon, color: iconColor, size: 36.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: AppDesignColors.textPrimary,
+                        fontSize: 17.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: AppTypography.fontFamily,
+                        height: 1.2,
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-
-                // 2. Privacy Policy Card
-                InkWell(
-                  onTap: () => _showPolicyDialog(
-                    context, 
-                    localization.privacyPolicyTitle, 
-                    localization.privacyPolicyText,
-                  ),
-                  borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppDesignColors.divider, width: 1.5),
-                      borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.privacy_tip_outlined, color: AppDesignColors.textSecondary, size: 24.0),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            localization.privacyPolicyTitle,
-                            style: AppTypography.secondaryText.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const Icon(Icons.arrow_forward_ios_rounded, color: AppDesignColors.textSecondary, size: 16.0),
-                      ],
+                    const SizedBox(height: 2.0),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: AppDesignColors.textSecondary,
+                        fontSize: 14.0,
+                        fontFamily: AppTypography.fontFamily,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-
-                // 3. Terms of Service Card
-                InkWell(
-                  onTap: () => _showPolicyDialog(
-                    context, 
-                    localization.termsOfServiceTitle, 
-                    localization.termsOfServiceText,
-                  ),
-                  borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppDesignColors.divider, width: 1.5),
-                      borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.description_outlined, color: AppDesignColors.textSecondary, size: 24.0),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            localization.termsOfServiceTitle,
-                            style: AppTypography.secondaryText.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const Icon(Icons.arrow_forward_ios_rounded, color: AppDesignColors.textSecondary, size: 16.0),
-                      ],
-                    ),
-                  ),
+                  ],
                 ),
               ],
             ),
           ),
-          actions: [
-            TextButton(
-              style: TextButton.styleFrom(
-                minimumSize: const Size(80, AppSpacing.minTouchTarget),
-              ),
-              onPressed: () => Navigator.of(dialogCtx).pop(),
-              child: Text(
-                localization.closeButton,
-                style: AppTypography.bodyText.copyWith(
-                  color: AppDesignColors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+        ),
+      ),
     );
   }
 
-  /// Opens a sub-dialog displaying policies in English.
-  void _showPolicyDialog(BuildContext context, String title, String body) {
-    final localization = AppLocalizations.of(context)!;
-    
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogCtx) {
-        return AlertDialog(
-          backgroundColor: AppDesignColors.surfaceCard,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-            side: const BorderSide(color: AppDesignColors.divider, width: 1.5),
-          ),
-          title: Text(
-            title,
-            style: AppTypography.sectionHeader.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: SingleChildScrollView(
-            child: Text(
-              body,
-              style: AppTypography.secondaryText.copyWith(
-                color: AppDesignColors.textPrimary,
-                height: 1.5,
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              style: TextButton.styleFrom(
-                minimumSize: const Size(80, AppSpacing.minTouchTarget),
-              ),
-              onPressed: () => Navigator.of(dialogCtx).pop(),
-              child: Text(
-                localization.yesButton,
-                style: AppTypography.bodyText.copyWith(
-                  color: AppDesignColors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-/// Helper Delegate to render beautiful and high-performance pinned persistent headers.
-class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
-  final double minHeight;
-  final double maxHeight;
-  final Widget child;
-
-  _StickyHeaderDelegate({
-    required this.minHeight,
-    required this.maxHeight,
-    required this.child,
-  });
-
-  @override
-  double get minExtent => minHeight;
-
-  @override
-  double get maxExtent => maxHeight;
-
-  @override
-  Widget build(
+  /// Displays the top 4 most recent calls.
+  Widget _buildRecentCallsPreview(
     BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
+    WidgetRef ref,
+    List<CallLogEntry> logs,
   ) {
-    return SizedBox.expand(child: child);
+    if (logs.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        decoration: BoxDecoration(
+          color: AppDesignColors.surfaceCard,
+          borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+          border: Border.all(color: AppDesignColors.divider, width: 1.5),
+        ),
+        child: Center(
+          child: Text(
+            AppLocalizations.of(context)!.noCallLogs,
+            style: AppTypography.secondaryText,
+          ),
+        ),
+      );
+    }
+
+    final previewLogs = logs.take(4).toList();
+
+    return Column(
+      children: previewLogs.map((entry) {
+        return _buildCallTile(context, ref, entry);
+      }).toList(),
+    );
   }
 
-  @override
-  bool shouldRebuild(_StickyHeaderDelegate oldDelegate) {
-    return maxHeight != oldDelegate.maxHeight ||
-        minHeight != oldDelegate.minHeight ||
-        child != oldDelegate.child;
+  Widget _buildCallTile(
+    BuildContext context,
+    WidgetRef ref,
+    CallLogEntry entry,
+  ) {
+    final localization = AppLocalizations.of(context)!;
+
+    String formatPhone(String p) {
+      final clean = p.replaceAll(RegExp(r'\s+'), '');
+      if (clean.length == 10) {
+        return '${clean.substring(0, 5)} ${clean.substring(5)}';
+      }
+      return p;
+    }
+
+    final String callTypeLabel;
+    switch (entry.callType) {
+      case CallEntryType.incoming:
+        callTypeLabel = localization.incomingCall;
+        break;
+      case CallEntryType.outgoing:
+        callTypeLabel = localization.outgoingCall;
+        break;
+      case CallEntryType.missed:
+        callTypeLabel = localization.missedCall;
+        break;
+      case CallEntryType.rejected:
+        callTypeLabel = localization.rejectedCall;
+        break;
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8.0),
+      decoration: BoxDecoration(
+        color: AppDesignColors.surfaceCard,
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        border: Border.all(color: AppDesignColors.divider, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 6.0,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _dialDirect(context, entry.phoneNumber),
+          borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 14.0,
+              vertical: 10.0,
+            ),
+            child: Row(
+              children: [
+                // Avatar
+                CircleAvatar(
+                  radius: 26.0,
+                  backgroundColor: entry.avatarColor,
+                  child: Text(
+                    entry.isSavedContact && entry.contactName.isNotEmpty
+                        ? entry.contactName.substring(0, 1).toUpperCase()
+                        : '?',
+                    style: const TextStyle(
+                      fontSize: 22.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: AppTypography.fontFamily,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+
+                // Caller Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        entry.isSavedContact
+                            ? '${entry.contactName}${entry.callCount > 1 ? " (${entry.callCount})" : ""}'
+                            : formatPhone(entry.phoneNumber),
+                        style: const TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: AppDesignColors.textPrimary,
+                          fontFamily: AppTypography.fontFamily,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2.0),
+                      Row(
+                        children: [
+                          Icon(entry.typeIcon, size: 16.0, color: entry.typeColor),
+                          const SizedBox(width: 4.0),
+                          Text(
+                            callTypeLabel,
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.w600,
+                              color: entry.typeColor,
+                              fontFamily: AppTypography.fontFamily,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            entry.telugifiedTime,
+                            style: const TextStyle(
+                              fontSize: 13.0,
+                              color: AppDesignColors.textSecondary,
+                              fontFamily: AppTypography.fontFamily,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+
+                // Action: Direct Call Button or Quick Save
+                entry.isSavedContact
+                    ? IconButton(
+                        icon: const Icon(
+                          Icons.phone_in_talk_rounded,
+                          color: AppDesignColors.success,
+                          size: 26.0,
+                        ),
+                        onPressed: () => _dialDirect(context, entry.phoneNumber),
+                      )
+                    : IconButton(
+                        icon: const Icon(
+                          Icons.person_add_alt_1_rounded,
+                          color: AppDesignColors.primary,
+                          size: 26.0,
+                        ),
+                        tooltip: localization.saveCallText,
+                        onPressed: () {
+                          context.push(
+                            '${AppRoutes.quickSave}?phone=${Uri.encodeComponent(entry.phoneNumber)}',
+                          );
+                        },
+                      ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _dialDirect(BuildContext context, String phoneNumber) async {
+    final status = await Permission.phone.request();
+    if (status.isGranted) {
+      const platform = MethodChannel('com.ammananna.app/direct_call');
+      try {
+        await platform.invokeMethod('makeCall', {'phoneNumber': phoneNumber});
+      } catch (_) {
+        final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+        try {
+          await launchUrl(phoneUri);
+        } catch (_) {}
+      }
+    }
+  }
+
+  Widget _buildPermissionNotice(BuildContext context, WidgetRef ref) {
+    final localization = AppLocalizations.of(context)!;
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppDesignColors.surfaceCard,
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        border: Border.all(color: AppDesignColors.divider, width: 1.5),
+      ),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.phone_locked_rounded,
+            color: AppDesignColors.primaryDark,
+            size: 44.0,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            localization.callLogPermissionExplanation,
+            style: AppTypography.bodyText.copyWith(
+              color: AppDesignColors.textSecondary,
+              fontSize: 16.0,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppDesignColors.primary,
+              foregroundColor: Colors.white,
+              minimumSize: const Size(160, 48),
+            ),
+            onPressed: () {
+              ref.read(callLogProvider.notifier).requestPermissionAndFetch();
+            },
+            child: Text(localization.grantPermission),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUpdateDownloadedBanner(
+    BuildContext context,
+    AppLocalizations localization,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
+      decoration: BoxDecoration(
+        color: AppDesignColors.successLight,
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        border: Border.all(
+          color: AppDesignColors.success,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppDesignColors.success.withValues(alpha: 0.1),
+            blurRadius: 8.0,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.check_circle_rounded,
+                color: AppDesignColors.success,
+                size: 26.0,
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Expanded(
+                child: Text(
+                  localization.updateDownloaded,
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                    color: AppDesignColors.textPrimary,
+                    fontFamily: AppTypography.fontFamily,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppDesignColors.success,
+              foregroundColor: Colors.white,
+              minimumSize: const Size(double.infinity, 48.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+            ),
+            icon: const Icon(Icons.restart_alt_rounded, size: 22.0),
+            label: Text(
+              localization.restartToUpdate,
+              style: const TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+                fontFamily: AppTypography.fontFamily,
+              ),
+            ),
+            onPressed: () {
+              ref.read(updateProvider.notifier).completeFlexibleUpdate();
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

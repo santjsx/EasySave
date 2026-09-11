@@ -5,351 +5,438 @@ import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/call_log_model.dart';
 import '../../providers/call_log_provider.dart';
 import '../../routing/routes.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../theme/typography.dart';
-import '../../widgets/easy_button.dart';
-import '../../widgets/easy_snackbar.dart';
 
-/// Screen displaying system call history logs (Recent Calls list) for Telugu-only elderly users.
-/// Custom structures match duplicate entries, call states, and direct voice-saving prompts.
-class RecentCallsScreen extends ConsumerWidget {
+/// Full Dedicated Screen for System Call Logs.
+/// Features All vs Missed Call filter chips, 1-tap direct dialing,
+/// and instant Quick-Save for unsaved callers.
+class RecentCallsScreen extends ConsumerStatefulWidget {
   const RecentCallsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RecentCallsScreen> createState() => _RecentCallsScreenState();
+}
+
+class _RecentCallsScreenState extends ConsumerState<RecentCallsScreen> {
+  int _selectedFilterIndex = 0; // 0: All, 1: Missed
+
+  @override
+  Widget build(BuildContext context) {
     final callLogsState = ref.watch(callLogProvider);
+    final localization = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: AppDesignColors.surface,
       appBar: AppBar(
+        backgroundColor: AppDesignColors.surface,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppDesignColors.textPrimary,
+            size: 28.0,
+          ),
+          tooltip: localization.backButton,
+          onPressed: () => context.pop(),
+        ),
         title: Text(
-          'ఫోన్ కాల్స్', // Telugu: "Recent Calls"
+          localization.recentCallsTitle,
           style: AppTypography.appName.copyWith(
             color: AppDesignColors.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 28.0),
-          tooltip: 'వెనక్కి',
-          onPressed: () => context.pop(),
-        ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-          child: callLogsState.when(
-            data: (logs) => _buildCallLogsList(context, logs),
-            loading: () => const Center(
-              child: CircularProgressIndicator(
-                strokeWidth: 5.0,
-                color: AppDesignColors.primary,
+        child: Column(
+          children: [
+            // 1. Filter Chips (All vs Missed)
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
+              ),
+              child: Row(
+                children: [
+                  _buildFilterChip(
+                    label: localization.allCalls,
+                    isSelected: _selectedFilterIndex == 0,
+                    icon: Icons.call_rounded,
+                    onTap: () => setState(() => _selectedFilterIndex = 0),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  _buildFilterChip(
+                    label: localization.missedCalls,
+                    isSelected: _selectedFilterIndex == 1,
+                    icon: Icons.phone_missed_rounded,
+                    selectedColor: AppDesignColors.error,
+                    onTap: () => setState(() => _selectedFilterIndex = 1),
+                  ),
+                ],
               ),
             ),
-            error: (error, stack) => _buildPermissionDeniedScreen(context, ref, error),
+            const SizedBox(height: AppSpacing.xs),
+
+            // 2. Call Logs List
+            Expanded(
+              child: RefreshIndicator(
+                color: AppDesignColors.primary,
+                onRefresh: () =>
+                    ref.read(callLogProvider.notifier).refreshCalls(),
+                child: callLogsState.when(
+                  data: (logs) {
+                    final filtered = _selectedFilterIndex == 0
+                        ? logs
+                        : logs
+                            .where((l) =>
+                                l.callType == CallEntryType.missed ||
+                                l.callType == CallEntryType.rejected)
+                            .toList();
+
+                    if (filtered.isEmpty) {
+                      return _buildEmptyPlaceholder();
+                    }
+
+                    return ListView.separated(
+                      itemCount: filtered.length,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.sm,
+                      ),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 8.0),
+                      itemBuilder: (context, index) {
+                        return _buildCallTile(filtered[index]);
+                      },
+                    );
+                  },
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(
+                      color: AppDesignColors.primary,
+                      strokeWidth: 4.0,
+                    ),
+                  ),
+                  error: (err, stack) => _buildPermissionError(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required bool isSelected,
+    required IconData icon,
+    Color? selectedColor,
+    required VoidCallback onTap,
+  }) {
+    final activeColor = selectedColor ?? AppDesignColors.primaryDark;
+
+    return Expanded(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onTap();
+          },
+          borderRadius: BorderRadius.circular(16.0),
+          child: Container(
+            height: 48.0,
+            decoration: BoxDecoration(
+              color: isSelected ? activeColor : AppDesignColors.surfaceCard,
+              borderRadius: BorderRadius.circular(16.0),
+              border: Border.all(
+                color: isSelected ? activeColor : AppDesignColors.divider,
+                width: 1.5,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: activeColor.withValues(alpha: 0.25),
+                        blurRadius: 8.0,
+                        offset: const Offset(0, 3),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 20.0,
+                  color: isSelected ? Colors.white : AppDesignColors.textSecondary,
+                ),
+                const SizedBox(width: 6.0),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: AppTypography.fontFamily,
+                    color:
+                        isSelected ? Colors.white : AppDesignColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  /// Builds a highly scrollable lazy list of callers with O(1) matching performance metrics.
-  Widget _buildCallLogsList(BuildContext context, List<CallLogEntry> logs) {
-    if (logs.isEmpty) {
-      return Center(
+  Widget _buildCallTile(CallLogEntry entry) {
+    final localization = AppLocalizations.of(context)!;
+
+    String formatPhone(String p) {
+      final clean = p.replaceAll(RegExp(r'\s+'), '');
+      if (clean.length == 10) {
+        return '${clean.substring(0, 5)} ${clean.substring(5)}';
+      }
+      return p;
+    }
+
+    final String callTypeLabel;
+    switch (entry.callType) {
+      case CallEntryType.incoming:
+        callTypeLabel = localization.incomingCall;
+        break;
+      case CallEntryType.outgoing:
+        callTypeLabel = localization.outgoingCall;
+        break;
+      case CallEntryType.missed:
+        callTypeLabel = localization.missedCall;
+        break;
+      case CallEntryType.rejected:
+        callTypeLabel = localization.rejectedCall;
+        break;
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppDesignColors.surfaceCard,
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        border: Border.all(color: AppDesignColors.divider, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 6.0,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _dialDirect(entry.phoneNumber),
+          borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 14.0,
+              vertical: 12.0,
+            ),
+            child: Row(
+              children: [
+                // Avatar
+                CircleAvatar(
+                  radius: 28.0,
+                  backgroundColor: entry.avatarColor,
+                  child: Text(
+                    entry.isSavedContact && entry.contactName.isNotEmpty
+                        ? entry.contactName.substring(0, 1).toUpperCase()
+                        : '?',
+                    style: const TextStyle(
+                      fontSize: 24.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: AppTypography.fontFamily,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+
+                // Caller info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        entry.isSavedContact
+                            ? '${entry.contactName}${entry.callCount > 1 ? " (${entry.callCount})" : ""}'
+                            : formatPhone(entry.phoneNumber),
+                        style: const TextStyle(
+                          fontSize: 19.0,
+                          fontWeight: FontWeight.bold,
+                          color: AppDesignColors.textPrimary,
+                          fontFamily: AppTypography.fontFamily,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 3.0),
+                      Row(
+                        children: [
+                          Icon(entry.typeIcon, size: 16.0, color: entry.typeColor),
+                          const SizedBox(width: 4.0),
+                          Text(
+                            callTypeLabel,
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.w600,
+                              color: entry.typeColor,
+                              fontFamily: AppTypography.fontFamily,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            entry.telugifiedTime,
+                            style: const TextStyle(
+                              fontSize: 13.0,
+                              color: AppDesignColors.textSecondary,
+                              fontFamily: AppTypography.fontFamily,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+
+                // Trailing: Direct call or Quick save
+                entry.isSavedContact
+                    ? IconButton(
+                        icon: const Icon(
+                          Icons.phone_in_talk_rounded,
+                          color: AppDesignColors.success,
+                          size: 28.0,
+                        ),
+                        onPressed: () => _dialDirect(entry.phoneNumber),
+                      )
+                    : ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppDesignColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10.0,
+                            vertical: 8.0,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                        ),
+                        icon: const Icon(Icons.person_add_alt_1_rounded, size: 18.0),
+                        label: Text(
+                          localization.saveCallText,
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: AppTypography.fontFamily,
+                          ),
+                        ),
+                        onPressed: () {
+                          context.push(
+                            '${AppRoutes.quickSave}?phone=${Uri.encodeComponent(entry.phoneNumber)}',
+                          );
+                        },
+                      ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _dialDirect(String phoneNumber) async {
+    final status = await Permission.phone.request();
+    if (status.isGranted) {
+      const platform = MethodChannel('com.ammananna.app/direct_call');
+      try {
+        await platform.invokeMethod('makeCall', {'phoneNumber': phoneNumber});
+      } catch (_) {
+        final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+        try {
+          await launchUrl(phoneUri);
+        } catch (_) {}
+      }
+    }
+  }
+
+  Widget _buildEmptyPlaceholder() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.phone_missed_rounded,
+            size: 72.0,
+            color: AppDesignColors.textSecondary,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            AppLocalizations.of(context)!.noCallLogs,
+            style: AppTypography.sectionHeader.copyWith(
+              color: AppDesignColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPermissionError() {
+    final localization = AppLocalizations.of(context)!;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(
-              Icons.phone_missed_rounded,
-              size: 96.0,
-              color: AppDesignColors.textSecondary,
+              Icons.phone_locked_rounded,
+              color: AppDesignColors.error,
+              size: 56.0,
             ),
-            const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.sm),
             Text(
-              'కాల్ రికార్డులు ఏమీ లేవు', // Telugu: "No call logs"
-              style: AppTypography.primaryLabel.copyWith(
-                color: AppDesignColors.textSecondary,
+              localization.permissionRequired,
+              style: AppTypography.sectionHeader.copyWith(
+                fontWeight: FontWeight.bold,
               ),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              localization.callLogPermissionExplanation,
+              style: AppTypography.bodyText,
               textAlign: TextAlign.center,
             ),
-          ],
-        ),
-      );
-    }
-
-    return ListView.separated(
-      itemCount: logs.length,
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-      separatorBuilder: (context, index) => const Divider(
-        color: AppDesignColors.divider,
-        thickness: 1.5,
-      ),
-      itemBuilder: (context, index) {
-        final CallLogEntry entry = logs[index];
-
-        return Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () async {
-              // 1. Request and verify CALL_PHONE permission first using permission_handler
-              final status = await Permission.phone.request();
-              if (status.isGranted) {
-                // 2. Place direct call bypassing dialer keypad via native MethodChannel
-                const platform = MethodChannel('com.ammananna.app/direct_call');
-                try {
-                  await platform.invokeMethod('makeCall', {
-                    'phoneNumber': entry.phoneNumber,
-                  });
-                } catch (e) {
-                  // Fallback to standard url_launcher dialer if native call fails
-                  final Uri phoneUri = Uri(scheme: 'tel', path: entry.phoneNumber);
-                  try {
-                    await launchUrl(phoneUri);
-                  } catch (_) {
-                    if (context.mounted) {
-                      EasySnackBar.showError(context, 'కాల్ చేయడం కుదరలేదు');
-                    }
-                  }
-                }
-              } else {
-                if (context.mounted) {
-                  EasySnackBar.showError(context, 'కాల్ చేయడానికి పర్మిషన్ ఇవ్వాలి');
-                }
-              }
-            },
-            borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.sm,
+            const SizedBox(height: AppSpacing.lg),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppDesignColors.primary,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(180, 52),
               ),
-              child: Row(
-                children: [
-                  // 1. Initial Avatar (warm palette deterministic hash match)
-                  Semantics(
-                    excludeSemantics: true,
-                    child: CircleAvatar(
-                      radius: 30.0,
-                      backgroundColor: entry.avatarColor,
-                      child: Text(
-                        entry.isSavedContact
-                            ? entry.contactName.substring(0, 1).toUpperCase()
-                            : '?',
-                        style: const TextStyle(
-                          fontSize: 26.0,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-
-                  // 2. Caller Details & Info Card
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Contact Name / Phone Number Header
-                        if (entry.isSavedContact)
-                          Text(
-                            '${entry.contactName}${entry.callCount > 1 ? " (${entry.callCount})" : ""}',
-                            style: AppTypography.confirmedName.copyWith(
-                              color: AppDesignColors.textPrimary,
-                              fontSize: 22.0, // Enlarged bold focus
-                              fontWeight: FontWeight.w800,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          )
-                        else
-                          SizedBox(
-                            height: 28.0,
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                entry.phoneNumber,
-                                style: AppTypography.confirmedName.copyWith(
-                                  color: AppDesignColors.textPrimary,
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ),
-                          ),
-                        const SizedBox(height: 4.0),
-
-                        // If saved, show phone number below
-                        if (entry.isSavedContact) ...[
-                          SizedBox(
-                            height: 24.0,
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                entry.phoneNumber,
-                                style: AppTypography.secondaryText.copyWith(
-                                  color: AppDesignColors.textSecondary,
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 4.0),
-                        ],
-
-                        // Call Type Description (Natural Telugu) & Call Time
-                        Wrap(
-                          spacing: AppSpacing.md,
-                          runSpacing: 4.0,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  entry.typeIcon,
-                                  size: 20.0,
-                                  color: entry.typeColor,
-                                ),
-                                const SizedBox(width: AppSpacing.xs),
-                                Text(
-                                  entry.telugifiedCallType,
-                                  style: AppTypography.bodyText.copyWith(
-                                    color: entry.typeColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.0,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              entry.telugifiedTime,
-                              style: AppTypography.secondaryText.copyWith(
-                                color: AppDesignColors.textSecondary,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // 3. CTA Action: Direct Save Voice-Overlay (Rendered strictly for unsaved)
-                  if (!entry.isSavedContact) ...[
-                    const SizedBox(width: AppSpacing.xs),
-                    Semantics(
-                      label: 'సేవ్ చేయండి', // Accessible voice override trigger
-                      child: SizedBox(
-                        width: 120.0,
-                        height: 52.0, // High visibility tactile button
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppDesignColors.primary,
-                            foregroundColor: Colors.white,
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
-                            ),
-                          ),
-                          onPressed: () {
-                            // Jump directly to quick voice-saving workflow!
-                            context.push(
-                              '${AppRoutes.quickSave}?phone=${Uri.encodeComponent(entry.phoneNumber)}',
-                            );
-                          },
-                          child: const Text(
-                            'సేవ్ చేయండి', // Telugu: "Save contact"
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'NotoSansTelugu',
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ] else ...[
-                    // For saved contacts, render a large phone call icon
-                    const SizedBox(width: AppSpacing.xs),
-                    Semantics(
-                      label: 'కాల్ చేయండి', // "Make a call" in Telugu
-                      child: Container(
-                        width: 56.0,
-                        height: 56.0,
-                        decoration: BoxDecoration(
-                          color: AppDesignColors.success.withValues(alpha: 0.12),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.phone_forwarded_rounded,
-                          size: 28.0,
-                          color: AppDesignColors.success,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+              onPressed: () {
+                ref.read(callLogProvider.notifier).requestPermissionAndFetch();
+              },
+              child: Text(localization.grantPermission),
             ),
-          ),
-        );
-      },
-    );
-  }
-
-  /// Builds a high-contrast elegant fallback screen in Telugu for gracefully handling permission denials.
-  Widget _buildPermissionDeniedScreen(BuildContext context, WidgetRef ref, Object error) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Icon(
-                Icons.security_rounded,
-                size: 96.0,
-                color: AppDesignColors.error,
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                'కాల్ రికార్డులు అనుమతి', // Telugu: "Call records permission"
-                style: AppTypography.appName.copyWith(
-                  color: AppDesignColors.textPrimary,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                'మీ ఫోన్‌కు వచ్చిన లేదా మిస్ అయిన కాల్స్ నంబర్లను చూసి సులభంగా సేవ్ చేసుకోవడానికి, ఈ యాప్‌కు కాల్ రికార్డుల అనుమతి తప్పనిసరిగా ఇవ్వాలి.', 
-                // "To see calls and save easily, this app needs call records permission."
-                style: AppTypography.bodyText.copyWith(
-                  color: AppDesignColors.textSecondary,
-                  fontSize: 18.0,
-                  height: 1.5,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.xxl),
-              EasyButton(
-                label: 'అనుమతి ఇవ్వండి', // Telugu: "Give Permission"
-                onPressed: () {
-                  ref.read(callLogProvider.notifier).requestPermissionAndFetch();
-                },
-              ),
-              const SizedBox(height: AppSpacing.md),
-            ],
-          ),
+          ],
         ),
       ),
     );

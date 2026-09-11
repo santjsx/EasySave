@@ -1,5 +1,4 @@
 /// Centralized registry of type-safe path strings for GoRouter navigation.
-/// Configured for the updated Save Contact flow: Voice first ➔ Dialer second.
 class AppRoutes {
   AppRoutes._(); // Prevent instantiation
 
@@ -21,19 +20,33 @@ class AppRoutes {
   /// Auto-dismissing success banner path: /save-contact/success
   static const String saveSuccess = '/save-contact/success';
 
+  // -------------------------------------------------------------
+  // Feature Flow 2: Contacts Directory & Management
+  // -------------------------------------------------------------
   /// Contacts List view path: /contacts
   static const String contactsList = '/contacts';
 
+  /// Dedicated Contact Details Screen: /contacts/details
+  static const String contactDetails = '/contacts/details';
+
+  /// Dedicated Add / Edit Contact Screen: /contacts/form
+  static const String contactForm = '/contacts/form';
+
   // -------------------------------------------------------------
-  // Feature Flow 2: WhatsApp Photo Sharer
+  // Feature Flow 3: WhatsApp Photo Sharer
   // -------------------------------------------------------------
   static const String sharePhoto = '/share-photo';
   static const String photoConfirm = '/share-photo/confirm';
   static const String contactPicker = '/share-photo/contacts';
 
   // -------------------------------------------------------------
-  // Feature Flow 3: Recent Calls & Quick Voice-Save
+  // Feature Flow 4: Recent Calls & Quick Voice-Save
   // -------------------------------------------------------------
   static const String recentCalls = '/recent-calls';
   static const String quickSave = '/recent-calls/quick-save';
+
+  // -------------------------------------------------------------
+  // Feature Flow 5: Settings & Information
+  // -------------------------------------------------------------
+  static const String settings = '/settings';
 }

@@ -19,8 +19,8 @@ void main() {
     expect(find.text('EasySave'), findsOneWidget);
     expect(find.text('మీ సులభమైన సేవ్ యాప్'), findsOneWidget);
 
-    // Verify that our giant home buttons exist in Telugu
-    expect(find.text('కొత్త నంబర్'), findsWidgets);
-    expect(find.text('ఫోటో పంపండి'), findsWidgets);
+    // Verify that our action cards exist in Telugu
+    expect(find.textContaining('కొత్త నంబర్'), findsWidgets);
+    expect(find.textContaining('ఫోటో పంపండి'), findsWidgets);
   });
 }

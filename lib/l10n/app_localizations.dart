@@ -103,19 +103,19 @@ abstract class AppLocalizations {
   /// No description provided for @appTagline.
   ///
   /// In te, this message translates to:
-  /// **'by santhoshh'**
+  /// **'మీ సులభమైన సేవ్ యాప్'**
   String get appTagline;
 
   /// No description provided for @saveContactLabel.
   ///
   /// In te, this message translates to:
-  /// **'కొత్త నంబర్ దాచుకోండి'**
+  /// **'కొత్త నంబర్ సేవ్ చేయండి'**
   String get saveContactLabel;
 
   /// No description provided for @saveContactSub.
   ///
   /// In te, this message translates to:
-  /// **'కొత్త నంబర్ రాసుకోవడానికి'**
+  /// **'కొత్త నంబర్ సేవ్ చేసుకోవడానికి'**
   String get saveContactSub;
 
   /// No description provided for @sharePhotoLabel.
@@ -133,7 +133,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterNumber.
   ///
   /// In te, this message translates to:
-  /// **'నంబర్ ఎంటర్ చేయండి'**
+  /// **'ఫోన్ నంబర్ ఇవ్వండి'**
   String get enterNumber;
 
   /// No description provided for @nextButton.
@@ -151,25 +151,25 @@ abstract class AppLocalizations {
   /// No description provided for @pressMicPrompt.
   ///
   /// In te, this message translates to:
-  /// **'పై బటన్ నొక్కి పేరు చెప్పండి'**
+  /// **'మైక్ నొక్కి పేరు చెప్పండి'**
   String get pressMicPrompt;
 
   /// No description provided for @listeningLabel.
   ///
   /// In te, this message translates to:
-  /// **'వింటున్నాను...'**
+  /// **'వింటున్నాము...'**
   String get listeningLabel;
 
   /// No description provided for @hearingLabel.
   ///
   /// In te, this message translates to:
-  /// **'విన్నది: '**
+  /// **'మీరు చెప్పిన పేరు: '**
   String get hearingLabel;
 
   /// No description provided for @isCorrectQuestion.
   ///
   /// In te, this message translates to:
-  /// **'ఇది కరెక్టేనా?'**
+  /// **'ఇది సరిగ్గా ఉందా?'**
   String get isCorrectQuestion;
 
   /// No description provided for @yesButton.
@@ -229,7 +229,7 @@ abstract class AppLocalizations {
   /// No description provided for @recentPhotos.
   ///
   /// In te, this message translates to:
-  /// **'కొత్త ఫోటోలు'**
+  /// **'గ్యాలరీ ఫోటోలు'**
   String get recentPhotos;
 
   /// No description provided for @sendThisPhoto.
@@ -247,37 +247,37 @@ abstract class AppLocalizations {
   /// No description provided for @whatsappWillSend.
   ///
   /// In te, this message translates to:
-  /// **'WhatsApp లో పంపిస్తాము'**
+  /// **'వాట్సాప్ లో పంపిస్తాము'**
   String get whatsappWillSend;
 
   /// No description provided for @whatsappNotInstalled.
   ///
   /// In te, this message translates to:
-  /// **'WhatsApp ఇన్స్టాల్ అయిలేదు'**
+  /// **'వాట్సాప్ ఇన్స్టాల్ అయిలేదు'**
   String get whatsappNotInstalled;
 
   /// No description provided for @installWhatsapp.
   ///
   /// In te, this message translates to:
-  /// **'WhatsApp ఇన్స్టాల్ చేయండి'**
+  /// **'వాట్సాప్ ఇన్స్టాల్ చేయండి'**
   String get installWhatsapp;
 
   /// No description provided for @saveContactFirst.
   ///
   /// In te, this message translates to:
-  /// **'ముందు నంబర్ సేవ్ చేయండి'**
+  /// **'ముందుగా నంబర్ సేవ్ చేయండి'**
   String get saveContactFirst;
 
   /// No description provided for @noPhotosFound.
   ///
   /// In te, this message translates to:
-  /// **'ఫోటోలు దొరకలేదు'**
+  /// **'ఫోటోలు ఏమీ లేవు'**
   String get noPhotosFound;
 
   /// No description provided for @generalErrorMessage.
   ///
   /// In te, this message translates to:
-  /// **'తప్పు జరిగింది, మళ్ళీ ప్రయత్నించండి'**
+  /// **'సమస్య వచ్చింది, మళ్ళీ ప్రయత్నించండి'**
   String get generalErrorMessage;
 
   /// No description provided for @speechNotRecognized.
@@ -289,31 +289,31 @@ abstract class AppLocalizations {
   /// No description provided for @permissionContactsExplanation.
   ///
   /// In te, this message translates to:
-  /// **'మీ ఫోన్ లోని కాంటాక్ట్స్ చూడడానికి అనుమతి అడుగుతున్నాము'**
+  /// **'మీ ఫోన్ లోని కాంటాక్ట్స్ చూడటానికి అనుమతి కావాలి'**
   String get permissionContactsExplanation;
 
   /// No description provided for @permissionWriteExplanation.
   ///
   /// In te, this message translates to:
-  /// **'కొత్త నంబర్లు సేవ్ చేయడానికి అనుమతి అడుగుతున్నాము'**
+  /// **'కొత్త నంబర్లు సేవ్ చేయడానికి అనుమతి కావాలి'**
   String get permissionWriteExplanation;
 
   /// No description provided for @permissionPhotosExplanation.
   ///
   /// In te, this message translates to:
-  /// **'ఫోటోలు చూడటానికి అనుమతి అడుగుతున్నాం'**
+  /// **'ఫోటోలు పంపడానికి అనుమతి కావాలి'**
   String get permissionPhotosExplanation;
 
   /// No description provided for @permissionMicExplanation.
   ///
   /// In te, this message translates to:
-  /// **'మీ పేరు వినడానికి మైక్ అనుమతి అడుగుతున్నాం'**
+  /// **'పేరు వినడానికి మైక్రోఫోన్ అనుమతి కావాలి'**
   String get permissionMicExplanation;
 
   /// No description provided for @permissionDeniedMessage.
   ///
   /// In te, this message translates to:
-  /// **'అనుమతి ఇవ్వకపోతే ఇది పని చేయదు'**
+  /// **'అనుమతి ఇవ్వకపోతే ఈ సదుపాయం పని చేయదు'**
   String get permissionDeniedMessage;
 
   /// No description provided for @openSettings.
@@ -325,38 +325,44 @@ abstract class AppLocalizations {
   /// No description provided for @teluguSpeechMissing.
   ///
   /// In te, this message translates to:
-  /// **'తెలుగు వాయిస్ ప్యాక్ డౌన్లోడ్ చేయండి'**
+  /// **'తెలుగు వాయిస్ ప్యాక్ డౌన్లోడ్ చేసుకోండి'**
   String get teluguSpeechMissing;
 
   /// No description provided for @viewMyContacts.
   ///
   /// In te, this message translates to:
-  /// **'నా ఫోన్ నంబర్లు'**
+  /// **'నా కాంటాక్ట్స్'**
   String get viewMyContacts;
 
   /// No description provided for @viewMyContactsSub.
   ///
   /// In te, this message translates to:
-  /// **'ఫోన్ బుక్ చూడడానికి, మార్చడానికి'**
+  /// **'ఫోన్ బుక్ చూడడానికి, మాట్లాడడానికి'**
   String get viewMyContactsSub;
 
   /// No description provided for @searchContactsHint.
   ///
   /// In te, this message translates to:
-  /// **'ఇక్కడ పేరు టైప్ చేసి వెతకండి...'**
+  /// **'పేరు లేదా నంబర్ వెతకండి...'**
   String get searchContactsHint;
 
   /// No description provided for @contactDetailsTitle.
   ///
   /// In te, this message translates to:
-  /// **'పరిచయం వివరాలు'**
+  /// **'కాంటాక్ట్ వివరాలు'**
   String get contactDetailsTitle;
 
   /// No description provided for @callNowButton.
   ///
   /// In te, this message translates to:
-  /// **'ఫోన్ చేయండి'**
+  /// **'కాల్ చేయండి'**
   String get callNowButton;
+
+  /// No description provided for @whatsappChatButton.
+  ///
+  /// In te, this message translates to:
+  /// **'వాట్సాప్ మెసేజ్'**
+  String get whatsappChatButton;
 
   /// No description provided for @renameButton.
   ///
@@ -367,7 +373,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteButton.
   ///
   /// In te, this message translates to:
-  /// **'తీసేయండి'**
+  /// **'డిలీట్ చేయండి'**
   String get deleteButton;
 
   /// No description provided for @deleteConfirmTitle.
@@ -379,7 +385,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteConfirmMessage.
   ///
   /// In te, this message translates to:
-  /// **'మీరు నిజంగా నిశ్చయంగా డిలీట్ చేయాలనుకుంటున్నారా?'**
+  /// **'ఈ కాంటాక్ట్‌ను డిలీట్ చేయాలనుకుంటున్నారా?'**
   String get deleteConfirmMessage;
 
   /// No description provided for @editContactTitle.
@@ -387,6 +393,12 @@ abstract class AppLocalizations {
   /// In te, this message translates to:
   /// **'వివరాలు మార్చండి'**
   String get editContactTitle;
+
+  /// No description provided for @addContactTitle.
+  ///
+  /// In te, this message translates to:
+  /// **'కొత్త కాంటాక్ట్'**
+  String get addContactTitle;
 
   /// No description provided for @editNameLabel.
   ///
@@ -403,55 +415,97 @@ abstract class AppLocalizations {
   /// No description provided for @contactUpdatedSuccess.
   ///
   /// In te, this message translates to:
-  /// **'వివరాలు మార్చబడ్డాయి!'**
+  /// **'వివరాలు సేవ్ అయ్యాయి!'**
   String get contactUpdatedSuccess;
 
   /// No description provided for @contactDeletedSuccess.
   ///
   /// In te, this message translates to:
-  /// **'పరిచయం తీసివేయబడింది!'**
+  /// **'కాంటాక్ట్ డిలీట్ అయింది!'**
   String get contactDeletedSuccess;
 
   /// No description provided for @cancelButton.
   ///
   /// In te, this message translates to:
-  /// **'రద్దు చేయి'**
+  /// **'రద్దు'**
   String get cancelButton;
 
   /// No description provided for @recentCallsTitle.
   ///
   /// In te, this message translates to:
-  /// **'వచ్చిన ఫోన్ కాల్స్'**
+  /// **'ఇటీవలి కాల్స్'**
   String get recentCallsTitle;
+
+  /// No description provided for @viewAllCalls.
+  ///
+  /// In te, this message translates to:
+  /// **'అన్నీ చూడండి'**
+  String get viewAllCalls;
+
+  /// No description provided for @allCalls.
+  ///
+  /// In te, this message translates to:
+  /// **'అన్నీ'**
+  String get allCalls;
+
+  /// No description provided for @missedCalls.
+  ///
+  /// In te, this message translates to:
+  /// **'మిస్డ్ కాల్స్'**
+  String get missedCalls;
+
+  /// No description provided for @incomingCall.
+  ///
+  /// In te, this message translates to:
+  /// **'వచ్చిన కాల్'**
+  String get incomingCall;
+
+  /// No description provided for @outgoingCall.
+  ///
+  /// In te, this message translates to:
+  /// **'చేసిన కాల్'**
+  String get outgoingCall;
+
+  /// No description provided for @missedCall.
+  ///
+  /// In te, this message translates to:
+  /// **'మిస్డ్ కాల్'**
+  String get missedCall;
+
+  /// No description provided for @rejectedCall.
+  ///
+  /// In te, this message translates to:
+  /// **'కట్ చేసిన కాల్'**
+  String get rejectedCall;
 
   /// No description provided for @noCallLogs.
   ///
   /// In te, this message translates to:
-  /// **'ఫోన్ కాల్స్ ఏమీ లేవు'**
+  /// **'కాల్స్ ఏమీ లేవు'**
   String get noCallLogs;
 
   /// No description provided for @callFailed.
   ///
   /// In te, this message translates to:
-  /// **'ఫోన్ చేయడం కుదరలేదు'**
+  /// **'కాల్ చేయడం కుదరలేదు'**
   String get callFailed;
 
   /// No description provided for @callPermissionNeeded.
   ///
   /// In te, this message translates to:
-  /// **'ఫోన్ చేయడానికి అనుమతి ఇవ్వాలి'**
+  /// **'కాల్ చేయడానికి అనుమతి ఇవ్వాలి'**
   String get callPermissionNeeded;
 
   /// No description provided for @permissionRequired.
   ///
   /// In te, this message translates to:
-  /// **'అనుమతి ఇవ్వండి'**
+  /// **'అనుమతి అవసరం'**
   String get permissionRequired;
 
   /// No description provided for @callLogPermissionExplanation.
   ///
   /// In te, this message translates to:
-  /// **'ఇక్కడ మీకు వచ్చిన ఫోన్ కాల్స్ చూసుకోవడానికి మరియు ఫోన్ చేయడానికి అనుమతి ఇవ్వండి.'**
+  /// **'మీ కాల్ హిస్టరీ చూడటానికి మరియు డైరెక్ట్ కాల్ చేయడానికి అనుమతి ఇవ్వండి.'**
   String get callLogPermissionExplanation;
 
   /// No description provided for @grantPermission.
@@ -463,7 +517,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveCallText.
   ///
   /// In te, this message translates to:
-  /// **'సేవ్ చేసుకోండి'**
+  /// **'సేవ్ చేయండి'**
   String get saveCallText;
 
   /// No description provided for @unsavedNumber.
@@ -471,6 +525,42 @@ abstract class AppLocalizations {
   /// In te, this message translates to:
   /// **'సేవ్ చేయని నంబర్'**
   String get unsavedNumber;
+
+  /// No description provided for @pasteFromClipboard.
+  ///
+  /// In te, this message translates to:
+  /// **'పేస్ట్ చేయండి'**
+  String get pasteFromClipboard;
+
+  /// No description provided for @keyboardToggleTooltip.
+  ///
+  /// In te, this message translates to:
+  /// **'కీబోర్డ్ మార్చండి'**
+  String get keyboardToggleTooltip;
+
+  /// No description provided for @clearText.
+  ///
+  /// In te, this message translates to:
+  /// **'తుడిచివేయి'**
+  String get clearText;
+
+  /// No description provided for @invalidPhoneError.
+  ///
+  /// In te, this message translates to:
+  /// **'సరైన ఫోన్ నంబర్ ఇవ్వండి (7-12 అంకెలు)'**
+  String get invalidPhoneError;
+
+  /// No description provided for @invalidNameError.
+  ///
+  /// In te, this message translates to:
+  /// **'పేరు చెప్పండి లేదా టైప్ చేయండి'**
+  String get invalidNameError;
+
+  /// No description provided for @contactSavedToast.
+  ///
+  /// In te, this message translates to:
+  /// **'కాంటాక్ట్ విజయవంతంగా సేవ్ అయింది!'**
+  String get contactSavedToast;
 
   /// No description provided for @settingsTitle.
   ///
@@ -481,38 +571,110 @@ abstract class AppLocalizations {
   /// No description provided for @developerCredits.
   ///
   /// In te, this message translates to:
-  /// **'Developed by Santosh Reddy'**
+  /// **'Developed with ❤️ by Santosh Reddy'**
   String get developerCredits;
 
   /// No description provided for @privacyPolicyTitle.
   ///
   /// In te, this message translates to:
-  /// **'Privacy Policy'**
+  /// **'గోప్యతా విధానం (Privacy Policy)'**
   String get privacyPolicyTitle;
 
   /// No description provided for @privacyPolicyText.
   ///
   /// In te, this message translates to:
-  /// **'EasySave is committed to protecting your privacy. This application operates entirely offline under your direct control. We do not collect, store, transmit, or share any personal data, contacts, call logs, or photos. All data processing occurs locally on your device, ensuring complete security and absolute confidentiality.'**
+  /// **'EasySave మీ గోప్యతను గౌరవిస్తుంది. ఈ యాప్ పూర్తిగా మీ ఫోన్ లోనే పనిచేస్తుంది (100% ఆఫ్‌లైన్). మీ నంబర్లు, కాల్స్, ఫోటోలు ఏ సర్వర్‌కు పంపబడవు. పూర్తి భద్రత మరియు నమ్మకం.'**
   String get privacyPolicyText;
 
   /// No description provided for @termsOfServiceTitle.
   ///
   /// In te, this message translates to:
-  /// **'Terms of Service'**
+  /// **'నిబంధనలు (Terms of Service)'**
   String get termsOfServiceTitle;
 
   /// No description provided for @termsOfServiceText.
   ///
   /// In te, this message translates to:
-  /// **'By using EasySave, you agree that all contact directories, call histories, and media transmission tools are managed exclusively offline on your local device. The application is provided on an \'as-is\' and \'as-available\' basis without any warranties. There are no remote database connections, analytics tracking, or third-party cloud integrations.'**
+  /// **'EasySave యాప్‌ను మీ వ్యక్తిగత ఉపయోగం కోసం నేరుగా వాడుకోవచ్చు. ఇది పూర్తిగా ఆఫ్‌లైన్ సాధనం.'**
   String get termsOfServiceText;
 
   /// No description provided for @closeButton.
   ///
   /// In te, this message translates to:
-  /// **'మూసివేయి'**
+  /// **'సరే'**
   String get closeButton;
+
+  /// No description provided for @appUpdate.
+  ///
+  /// In te, this message translates to:
+  /// **'యాప్ అప్‌డేట్'**
+  String get appUpdate;
+
+  /// No description provided for @checkForUpdates.
+  ///
+  /// In te, this message translates to:
+  /// **'అప్‌డేట్ తనిఖీ చేయండి'**
+  String get checkForUpdates;
+
+  /// No description provided for @checkingForUpdates.
+  ///
+  /// In te, this message translates to:
+  /// **'తనిఖీ చేస్తున్నాము...'**
+  String get checkingForUpdates;
+
+  /// No description provided for @upToDate.
+  ///
+  /// In te, this message translates to:
+  /// **'మీ యాప్ సరికొత్త వెర్షన్‌లో ఉంది'**
+  String get upToDate;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In te, this message translates to:
+  /// **'కొత్త వెర్షన్ అందుబాటులో ఉంది!'**
+  String get updateAvailable;
+
+  /// No description provided for @updateDownloaded.
+  ///
+  /// In te, this message translates to:
+  /// **'అప్‌డేట్ సిద్ధంగా ఉంది. యాప్‌ను రీస్టార్ట్ చేయండి.'**
+  String get updateDownloaded;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In te, this message translates to:
+  /// **'ఇప్పుడే అప్‌డేట్ చేయండి'**
+  String get updateNow;
+
+  /// No description provided for @restartToUpdate.
+  ///
+  /// In te, this message translates to:
+  /// **'ఇప్పుడే రీస్టార్ట్ చేయండి'**
+  String get restartToUpdate;
+
+  /// No description provided for @downloadingUpdate.
+  ///
+  /// In te, this message translates to:
+  /// **'అప్‌డేట్ డౌన్‌లోడ్ అవుతోంది...'**
+  String get downloadingUpdate;
+
+  /// No description provided for @updateError.
+  ///
+  /// In te, this message translates to:
+  /// **'అప్‌డేట్ వివరాలు పొందలేకపోయాము. ప్లే స్టోర్‌లో చూడండి.'**
+  String get updateError;
+
+  /// No description provided for @openInPlayStore.
+  ///
+  /// In te, this message translates to:
+  /// **'ప్లే స్టోర్‌లో తెరవండి'**
+  String get openInPlayStore;
+
+  /// No description provided for @versionLabel.
+  ///
+  /// In te, this message translates to:
+  /// **'ప్రస్తుత వెర్షన్'**
+  String get versionLabel;
 }
 
 class _AppLocalizationsDelegate

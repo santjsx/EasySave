@@ -12,13 +12,13 @@ class AppLocalizationsTe extends AppLocalizations {
   String get appName => 'EasySave';
 
   @override
-  String get appTagline => 'by santhoshh';
+  String get appTagline => 'మీ సులభమైన సేవ్ యాప్';
 
   @override
-  String get saveContactLabel => 'కొత్త నంబర్ దాచుకోండి';
+  String get saveContactLabel => 'కొత్త నంబర్ సేవ్ చేయండి';
 
   @override
-  String get saveContactSub => 'కొత్త నంబర్ రాసుకోవడానికి';
+  String get saveContactSub => 'కొత్త నంబర్ సేవ్ చేసుకోవడానికి';
 
   @override
   String get sharePhotoLabel => 'ఫోటో పంపండి';
@@ -27,7 +27,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get sharePhotoSub => 'వాట్సాప్ లో ఫోటో పంపండి';
 
   @override
-  String get enterNumber => 'నంబర్ ఎంటర్ చేయండి';
+  String get enterNumber => 'ఫోన్ నంబర్ ఇవ్వండి';
 
   @override
   String get nextButton => 'తర్వాత';
@@ -36,16 +36,16 @@ class AppLocalizationsTe extends AppLocalizations {
   String get speakName => 'పేరు చెప్పండి';
 
   @override
-  String get pressMicPrompt => 'పై బటన్ నొక్కి పేరు చెప్పండి';
+  String get pressMicPrompt => 'మైక్ నొక్కి పేరు చెప్పండి';
 
   @override
-  String get listeningLabel => 'వింటున్నాను...';
+  String get listeningLabel => 'వింటున్నాము...';
 
   @override
-  String get hearingLabel => 'విన్నది: ';
+  String get hearingLabel => 'మీరు చెప్పిన పేరు: ';
 
   @override
-  String get isCorrectQuestion => 'ఇది కరెక్టేనా?';
+  String get isCorrectQuestion => 'ఇది సరిగ్గా ఉందా?';
 
   @override
   String get yesButton => 'అవును';
@@ -75,7 +75,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get choosePhoto => 'ఫోటో ఎంచుకోండి';
 
   @override
-  String get recentPhotos => 'కొత్త ఫోటోలు';
+  String get recentPhotos => 'గ్యాలరీ ఫోటోలు';
 
   @override
   String get sendThisPhoto => 'ఈ ఫోటో పంపండి';
@@ -84,81 +84,86 @@ class AppLocalizationsTe extends AppLocalizations {
   String get whoToSend => 'ఎవరికి పంపించాలి?';
 
   @override
-  String get whatsappWillSend => 'WhatsApp లో పంపిస్తాము';
+  String get whatsappWillSend => 'వాట్సాప్ లో పంపిస్తాము';
 
   @override
-  String get whatsappNotInstalled => 'WhatsApp ఇన్స్టాల్ అయిలేదు';
+  String get whatsappNotInstalled => 'వాట్సాప్ ఇన్స్టాల్ అయిలేదు';
 
   @override
-  String get installWhatsapp => 'WhatsApp ఇన్స్టాల్ చేయండి';
+  String get installWhatsapp => 'వాట్సాప్ ఇన్స్టాల్ చేయండి';
 
   @override
-  String get saveContactFirst => 'ముందు నంబర్ సేవ్ చేయండి';
+  String get saveContactFirst => 'ముందుగా నంబర్ సేవ్ చేయండి';
 
   @override
-  String get noPhotosFound => 'ఫోటోలు దొరకలేదు';
+  String get noPhotosFound => 'ఫోటోలు ఏమీ లేవు';
 
   @override
-  String get generalErrorMessage => 'తప్పు జరిగింది, మళ్ళీ ప్రయత్నించండి';
+  String get generalErrorMessage => 'సమస్య వచ్చింది, మళ్ళీ ప్రయత్నించండి';
 
   @override
   String get speechNotRecognized => 'అర్థం కాలేదు, మళ్ళీ చెప్పండి';
 
   @override
   String get permissionContactsExplanation =>
-      'మీ ఫోన్ లోని కాంటాక్ట్స్ చూడడానికి అనుమతి అడుగుతున్నాము';
+      'మీ ఫోన్ లోని కాంటాక్ట్స్ చూడటానికి అనుమతి కావాలి';
 
   @override
   String get permissionWriteExplanation =>
-      'కొత్త నంబర్లు సేవ్ చేయడానికి అనుమతి అడుగుతున్నాము';
+      'కొత్త నంబర్లు సేవ్ చేయడానికి అనుమతి కావాలి';
 
   @override
-  String get permissionPhotosExplanation =>
-      'ఫోటోలు చూడటానికి అనుమతి అడుగుతున్నాం';
+  String get permissionPhotosExplanation => 'ఫోటోలు పంపడానికి అనుమతి కావాలి';
 
   @override
   String get permissionMicExplanation =>
-      'మీ పేరు వినడానికి మైక్ అనుమతి అడుగుతున్నాం';
+      'పేరు వినడానికి మైక్రోఫోన్ అనుమతి కావాలి';
 
   @override
-  String get permissionDeniedMessage => 'అనుమతి ఇవ్వకపోతే ఇది పని చేయదు';
+  String get permissionDeniedMessage => 'అనుమతి ఇవ్వకపోతే ఈ సదుపాయం పని చేయదు';
 
   @override
   String get openSettings => 'సెట్టింగ్స్ తెరవండి';
 
   @override
-  String get teluguSpeechMissing => 'తెలుగు వాయిస్ ప్యాక్ డౌన్లోడ్ చేయండి';
+  String get teluguSpeechMissing => 'తెలుగు వాయిస్ ప్యాక్ డౌన్లోడ్ చేసుకోండి';
 
   @override
-  String get viewMyContacts => 'నా ఫోన్ నంబర్లు';
+  String get viewMyContacts => 'నా కాంటాక్ట్స్';
 
   @override
-  String get viewMyContactsSub => 'ఫోన్ బుక్ చూడడానికి, మార్చడానికి';
+  String get viewMyContactsSub => 'ఫోన్ బుక్ చూడడానికి, మాట్లాడడానికి';
 
   @override
-  String get searchContactsHint => 'ఇక్కడ పేరు టైప్ చేసి వెతకండి...';
+  String get searchContactsHint => 'పేరు లేదా నంబర్ వెతకండి...';
 
   @override
-  String get contactDetailsTitle => 'పరిచయం వివరాలు';
+  String get contactDetailsTitle => 'కాంటాక్ట్ వివరాలు';
 
   @override
-  String get callNowButton => 'ఫోన్ చేయండి';
+  String get callNowButton => 'కాల్ చేయండి';
+
+  @override
+  String get whatsappChatButton => 'వాట్సాప్ మెసేజ్';
 
   @override
   String get renameButton => 'పేరు మార్చండి';
 
   @override
-  String get deleteButton => 'తీసేయండి';
+  String get deleteButton => 'డిలీట్ చేయండి';
 
   @override
   String get deleteConfirmTitle => 'డిలీట్ చేయాలా?';
 
   @override
   String get deleteConfirmMessage =>
-      'మీరు నిజంగా నిశ్చయంగా డిలీట్ చేయాలనుకుంటున్నారా?';
+      'ఈ కాంటాక్ట్‌ను డిలీట్ చేయాలనుకుంటున్నారా?';
 
   @override
   String get editContactTitle => 'వివరాలు మార్చండి';
+
+  @override
+  String get addContactTitle => 'కొత్త కాంటాక్ట్';
 
   @override
   String get editNameLabel => 'పేరు';
@@ -167,62 +172,139 @@ class AppLocalizationsTe extends AppLocalizations {
   String get editPhoneLabel => 'ఫోన్ నంబర్';
 
   @override
-  String get contactUpdatedSuccess => 'వివరాలు మార్చబడ్డాయి!';
+  String get contactUpdatedSuccess => 'వివరాలు సేవ్ అయ్యాయి!';
 
   @override
-  String get contactDeletedSuccess => 'పరిచయం తీసివేయబడింది!';
+  String get contactDeletedSuccess => 'కాంటాక్ట్ డిలీట్ అయింది!';
 
   @override
-  String get cancelButton => 'రద్దు చేయి';
+  String get cancelButton => 'రద్దు';
 
   @override
-  String get recentCallsTitle => 'వచ్చిన ఫోన్ కాల్స్';
+  String get recentCallsTitle => 'ఇటీవలి కాల్స్';
 
   @override
-  String get noCallLogs => 'ఫోన్ కాల్స్ ఏమీ లేవు';
+  String get viewAllCalls => 'అన్నీ చూడండి';
 
   @override
-  String get callFailed => 'ఫోన్ చేయడం కుదరలేదు';
+  String get allCalls => 'అన్నీ';
 
   @override
-  String get callPermissionNeeded => 'ఫోన్ చేయడానికి అనుమతి ఇవ్వాలి';
+  String get missedCalls => 'మిస్డ్ కాల్స్';
 
   @override
-  String get permissionRequired => 'అనుమతి ఇవ్వండి';
+  String get incomingCall => 'వచ్చిన కాల్';
+
+  @override
+  String get outgoingCall => 'చేసిన కాల్';
+
+  @override
+  String get missedCall => 'మిస్డ్ కాల్';
+
+  @override
+  String get rejectedCall => 'కట్ చేసిన కాల్';
+
+  @override
+  String get noCallLogs => 'కాల్స్ ఏమీ లేవు';
+
+  @override
+  String get callFailed => 'కాల్ చేయడం కుదరలేదు';
+
+  @override
+  String get callPermissionNeeded => 'కాల్ చేయడానికి అనుమతి ఇవ్వాలి';
+
+  @override
+  String get permissionRequired => 'అనుమతి అవసరం';
 
   @override
   String get callLogPermissionExplanation =>
-      'ఇక్కడ మీకు వచ్చిన ఫోన్ కాల్స్ చూసుకోవడానికి మరియు ఫోన్ చేయడానికి అనుమతి ఇవ్వండి.';
+      'మీ కాల్ హిస్టరీ చూడటానికి మరియు డైరెక్ట్ కాల్ చేయడానికి అనుమతి ఇవ్వండి.';
 
   @override
   String get grantPermission => 'అనుమతి ఇవ్వండి';
 
   @override
-  String get saveCallText => 'సేవ్ చేసుకోండి';
+  String get saveCallText => 'సేవ్ చేయండి';
 
   @override
   String get unsavedNumber => 'సేవ్ చేయని నంబర్';
 
   @override
+  String get pasteFromClipboard => 'పేస్ట్ చేయండి';
+
+  @override
+  String get keyboardToggleTooltip => 'కీబోర్డ్ మార్చండి';
+
+  @override
+  String get clearText => 'తుడిచివేయి';
+
+  @override
+  String get invalidPhoneError => 'సరైన ఫోన్ నంబర్ ఇవ్వండి (7-12 అంకెలు)';
+
+  @override
+  String get invalidNameError => 'పేరు చెప్పండి లేదా టైప్ చేయండి';
+
+  @override
+  String get contactSavedToast => 'కాంటాక్ట్ విజయవంతంగా సేవ్ అయింది!';
+
+  @override
   String get settingsTitle => 'సెట్టింగ్స్ & సమాచారం';
 
   @override
-  String get developerCredits => 'Developed by Santosh Reddy';
+  String get developerCredits => 'Developed with ❤️ by Santosh Reddy';
 
   @override
-  String get privacyPolicyTitle => 'Privacy Policy';
+  String get privacyPolicyTitle => 'గోప్యతా విధానం (Privacy Policy)';
 
   @override
   String get privacyPolicyText =>
-      'EasySave is committed to protecting your privacy. This application operates entirely offline under your direct control. We do not collect, store, transmit, or share any personal data, contacts, call logs, or photos. All data processing occurs locally on your device, ensuring complete security and absolute confidentiality.';
+      'EasySave మీ గోప్యతను గౌరవిస్తుంది. ఈ యాప్ పూర్తిగా మీ ఫోన్ లోనే పనిచేస్తుంది (100% ఆఫ్‌లైన్). మీ నంబర్లు, కాల్స్, ఫోటోలు ఏ సర్వర్‌కు పంపబడవు. పూర్తి భద్రత మరియు నమ్మకం.';
 
   @override
-  String get termsOfServiceTitle => 'Terms of Service';
+  String get termsOfServiceTitle => 'నిబంధనలు (Terms of Service)';
 
   @override
   String get termsOfServiceText =>
-      'By using EasySave, you agree that all contact directories, call histories, and media transmission tools are managed exclusively offline on your local device. The application is provided on an \'as-is\' and \'as-available\' basis without any warranties. There are no remote database connections, analytics tracking, or third-party cloud integrations.';
+      'EasySave యాప్‌ను మీ వ్యక్తిగత ఉపయోగం కోసం నేరుగా వాడుకోవచ్చు. ఇది పూర్తిగా ఆఫ్‌లైన్ సాధనం.';
 
   @override
-  String get closeButton => 'మూసివేయి';
+  String get closeButton => 'సరే';
+
+  @override
+  String get appUpdate => 'యాప్ అప్‌డేట్';
+
+  @override
+  String get checkForUpdates => 'అప్‌డేట్ తనిఖీ చేయండి';
+
+  @override
+  String get checkingForUpdates => 'తనిఖీ చేస్తున్నాము...';
+
+  @override
+  String get upToDate => 'మీ యాప్ సరికొత్త వెర్షన్‌లో ఉంది';
+
+  @override
+  String get updateAvailable => 'కొత్త వెర్షన్ అందుబాటులో ఉంది!';
+
+  @override
+  String get updateDownloaded =>
+      'అప్‌డేట్ సిద్ధంగా ఉంది. యాప్‌ను రీస్టార్ట్ చేయండి.';
+
+  @override
+  String get updateNow => 'ఇప్పుడే అప్‌డేట్ చేయండి';
+
+  @override
+  String get restartToUpdate => 'ఇప్పుడే రీస్టార్ట్ చేయండి';
+
+  @override
+  String get downloadingUpdate => 'అప్‌డేట్ డౌన్‌లోడ్ అవుతోంది...';
+
+  @override
+  String get updateError =>
+      'అప్‌డేట్ వివరాలు పొందలేకపోయాము. ప్లే స్టోర్‌లో చూడండి.';
+
+  @override
+  String get openInPlayStore => 'ప్లే స్టోర్‌లో తెరవండి';
+
+  @override
+  String get versionLabel => 'ప్రస్తుత వెర్షన్';
 }
