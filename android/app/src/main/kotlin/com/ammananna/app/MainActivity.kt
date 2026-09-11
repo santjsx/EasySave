@@ -11,6 +11,8 @@ import android.Manifest
 import android.content.ContentProviderOperation
 import android.provider.ContactsContract
 import android.accounts.AccountManager
+import android.content.Context
+import android.telecom.TelecomManager
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.ammananna.app/direct_call"
@@ -68,11 +70,46 @@ class MainActivity: FlutterActivity() {
         val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
         if (cleanNumber.isEmpty()) return false
 
-        return try {
-            val dialIntent = Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:$cleanNumber")
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        val hasCallPermission = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CALL_PHONE
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (hasCallPermission) {
+            try {
+                val callIntent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$cleanNumber")).apply {
+                    // Attach multi-SIM routing extras for MediaTek / Realme / ColorOS modems
+                    putExtra("com.android.phone.extra.slot", 0)
+                    putExtra("simSlot", 0)
+                    putExtra("sim_slot", 0)
+                    putExtra("slot", 0)
+                    putExtra("Cdma_Supp", true)
+                }
+
+                // If a preferred outgoing phone account is designated in TelecomManager, attach it
+                try {
+                    val tm = getSystemService(Context.TELECOM_SERVICE) as? TelecomManager
+                    val userAccount = tm?.userSelectedOutgoingPhoneAccount
+                    if (userAccount != null) {
+                        callIntent.putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, userAccount)
+                    }
+                } catch (e: Exception) {
+                    // Ignore telecom reflection errors
+                }
+
+                // Start directly from Activity context without FLAG_ACTIVITY_NEW_TASK
+                // to prevent Realme UI task detachment / blank screen freeze
+                startActivity(callIntent)
+                return true
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // If direct ACTION_CALL failed, fall back to ACTION_DIAL below
             }
+        }
+
+        // Zero-permission / Safe fallback: Launch dialer
+        return try {
+            val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$cleanNumber"))
             startActivity(dialIntent)
             true
         } catch (e: Exception) {

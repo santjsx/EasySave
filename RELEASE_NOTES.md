@@ -1,3 +1,18 @@
+# EasySave v1.3.3 Release - Direct 1-Click Calling Without Keypad 🚀📞
+
+We are proud to release version **1.3.3**, implementing true 1-click **Direct Calling** without opening the Google dialer keypad on Realme 8 5G and all Android devices, complete with dual-SIM routing extras and graceful dialer fallback.
+
+---
+
+## 🛠️ What's Changed in v1.3.3
+### 📞 Direct 1-Click Calling (No Keypad)
+*   **Direct Outbound Calling:** When tapping Call, the app now initiates the call directly via `ACTION_CALL` without opening or requiring interaction with the Google Dialer keypad.
+*   **Realme 8 5G Dual-SIM Routing Extras:** Passes dual-SIM routing parameters (`com.android.phone.extra.slot`, `simSlot`, `sim_slot`, and `TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE`) so Realme UI immediately knows which SIM to route through without displaying a blank white screen or freezing.
+*   **Activity Window Attachment Fix:** Dispatches the calling intent directly from the Activity context without `FLAG_ACTIVITY_NEW_TASK`, ensuring the in-call overlay window attaches cleanly and seamlessly to the screen.
+*   **Seamless Permission & Dialer Fallback:** Automatically requests `CALL_PHONE` permission if not yet granted, and gracefully falls back to `ACTION_DIAL` if denied or restricted by OS policies.
+
+---
+
 # EasySave v1.3.2 Release - Dual-SIM Calling Fix & Text Scaling Safeguards 🚀📱
 
 We are proud to release version **1.3.2**, fixing the dual-SIM calling freeze (blank white screen on Realme / Oppo / ColorOS devices) and preventing oversized layout ballooning when Android system display/font size is set to Large or Largest.

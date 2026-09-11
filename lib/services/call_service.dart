@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
@@ -8,8 +9,8 @@ import '../widgets/easy_snackbar.dart';
 
 /// Top industry-grade calling service for EasySave.
 /// Guarantees zero edge cases, 100% reliable 1-click calling on every Android device.
-/// Strips illegal characters/spaces, checks direct calling permissions, and seamlessly
-/// falls back to Android's native dialer with zero permissions required.
+/// Directly initiates the call without opening the dialer keypad when phone permission
+/// is available, and seamlessly falls back to the dialer if permission is denied.
 class CallService {
   static const MethodChannel _platform = MethodChannel('com.ammananna.app/direct_call');
 
@@ -25,10 +26,8 @@ class CallService {
 
   /// Initiates a phone call in a single click with dual-tier fallback.
   ///
-  /// - Tier 1: Launches Android's official dialer via `Intent.ACTION_DIAL` (`tel:<cleanNumber>`).
-  ///   This is Google's recommended standard for non-dialer apps. It requires ZERO permissions,
-  ///   never freezes on dual-SIM devices (allows selecting SIM 1 or SIM 2), and opens instantly.
-  /// - Tier 2: Seamlessly falls back to native platform channel if url_launcher is restricted.
+  /// - Tier 1: Direct native call without dialer keypad via platform channel (ACTION_CALL + dual-SIM extras).
+  /// - Tier 2: Seamlessly falls back to ACTION_DIAL if direct calling is blocked or permission denied.
   Future<bool> makeCall(BuildContext context, String rawPhone) async {
     final localization = AppLocalizations.of(context);
     final String cleanPhone = sanitizePhoneNumber(rawPhone);
@@ -42,7 +41,24 @@ class CallService {
 
     HapticFeedback.mediumImpact();
 
-    // 1. Primary: Launch Android system dialer via ACTION_DIAL (Zero permissions, 100% reliable across dual-SIM)
+    // 1. Direct Native Calling: Directly places the call without showing the keypad
+    try {
+      final status = await Permission.phone.status;
+      if (!status.isGranted) {
+        await Permission.phone.request();
+      }
+      final bool? directCallSucceeded = await _platform.invokeMethod<bool>(
+        'makeCall',
+        {'phoneNumber': cleanPhone},
+      );
+      if (directCallSucceeded == true) {
+        return true;
+      }
+    } catch (e) {
+      debugPrint('Native direct call invocation error: $e');
+    }
+
+    // 2. Safe Fallback: Launch Android dialer via ACTION_DIAL if direct call was blocked
     try {
       final Uri telUri = Uri.parse('tel:$cleanPhone');
       final bool launched = await launchUrl(
@@ -53,18 +69,7 @@ class CallService {
         return true;
       }
     } catch (e) {
-      debugPrint('url_launcher ACTION_DIAL error: $e');
-    }
-
-    // 2. Fallback: Native platform channel dialer dispatch if url_launcher failed
-    try {
-      final fallbackResult = await _platform.invokeMethod<bool>(
-        'makeCall',
-        {'phoneNumber': cleanPhone},
-      );
-      if (fallbackResult == true) return true;
-    } catch (e) {
-      debugPrint('Native platform fallback error: $e');
+      debugPrint('url_launcher fallback error: $e');
     }
 
     if (context.mounted && localization != null) {
